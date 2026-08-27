@@ -1,0 +1,141 @@
+syntax = "proto3";
+
+package sift.users.v2;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sift/common/type/v1/user.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {title: "User Service"}
+};
+
+service UserService {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {description: "Service to programmatically interact with user objects."};
+
+  // Used to toggle a user's active status within their organization.
+  rpc UpdateUserOrganizationActive(UpdateUserOrganizationActiveRequest) returns (UpdateUserOrganizationActiveResponse) {
+    option (google.api.http) = {
+      post: "/api/v2/users/{user_id}/active"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "UpdateUserOrganizationActive"
+      description: "Used to toggle a user's active status within their organization."
+    };
+  }
+
+  // Retrieves a user object.
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {
+    option (google.api.http) = {get: "/api/v2/users/{user_id}"};
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "GetUser"
+      description: "Retrieves a user object."
+    };
+  }
+
+  // List active users.
+  rpc ListActiveUsers(ListActiveUsersRequest) returns (ListActiveUsersResponse) {
+    option (google.api.http) = {get: "/api/v2/users"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "ListActiveUsers"
+      description: "List active users."
+    };
+  }
+
+  // List users.
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
+    option (google.api.http) = {get: "/api/v2/users:all"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "ListUsers"
+      description: "List users."
+      operation_id: "UserService_ListUsersV2"
+    };
+  }
+}
+
+message UpdateUserOrganizationActiveRequest {
+  string user_id = 1;
+  string organization_id = 2;
+  bool active = 3;
+}
+
+message UpdateUserOrganizationActiveResponse {}
+
+// The request for a call to retrieve a single existing user by its user_id.
+message GetUserRequest {
+  // The id of the asset to be retrieved. Required.
+  string user_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetUserResponse {
+  sift.common.type.v1.User user = 1;
+}
+
+// The request for a call to `UserService_ListActiveUsers` to retrieve users.
+message ListActiveUsersRequest {
+  // The maximum number of users to return. The service may return fewer than this value.
+  // If unspecified, at most 50 users will be returned. The maximum value is 1000; values above
+  // 1000 will be coerced to 1000. Optional.
+  uint32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // A page token, received from a previous `ListActiveUsers` call.
+  // Provide this to retrieve the subsequent page.
+  // When paginating, all other parameters provided to `ListActiveUsers` must match
+  // the call that provided the page token. Optional.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+  // Available fields to filter by are `user_id` and `name`.
+  // For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).
+  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. If provided, this will scope down the user search to just those in the organization ID provided.
+  string organization_id = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // How to order the retrieved users. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+  // Available fields to order_by are `name`, `created_date`, and `modified_date`.
+  // If left empty, items are ordered by `name` in ascending order (A-Z).
+  // For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+  // Example: "created_date desc,modified_date"
+  string order_by = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The response of a call to `UserService_ListActiveUsersResponse`.
+message ListActiveUsersResponse {
+  repeated sift.common.type.v1.User users = 1;
+  string next_page_token = 2;
+}
+
+// The request for a call to `UserService_ListUsers` to retrieve users.
+message ListUsersRequest {
+  // The maximum number of users to return. The service may return fewer than this value.
+  // If unspecified, at most 50 users will be returned. The maximum value is 1000; values above
+  // 1000 will be coerced to 1000. Optional.
+  uint32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // A page token, received from a previous `ListUsers` call.
+  // Provide this to retrieve the subsequent page.
+  // When paginating, all other parameters provided to `ListUsers` must match
+  // the call that provided the page token. Optional.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+  // Available fields to filter by are `user_id` and `name`.
+  // For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).
+  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // How to order the retrieved users. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+  // Available fields to order_by are:
+  // - created_date
+  // - modified_date
+  string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The response of a call to `UserService_ListUsersResponse`.
+message ListUsersResponse {
+  repeated sift.common.type.v1.User users = 1;
+  string next_page_token = 2;
+}

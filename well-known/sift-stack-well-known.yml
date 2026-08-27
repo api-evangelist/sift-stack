@@ -1,0 +1,43 @@
+generated: '2026-08-27'
+method: probed
+source: 'Direct HTTP probes of /.well-known/* on every public Sift host, 2026-08-27'
+name: Sift /.well-known probe
+note: >-
+  The documentation host serves a real agent-discovery set — an A2A agent card, an MCP server manifest and
+  llms.txt — but no security.txt and no api-catalog anywhere. The marketing host (Webflow) answers every
+  /.well-known/* path with a 404 HTML page reading "Invalid .well-known request". The API host
+  api.siftstack.com requires a bearer token at the edge and returned 401 with an empty body for every path,
+  including anonymous OAuth metadata paths, so nothing there could be read; that is a gated result, not an
+  absent one.
+hosts:
+- host: docs.siftstack.com
+  documents:
+  - {path: /.well-known/agent-card.json, status: 200, file: well-known/sift-stack-agent-card.json}
+  - {path: /.well-known/mcp.json, status: 200, file: well-known/sift-stack-mcp.json}
+  - {path: /.well-known/llms.txt, status: 200, file: well-known/sift-stack-llms.txt}
+  - {path: /.well-known/agent-skills/sift/skill.md, status: 200, file: skills/sift-stack-sift.md}
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+- host: www.siftstack.com
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /.well-known/llms.txt, status: 404}
+- host: api.siftstack.com
+  documents:
+  - {path: /.well-known/agent-card.json, status: 401}
+  - {path: /.well-known/oauth-authorization-server, status: 401}
+  - {path: /.well-known/openid-configuration, status: 401}
+  - {path: /openapi.json, status: 401}
+  - {path: /, status: 401}

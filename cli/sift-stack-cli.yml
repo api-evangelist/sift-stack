@@ -1,0 +1,66 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://docs.siftstack.com/documentation/cli/sift-cli (200),
+  https://docs.siftstack.com/documentation/reference/cli-reference (200),
+  https://docs.siftstack.com/documentation/cli/import-files-with-the-sift-cli (200),
+  https://docs.siftstack.com/documentation/cli/export-data-with-the-sift-cli (200),
+  https://docs.siftstack.com/documentation/cli/sift-mcp (200),
+  https://github.com/sift-stack/sift/releases/tag/sift_cli-v0.4.4 (200). Read 2026-08-27.
+name: sift-cli
+binary: sift-cli
+version: 0.4.4
+released: '2026-08-24'
+language: rust
+license: MIT
+repository: https://github.com/sift-stack/sift
+install:
+- method: shell installer
+  command: 'curl --proto "=https" --tlsv1.2 -LsSf https://github.com/sift-stack/sift/releases/latest/download/sift_cli-installer.sh | sh'
+- method: powershell installer
+  command: 'irm https://github.com/sift-stack/sift/releases/latest/download/sift_cli-installer.ps1 | iex'
+- method: prebuilt archive
+  note: 'cargo-dist tarballs with sha256 sums for aarch64/x86_64 macOS, aarch64/x86_64 Linux (gnu), and x86_64 Windows (msvc).'
+registry: none
+registry_note: >-
+  Not published to crates.io, npm, PyPI or Homebrew. The crates.io crate named `sift-cli` is an UNRELATED
+  project. Distribution is GitHub Releases only.
+configuration:
+  file: sift.toml
+  profiles: true
+  fields: [grpc-uri, rest-uri, api-key, app-uri]
+  note: Multiple named profiles (e.g. `default`, `mission`); every command takes --profile.
+commands:
+- group: config
+  subcommands: [create, update, show, where]
+  purpose: Create and inspect the sift.toml profile that holds endpoints and the API key.
+- group: ping
+  purpose: Verify connectivity and credentials against the configured profile.
+- group: import
+  subcommands: [csv, parquet, tdms, hdf, ulog, backups]
+  flags: ['--asset <name>', '--run <name>', '--file <path>', '--format <fmt>', '--preview']
+  purpose: Import telemetry files into an Asset and Run. `--preview` is a dry run.
+- group: export
+  subcommands: [run, asset]
+  purpose: Pull channel data out of Sift for external analysis.
+- group: agent
+  subcommands: [install, update, doctor, uninstall]
+  flags: ['--profile <name>', '--allow-destructive', '--read-only', '--default-profile']
+  purpose: >-
+    Install and maintain the Sift MCP server plus a bundled SKILL.md across Claude Code, Codex, Cursor and
+    OpenCode. `doctor` reports drift without changing anything. This is the CLI's most distinctive surface —
+    the CLI is also the agent integration installer.
+- group: mcp
+  purpose: 'Run the Sift MCP server over stdio (`sift-cli mcp`); this is what an MCP client launches.'
+- group: doc
+  purpose: Documentation lookup from the command line.
+- group: install completions
+  purpose: Shell completion installation.
+key_flows:
+- {name: first run, steps: ['sift-cli config create', 'sift-cli config update --grpc-uri ... --rest-uri ... --api-key ... --app-uri ...', 'sift-cli ping']}
+- {name: dry-run an import, steps: ['sift-cli import --asset <a> --run <r> --file <f> --preview', 'sift-cli import --asset <a> --run <r> --file <f> --format csv']}
+- {name: wire up agents, steps: ['sift-cli agent install', 'sift-cli agent doctor', 'sift-cli agent update --allow-destructive  # only when write access is intended']}
+note: >-
+  The CLI is the delivery vehicle for three separate things — a data import/export tool, the local MCP
+  server, and the versioned agent skill — which is why its release cadence (0.4.0 → 0.4.4 across August 2026)
+  is the fastest of any Sift artifact.

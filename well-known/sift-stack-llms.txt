@@ -1,0 +1,558 @@
+# Sift
+
+> Explore how to accelerate mission-critical engineering with Sift
+
+- [Automate telemetry review with Sift](https://docs.siftstack.com/documentation/home.md): Ingest telemetry. Define checks. Automate reviews.
+- [What is Sift?](https://docs.siftstack.com/documentation/get-started/what-is-sift.md): Learn the core concepts of the Sift data model.
+- [Create your first telemetry workflow](https://docs.siftstack.com/documentation/get-started/quickstart.md): Quickly learn how to import your telemetry into Sift.
+- [Understand Assets, Channels, and Runs](https://docs.siftstack.com/documentation/get-started/data-model.md): Learn how Sift organizes data
+- [Navigate the Sift workspace](https://docs.siftstack.com/documentation/get-started/navigate.md): Locate Sift's core sections, including Runs, Rules, and Reports, and understand how the navigation is organized.
+- [Glossary](https://docs.siftstack.com/documentation/get-started/glossary.md): Definitions of common Sift concepts including Runs, Channels, Annotations, Campaigns, and data ingestion methods.
+- [Import data from a file](https://docs.siftstack.com/documentation/ingest/data-import/import-data-from-a-file.md): Import a telemetry file into Sift and start analyzing your data.
+- [Stream live telemetry](https://docs.siftstack.com/documentation/ingest/stream/index.md): Choose a method to send real-time telemetry data from your application to Sift.
+- [Choose a streaming method](https://docs.siftstack.com/documentation/ingest/stream/choose-a-streaming-method.md): Select the streaming method that fits your situation
+- [Stream your first telemetry data with Python](https://docs.siftstack.com/documentation/ingest/stream/stream-your-first-telemetry-data-with-python.md): Send telemetry to Sift using Python.
+- [Stream telemetry from a running application](https://docs.siftstack.com/documentation/ingest/stream/stream-telemetry-from-a-running-application.md): Stream structured telemetry over gRPC with an ingestion config
+- [Organize streamed data into Assets and Runs](https://docs.siftstack.com/documentation/ingest/stream/organize-streamed-data-into-assets-and-runs.md): Associate your streamed telemetry with Runs
+- [Continue streaming across multiple Runs](https://docs.siftstack.com/documentation/ingest/stream/continue-streaming-across-multiple-runs.md): Stream data across restarts or separate processes
+- [Monitor ingestion health](https://docs.siftstack.com/documentation/ingest/monitor-ingestion-health.md): Use sift_app to verify data flow, troubleshoot ingestion failures, and track pipeline performance.
+- [Analyze a Run](https://docs.siftstack.com/documentation/analyze/analyze-a-run.md): Open a Run in Explore, plot Channels, build a multi-Panel workspace to analyze and share telemetry.
+- [Investigate a telemetry anomaly](https://docs.siftstack.com/documentation/analyze/investigate-telemetry-anomaly.md): Isolate unusual signal behavior, compare related Channels, and identify the root cause of an anomaly.
+- [Compare signals over time](https://docs.siftstack.com/documentation/analyze/compare-signals-over-time.md): Plot multiple Channels in the same workspace to identify correlations, trends, and dependencies between signals.
+- [Compare a Run against a baseline](https://docs.siftstack.com/documentation/analyze/compare-run-baseline.md): Compare a new Run against a baseline Run to identify regressions and validate expected behavior.
+- [Align Runs for comparison](https://docs.siftstack.com/documentation/analyze/align-runs-comparison.md): Align multiple Runs to a shared T-0 reference point so signals line up for meaningful comparison.
+- [Standardize analysis across Runs](https://docs.siftstack.com/documentation/analyze/standardize-analysis-across-runs.md): Save your analysis setup once and apply it to any dataset without rebuilding from scratch.
+- [Monitor telemetry in real time](https://docs.siftstack.com/documentation/analyze/monitor-telemetry-in-real-time.md): Use Live mode in Explore to monitor real-time telemetry as it streams into Sift.
+- [Overview](https://docs.siftstack.com/documentation/review/overview.md): Learn how Rules, Reports, Annotations, and Campaigns work together when reviewing a Run
+- [Detect and review issues in a Run](https://docs.siftstack.com/documentation/review/detect-and-review-issues-in-a-run.md): Generate a Report, review flagged issues, and close them out
+- [Detect deviations automatically using Rules](https://docs.siftstack.com/documentation/review/detect-deviations-automatically-using-rules.md): Automatically flag anomalies in your telemetry without manual inspection.
+- [Set up a repeatable review checklist](https://docs.siftstack.com/documentation/review/set-up-a-repeatable-review-checklist.md): Create a standard set of automated checks that applies to every new dataset automatically.
+- [Triage and close out flagged issues](https://docs.siftstack.com/documentation/review/triage-and-close-out-flagged-issues.md): Work through a Report's Annotations: assign, update, and resolve issues to drive a review to completion
+- [Campaigns: track a multi-Run review effort](https://docs.siftstack.com/documentation/review/track-a-multi-run-review-campaign.md): Organize Reports from multiple Runs into a Campaign and track overall review progress
+- [Overview](https://docs.siftstack.com/documentation/analyze/families/overview.md)
+- [Group Runs into a Family](https://docs.siftstack.com/documentation/analyze/families/group-runs-into-a-family.md): Create a named group of related Runs to use as a comparison baseline, statistical reference, and automated detection source.
+- [Compare Runs visually against a Family baseline](https://docs.siftstack.com/documentation/analyze/families/compare-runs-visually-against-a-family-baseline.md): Overlay Family members on a shared aligned time axis in Explore to inspect variance, identify outliers, and compare a new Run against the historical spread.
+- [Detect statistical deviations using Family Rules](https://docs.siftstack.com/documentation/analyze/families/detect-deviations-from-a-historical-baseline.md): Automatically flag when new data falls outside the expected range of your historical reference.
+- [Manage Families](https://docs.siftstack.com/documentation/analyze/families/keep-a-family-current.md): Update Family membership, configuration, and statistics as your test program evolves.
+- [Calculated Channels: create a derived signal](https://docs.siftstack.com/documentation/transform/create-a-derived-signal.md): Use a Calculated Channel to compute a new derived signal without modifying the original telemetry data.
+- [Reuse expression logic](https://docs.siftstack.com/documentation/transform/reuse-expression-logic.md): Define expression logic once and reference it across multiple Calculated Channels, Rules, and User-Defined Functions.
+- [Reference files in expressions](https://docs.siftstack.com/documentation/transform/reference-files-in-expressions.md): Use file data from Assets and Runs in Rule and Calculated Channel expressions instead of hardcoding values.
+- [Export data to a file](https://docs.siftstack.com/documentation/export/export-data-from-a-file.md): Export telemetry data from a Run to a file for downstream analysis, sharing, or archiving.
+- [Sift CLI setup](https://docs.siftstack.com/documentation/cli/sift-cli.md): Install, configure, and run the Sift CLI to import and export telemetry from the command line.
+- [Import files with the Sift CLI](https://docs.siftstack.com/documentation/cli/import-files-with-the-sift-cli.md): Import CSV, Parquet, TDMS, HDF5, ULog, and backup files into Sift from the command line.
+- [Export data with the Sift CLI](https://docs.siftstack.com/documentation/cli/export-data-with-the-sift-cli.md): Export Run and Asset telemetry from Sift to a file from the command line.
+- [Sift MCP server](https://docs.siftstack.com/documentation/cli/sift-mcp.md): Connect AI coding agents to Sift with the Sift Model Context Protocol server.
+- [Visualize Sift telemetry in Grafana](https://docs.siftstack.com/documentation/integrate/visualize-sift-telemetry-in-grafana.md): Connect Sift as a Grafana data source to build persistent, team-facing dashboards for live monitoring and historical analysis.
+- [Open Explore with a dynamic URL](https://docs.siftstack.com/documentation/integrate/open-explore-with-a-dynamic-url.md): Construct a URL with query parameters to open Explore with Runs or Assets, Channels, Panel type, and an optional time range preloaded.
+- [Stream data to Sift from FlexLogger](https://docs.siftstack.com/documentation/integrate/stream-data-to-sift-from-flexlogger.md): Install the Sift FlexLogger plugins to send Channel data to Sift.
+- [Set up API access](https://docs.siftstack.com/documentation/manage/set-up-api-access.md): Create an API key and obtain the base URL needed to authenticate and send requests to the Sift API.
+- [Get alerted when a limit is breached](https://docs.siftstack.com/documentation/manage/get-alerted-when-a-limit-is-breached.md): Set up a webhook to receive notifications in an external system when a Rule is violated or resolved during live data ingestion.
+- [Organize resources with Metadata](https://docs.siftstack.com/documentation/manage/organize-and-filter-resources-with-metadata.md): Define a structured taxonomy using Metadata keys to organize, categorize, and filter resources including Runs, Campaigns, and Annotations across your workspace.
+- [Recover failed ingestion data](https://docs.siftstack.com/documentation/manage/identify-and-recover-failed-ingestion-data.md): Review DLQ entries, download failed data, and reingest it after resolving the issue.
+- [Connect an Identity Provider (IdP)](https://docs.siftstack.com/documentation/manage/connect-an-identity-provider.md): Configure an external Identity Provider to manage users and groups in Sift using SCIM push provisioning.
+- [Manage user access](https://docs.siftstack.com/documentation/manage/manage-user-access.md): Invite users, manage their status, and organize them into groups to control access to Sift.
+- [Set up attribute-based access policies](https://docs.siftstack.com/documentation/manage/set-up-data-access-governance.md): Use Data Access Governance (DAG) to control access to Sift resources.
+- [Sift CLI reference](https://docs.siftstack.com/documentation/reference/cli-reference.md): Complete command, subcommand, and flag reference for the Sift CLI.
+- [File formats for import and export](https://docs.siftstack.com/documentation/reference/supported-file-formats.md): File formats supported for importing and exporting data in the Sift UI.
+- [Ingestion config streaming reference](https://docs.siftstack.com/documentation/reference/stream/ingestion-config-streaming-reference.md): Field definitions, protobuf schemas, and examples for ingestion-config-based streaming
+- [Protobuf ingestion reference](https://docs.siftstack.com/documentation/reference/stream/protobuf-ingestion-reference.md): Schema registration, data ingestion, and channel parsing options for protobuf-based streaming
+- [Schemaless ingestion reference](https://docs.siftstack.com/documentation/reference/stream/schemaless-ingestion-reference.md): Field definitions and examples for sending JSON to Sift over REST without pre-registering a schema
+- [Influx Line Protocol reference](https://docs.siftstack.com/documentation/reference/stream/influx-line-protocol-reference.md): Configuration and examples for streaming data to Sift using an Influx client
+- [Client library reference](https://docs.siftstack.com/documentation/reference/stream/client-library-reference.md): Installation, imports, and complete code examples for the Sift Python, Go, and Rust client libraries
+- [Streaming error reference](https://docs.siftstack.com/documentation/reference/stream/streaming-error-reference.md)
+- [Assets reference](https://docs.siftstack.com/documentation/reference/asset-settings.md): Settings, options, and behaviors for Assets in Sift.
+- [Explore reference](https://docs.siftstack.com/documentation/reference/explore-settings.md): Settings, options, and behaviors for all Explore features.
+- [Explore (legacy) settings](https://docs.siftstack.com/documentation/reference/explore-legacy-settings.md): Settings, options, and behaviors for Explore (legacy) features.
+- [CEL expression](https://docs.siftstack.com/documentation/reference/expression-syntax.md): Functions, operators, and Channel references for writing expressions using Sift's supported subset of CEL in Calculated Channels, Rules, and User-Defined Functions
+- [Channels reference](https://docs.siftstack.com/documentation/reference/channels-reference.md): Naming rules and supported data types for Channels in Sift
+- [Runs reference](https://docs.siftstack.com/documentation/reference/runs-reference.md): File attachments and Run management in Sift
+- [Families reference](https://docs.siftstack.com/documentation/reference/families-reference.md): Core concepts and processes involved in creating and using Families.
+- [Campaigns reference](https://docs.siftstack.com/documentation/reference/campaigns-reference.md): Data model, operations, filters, and permissions for Campaigns in Sift
+- [Rules reference](https://docs.siftstack.com/documentation/reference/rule-settings.md): Settings, options, and behaviors for Rules in Sift.
+- [Reports reference](https://docs.siftstack.com/documentation/reference/reports-reference.md): Fields, statuses, and settings for Reports in Sift
+- [Report Templates reference](https://docs.siftstack.com/documentation/reference/report-templates-reference.md): Apply the same checks to every Run automatically with a Report Template
+- [Calculated Channels reference](https://docs.siftstack.com/documentation/reference/calculated-channel-settings.md): Settings, options, and behaviors for Calculated Channels in Sift.
+- [User-Defined Functions reference](https://docs.siftstack.com/documentation/reference/user-defined-functions-settings.md): Settings, options, and behaviors for User-Defined Functions in Sift.
+- [Annotations reference](https://docs.siftstack.com/documentation/reference/annotations-reference.md): Status definitions, valid transitions, and file attachment limits for Annotations
+- [Report chart display options](https://docs.siftstack.com/documentation/reference/report-chart-display-options.md): Strip charts, merged charts, Log Viewer, and keyboard navigation in Reports
+- [Naming conventions and limits](https://docs.siftstack.com/documentation/reference/naming-rules.md): Character limits, allowed characters, and mutability behavior for Asset, Channel, Run, and other Sift entity names.
+- [Webhook settings](https://docs.siftstack.com/documentation/reference/manage/webhooks-settings.md): Settings, options, and behaviors for Webhooks in Sift.
+- [Metadata settings](https://docs.siftstack.com/documentation/reference/manage/metadata-settings.md): Settings, options, and behaviors for Metadata in Sift, including supported resource types such as Runs, Campaigns, and Annotations.
+- [Identity Provider (IdP) settings](https://docs.siftstack.com/documentation/reference/manage/idp-settings.md): Settings, options, and behaviors for Identity Provider (IdP) integration in Sift.
+- [User Management settings](https://docs.siftstack.com/documentation/reference/manage/user-management-settings.md): Settings, options, and behaviors for User Management in Sift.
+- [Authorization models settings](https://docs.siftstack.com/documentation/reference/manage/authorization-models-settings.md): Settings, options, and behaviors for Role-Based Access Control (RBAC) and Data Access Governance (DAG) in Sift.
+- [Troubleshooting](https://docs.siftstack.com/documentation/troubleshoot/troubleshooting.md): Learn how to fix common configuration issues.
+- [Learning path](https://docs.siftstack.com/learning-path/overview.md): Begin your Sift journey and grow your confidence with step-by-step tutorials
+- [Tutorial 1: Import and visualize historical data in Sift](https://docs.siftstack.com/learning-path/tutorial-1/overview.md): Explore different methods for ingesting historical data
+- [Step 1: Understand how Sift organizes telemetry data](https://docs.siftstack.com/learning-path/tutorial-1/step-1.md)
+- [Step 2: Discover methods to import historical data](https://docs.siftstack.com/learning-path/tutorial-1/step-2.md)
+- [Step 3: Understand how to visualize imported historical data](https://docs.siftstack.com/learning-path/tutorial-1/step-3.md)
+- [Conclusion](https://docs.siftstack.com/learning-path/tutorial-1/conclusion.md)
+- [Tutorial 2: Stream and visualize live data in Sift](https://docs.siftstack.com/learning-path/tutorial-2/overview.md): Explore the different streaming options available for live data ingestion
+- [Step 1: Discuss options to live stream data](https://docs.siftstack.com/learning-path/tutorial-2/step-1.md)
+- [Step 2: Understand how to observe live-streamed data](https://docs.siftstack.com/learning-path/tutorial-2/step-2.md)
+- [Conclusion](https://docs.siftstack.com/learning-path/tutorial-2/conclusion.md)
+- [Tutorial 3: Visualize and analyze data with interactive telemetry charts](https://docs.siftstack.com/learning-path/tutorial-3/overview.md): Discover Sift's tools to explore, navigate, inspect, and compare your telemetry
+- [Step 1: Learn about Panels](https://docs.siftstack.com/learning-path/tutorial-3/step-1.md)
+- [Step 2: Create a multi-Panel layout](https://docs.siftstack.com/learning-path/tutorial-3/step-2.md)
+- [Conclusion](https://docs.siftstack.com/learning-path/tutorial-3/conclusion.md)
+- [Tutorial 4: Automatically detect and summarize issues in telemetry data](https://docs.siftstack.com/learning-path/tutorial-4/overview.md): Use Sift's Rules and Reports features to automatically detect anomalies and summarize insights
+- [Step 1: Create a Rule](https://docs.siftstack.com/learning-path/tutorial-4/step-1.md)
+- [Step 2: Generate a Report](https://docs.siftstack.com/learning-path/tutorial-4/step-2.md)
+- [Conclusion](https://docs.siftstack.com/learning-path/tutorial-4/conclusion.md)
+- [Tutorial 5: Trigger real-time alerts from live data events](https://docs.siftstack.com/learning-path/tutorial-5/overview.md): Enable real-time notifications by connecting Rule triggers to external systems using Webhooks.
+- [Step 1: Understand Webhooks](https://docs.siftstack.com/learning-path/tutorial-5/step-1.md)
+- [Step 2: Create a Webhook](https://docs.siftstack.com/learning-path/tutorial-5/step-2.md)
+- [Step 3: Connect the Webhook to the Rule](https://docs.siftstack.com/learning-path/tutorial-5/step-3.md)
+- [Conclusion](https://docs.siftstack.com/learning-path/tutorial-5/conclusion.md)
+- [Tutorial 6: Create new signals from original data](https://docs.siftstack.com/learning-path/tutorial-6/overview.md): Use Calculated Channels to generate new signals and metrics from your existing telemetry
+- [Step 1: Understand Calculated Channels](https://docs.siftstack.com/learning-path/tutorial-6/step-1.md)
+- [Step 2: Create a Calculated Channel](https://docs.siftstack.com/learning-path/tutorial-6/step-2.md)
+- [Step 3: Plot a Calculated Channel](https://docs.siftstack.com/learning-path/tutorial-6/step-3.md)
+- [Conclusion](https://docs.siftstack.com/learning-path/tutorial-6/conclusion.md)
+- [Tutorial 7: Build reusable logic for consistent data transformation](https://docs.siftstack.com/learning-path/tutorial-7/overview.md): Centralize reusable transformation logic using User-Defined Functions
+- [Step 1: Understand User-Defined Functions](https://docs.siftstack.com/learning-path/tutorial-7/step-1.md)
+- [Step 2: Create a User-Defined Function](https://docs.siftstack.com/learning-path/tutorial-7/step-2.md)
+- [Step 3: Apply User-Defined Functions](https://docs.siftstack.com/learning-path/tutorial-7/step-3.md)
+- [Conclusion](https://docs.siftstack.com/learning-path/tutorial-7/conclusion.md)
+- [Tutorial 8: Tag and search workspace resources with Metadata](https://docs.siftstack.com/learning-path/tutorial-8/overview.md): Use Metadata to add structured context to your workspace resources for faster searching and better organization.
+- [Step 1: Understand Metadata](https://docs.siftstack.com/learning-path/tutorial-8/step-1.md)
+- [Step 2: Create a Metadata key](https://docs.siftstack.com/learning-path/tutorial-8/step-2.md)
+- [Step 3: Use Metadata to improve discoverability](https://docs.siftstack.com/learning-path/tutorial-8/step-3.md)
+- [Conclusion](https://docs.siftstack.com/learning-path/tutorial-8/conclusion.md)
+- [Tutorials](https://docs.siftstack.com/tutorials/overview.md): Explore step-by-step tutorials that show you how to use Sift's full range of features and capabilities
+- [Getting started with streaming data to Sift using Python](https://docs.siftstack.com/tutorials/ingest/tutorial-1.md): Learn how to send live telemetry from a Python script to Sift and view it in real time
+- [Getting started with streaming data to Sift using Rust](https://docs.siftstack.com/tutorials/ingest/tutorial-2.md): Learn how to send live telemetry from a Rust application to Sift and view it in real time
+- [Getting started with Explore (legacy)](https://docs.siftstack.com/tutorials/analyze/explore-v1/tutorial-1.md): Learn how to work with Explore (legacy)
+- [Getting started with Explore](https://docs.siftstack.com/tutorials/analyze/explore/tutorial-1.md): Build your first multi Panel workspace to visualize and understand your data
+- [Integrate an Identity Provider (IdP) with Sift](https://docs.siftstack.com/tutorials/manage/tutorial-1.md): Learn how to integrate an external IdP with Sift using Microsoft Entra ID
+- [Getting started with Metadata in Sift](https://docs.siftstack.com/tutorials/manage/tutorial-2.md): Learn how to create Metadata keys and filter resources in Sift
+- [API](https://docs.siftstack.com/api/overview.md): Automate telemetry review and data export using Sift's REST and gRPC APIs
+- [Authenticate with the API](https://docs.siftstack.com/api/authenticate/authenticate-with-the-api.md): Authenticate REST or gRPC requests to Sift using an API key and a base URL.
+- [Generate a gRPC client with Buf](https://docs.siftstack.com/api/clients/generate-a-client-with-buf.md): Compile Sift's Protocol Buffers into a client for your language and protobuf version when an official client doesn't fit your environment.
+- [Create, preview, and evaluate Rules programmatically](https://docs.siftstack.com/api/review/evaluate-rules.md): Create, preview, and evaluate Rules programmatically against a Run or Asset to generate a Report and Annotations.
+- [Create, preview, and evaluate Ad Hoc Rules](https://docs.siftstack.com/api/review/manage-ad-hoc-rules.md): Create, preview, and evaluate Ad Hoc Rules programmatically for automated pipelines such as CI/CD.
+- [Export data programmatically](https://docs.siftstack.com/api/export/export-data-programmatically.md): Export telemetry data from Sift using the REST API, an official client library, or a client generated with Buf.
+- [Export data to MATLAB](https://docs.siftstack.com/api/export/export-data-to-matlab.md): Get telemetry data from Sift into MATLAB for analysis using the official Python client or the REST API.
+- [ListAnnotationLogs](https://docs.siftstack.com/api-reference/annotationlogservice/listannotationlogs.md): Retrieves annotation logs using an optional filter.
+- [ListAnnotationLogs](https://docs.siftstack.com/api-reference/annotationlogservice/listannotationlogs-1.md): Retrieves annotation logs using an optional filter.
+- [CreateAnnotationLog](https://docs.siftstack.com/api-reference/annotationlogservice/createannotationlog.md): Creates an annotation log on an annotation.
+- [DeleteAnnotationLog](https://docs.siftstack.com/api-reference/annotationlogservice/deleteannotationlog.md): Deletes an annotation log.
+- [ListAnnotation](https://docs.siftstack.com/api-reference/annotationservice/listannotation.md): Retrieves annotations using an optional filter.
+- [CreateAnnotation](https://docs.siftstack.com/api-reference/annotationservice/createannotation.md): Creates an annotation.
+- [UpdateAnnotation](https://docs.siftstack.com/api-reference/annotationservice/updateannotation.md): Updates an existing annotation using using the list of fields specified in `update_mask`.
+- [GetAnnotation](https://docs.siftstack.com/api-reference/annotationservice/getannotation.md): Retrieves an annotation
+- [DeleteAnnotation](https://docs.siftstack.com/api-reference/annotationservice/deleteannotation.md): Archives an annotation.
+- [ArchiveAnnotation](https://docs.siftstack.com/api-reference/annotationservice/archiveannotation.md): Archives an annotation.
+- [UnarchiveAnnotation](https://docs.siftstack.com/api-reference/annotationservice/unarchiveannotation.md): Unarchives an annotation.
+- [BatchArchiveAnnotations](https://docs.siftstack.com/api-reference/annotationservice/batcharchiveannotations.md): Batch archives annotations.
+- [BatchDeleteAnnotation](https://docs.siftstack.com/api-reference/annotationservice/batchdeleteannotation.md): Batch archives annotations.
+- [BatchUnarchiveAnnotations](https://docs.siftstack.com/api-reference/annotationservice/batchunarchiveannotations.md): Batch unarchives annotations.
+- [ListAssets](https://docs.siftstack.com/api-reference/assetservice/listassets.md): Retrieves assets using an optional filter.
+- [CreateAsset](https://docs.siftstack.com/api-reference/assetservice/createasset.md): Creates a new, empty asset.
+- [UpdateAsset](https://docs.siftstack.com/api-reference/assetservice/updateasset.md): Update fields on an asset.
+- [GetAsset](https://docs.siftstack.com/api-reference/assetservice/getasset.md): Retrieves an asset.
+- [DeleteAsset](https://docs.siftstack.com/api-reference/assetservice/deleteasset.md): Deletes an asset.
+- [ArchiveAsset](https://docs.siftstack.com/api-reference/assetservice/archiveasset.md): Archives an asset.
+- [ListAutomationTriggeredEvents](https://docs.siftstack.com/api-reference/automationservice/listautomationtriggeredevents.md): Retrieve and optionally filter a list of automation triggered events.
+- [ListAutomationTriggers](https://docs.siftstack.com/api-reference/automationservice/listautomationtriggers.md): Retrieve and optionally filter a list of automation triggers.
+- [CreateAutomationTrigger](https://docs.siftstack.com/api-reference/automationservice/createautomationtrigger.md): Create an automation trigger.
+- [UpdateAutomationTrigger](https://docs.siftstack.com/api-reference/automationservice/updateautomationtrigger.md): Update select fields of an existing automation trigger.
+- [GetAutomationTrigger](https://docs.siftstack.com/api-reference/automationservice/getautomationtrigger.md): Retrieve an automation trigger by ID.
+- [DeleteAutomationTrigger](https://docs.siftstack.com/api-reference/automationservice/deleteautomationtrigger.md): Soft-delete an automation trigger by setting its archived_date.
+- [ListExpressionIdentifiers](https://docs.siftstack.com/api-reference/calculatedchannelsservice/listexpressionidentifiers.md): Retrieves a list of valid identifiers that can be used as part of a calculated channel expression.
+- [ValidateExpression](https://docs.siftstack.com/api-reference/calculatedchannelsservice/validateexpression.md): Used to validate whether or not an expression used for a calculated channel is valid.
+- [ListCampaigns](https://docs.siftstack.com/api-reference/campaignservice/listcampaigns.md): List campaigns.
+- [CreateCampaign](https://docs.siftstack.com/api-reference/campaignservice/createcampaign.md): Create a campaign.
+- [UpdateCampaign](https://docs.siftstack.com/api-reference/campaignservice/updatecampaign.md): Updates an existing campaign using the list of fields specified in `update_mask`.
+- [GetCampaign](https://docs.siftstack.com/api-reference/campaignservice/getcampaign.md): Retrieve a campaign.
+- [ListCampaignAnnotations](https://docs.siftstack.com/api-reference/campaignservice/listcampaignannotations.md): List annotations for a campaign.
+- [GetCampaignReportSummaries](https://docs.siftstack.com/api-reference/campaignservice/getcampaignreportsummaries.md): Returns per-campaign report summaries in bulk.
+- [GetCampaign](https://docs.siftstack.com/api-reference/campaignservice/getcampaign-1.md): Retrieve a campaign.
+- [CreateChannelSchema](https://docs.siftstack.com/api-reference/channelschemaservice/createchannelschema.md): Create a channel schema
+- [BatchCreateChannelSchemas](https://docs.siftstack.com/api-reference/channelschemaservice/batchcreatechannelschemas.md): Create a batch of channel schemas
+- [CreateChannelSchema](https://docs.siftstack.com/api-reference/channelschemaservice/createchannelschema-1.md): Create a channel schema
+- [BatchCreateChannelSchemas](https://docs.siftstack.com/api-reference/channelschemaservice/batchcreatechannelschemas-1.md): Create a batch of channel schemas
+- [ListComments](https://docs.siftstack.com/api-reference/commentservice/listcomments.md): Retrieves comments using an optional filter.
+- [CreateComment](https://docs.siftstack.com/api-reference/commentservice/createcomment.md): Creates a comment on a resource.
+- [UpdateComment](https://docs.siftstack.com/api-reference/commentservice/updatecomment.md): Updates the body of an existing comment.
+- [DeleteComment](https://docs.siftstack.com/api-reference/commentservice/deletecomment.md): Deletes a comment.
+- [GetData](https://docs.siftstack.com/api-reference/dataservice/getdata.md): Query data
+- [GetData](https://docs.siftstack.com/api-reference/dataservice/getdata-1.md): Query data
+- [ReadDoc](https://docs.siftstack.com/api-reference/docsservice/readdoc.md): Read the full markdown of a Sift documentation page by path.
+- [SearchDocs](https://docs.siftstack.com/api-reference/docsservice/searchdocs.md): Keyword search across Sift's product documentation.
+- [Batch lists all resource-attributes for multiple entities. Excludes archived by default.](https://docs.siftstack.com/api-reference/resourceattributeservice/batch-lists-all-resource-attributes-for-multiple-entities-excludes-archived-by-default.md)
+- [Lists all resource-attributes for a specific entity. Excludes archived by default.](https://docs.siftstack.com/api-reference/resourceattributeservice/lists-all-resource-attributes-for-a-specific-entity-excludes-archived-by-default.md)
+- [Post apiv1resource attribute enum values](https://docs.siftstack.com/api-reference/resourceattributeservice/post-apiv1resource-attribute-enum-values.md)
+- [Archives multiple enum values and migrates all resource-attributes with those values to their respective replacement values.](https://docs.siftstack.com/api-reference/resourceattributeservice/archives-multiple-enum-values-and-migrates-all-resource-attributes-with-those-values-to-their-respective-replacement-values.md)
+- [Unarchives multiple enum values BUT DOES NOT migrate resource-attributes with a replacement value back to the original value.](https://docs.siftstack.com/api-reference/resourceattributeservice/unarchives-multiple-enum-values-but-does-not-migrate-resource-attributes-with-a-replacement-value-back-to-the-original-value.md)
+- [Archives an enum value and migrates all resource-attributes with that value to a replacement value.](https://docs.siftstack.com/api-reference/resourceattributeservice/archives-an-enum-value-and-migrates-all-resource-attributes-with-that-value-to-a-replacement-value.md)
+- [Get apiv1resource attribute enum values](https://docs.siftstack.com/api-reference/resourceattributeservice/get-apiv1resource-attribute-enum-values.md)
+- [Patch apiv1resource attribute enum values](https://docs.siftstack.com/api-reference/resourceattributeservice/patch-apiv1resource-attribute-enum-values.md)
+- [Unarchives an enum value BUT DOES NOT migrate resource-attributes with a replacement value back to the original value.](https://docs.siftstack.com/api-reference/resourceattributeservice/unarchives-an-enum-value-but-does-not-migrate-resource-attributes-with-a-replacement-value-back-to-the-original-value.md)
+- [Get apiv1resource attribute keys](https://docs.siftstack.com/api-reference/resourceattributeservice/get-apiv1resource-attribute-keys.md)
+- [Post apiv1resource attribute keys](https://docs.siftstack.com/api-reference/resourceattributeservice/post-apiv1resource-attribute-keys.md)
+- [Archives multiple resource_attribute keys AND all their associated enum values AND all their associated resource-attributes.](https://docs.siftstack.com/api-reference/resourceattributeservice/archives-multiple-resource_attribute-keys-and-all-their-associated-enum-values-and-all-their-associated-resource-attributes.md)
+- [Unarchives multiple resource_attribute keys BUT NOT their associated enum values OR resource-attributes.](https://docs.siftstack.com/api-reference/resourceattributeservice/unarchives-multiple-resource_attribute-keys-but-not-their-associated-enum-values-or-resource-attributes.md)
+- [Get apiv1resource attribute keys 1](https://docs.siftstack.com/api-reference/resourceattributeservice/get-apiv1resource-attribute-keys-1.md)
+- [Patch apiv1resource attribute keys](https://docs.siftstack.com/api-reference/resourceattributeservice/patch-apiv1resource-attribute-keys.md)
+- [Archives a resource_attribute key AND all its associated enum values AND all its associated resource-attributes.](https://docs.siftstack.com/api-reference/resourceattributeservice/archives-a-resource_attribute-key-and-all-its-associated-enum-values-and-all-its-associated-resource-attributes.md)
+- [Get apiv1resource attribute keys archive impact](https://docs.siftstack.com/api-reference/resourceattributeservice/get-apiv1resource-attribute-keys-archive-impact.md)
+- [Get apiv1resource attribute keys enum values](https://docs.siftstack.com/api-reference/resourceattributeservice/get-apiv1resource-attribute-keys-enum-values.md)
+- [Unarchives a resource_attribute key BUT NOT its associated enum values OR resource-attributes.](https://docs.siftstack.com/api-reference/resourceattributeservice/unarchives-a-resource_attribute-key-but-not-its-associated-enum-values-or-resource-attributes.md)
+- [Get apiv1resource attributes](https://docs.siftstack.com/api-reference/resourceattributeservice/get-apiv1resource-attributes.md)
+- [Creates resource-attributes for multiple entities with the same key-value pair.](https://docs.siftstack.com/api-reference/resourceattributeservice/creates-resource-attributes-for-multiple-entities-with-the-same-key-value-pair.md)
+- [Archives multiple resource-attributes.](https://docs.siftstack.com/api-reference/resourceattributeservice/archives-multiple-resource-attributes.md)
+- [Unarchives multiple resource-attributes.](https://docs.siftstack.com/api-reference/resourceattributeservice/unarchives-multiple-resource-attributes.md)
+- [Get apiv1resource attributes 1](https://docs.siftstack.com/api-reference/resourceattributeservice/get-apiv1resource-attributes-1.md)
+- [Post apiv1resource attributes archive](https://docs.siftstack.com/api-reference/resourceattributeservice/post-apiv1resource-attributes-archive.md)
+- [Post apiv1resource attributes unarchive](https://docs.siftstack.com/api-reference/resourceattributeservice/post-apiv1resource-attributes-unarchive.md)
+- [ExportData](https://docs.siftstack.com/api-reference/exportservice/exportdata.md): Export data.
+- [GetDownloadUrl](https://docs.siftstack.com/api-reference/exportservice/getdownloadurl.md): Retrieve the download URL for a completed job.
+- [GetTokenDetails](https://docs.siftstack.com/api-reference/externalsyncservice/gettokendetails.md): Get details about the most recent token generated, does not include the token itself
+- [SyncOrganization](https://docs.siftstack.com/api-reference/externalsyncservice/syncorganization.md): Synchronizes an organization's users and groups
+- [GetExternalSyncRun](https://docs.siftstack.com/api-reference/externalsyncservice/getexternalsyncrun.md): Get one external sync run including the full diff payload
+- [GenerateToken](https://docs.siftstack.com/api-reference/externalsyncservice/generatetoken.md): Generates a token for synchronizing an organization's users and groups
+- [GetIsOrgExternallyProvisioned](https://docs.siftstack.com/api-reference/externalsyncservice/getisorgexternallyprovisioned.md): Returns whether the organization is configured for external (SCIM) user provisioning
+- [ListExternalSyncRuns](https://docs.siftstack.com/api-reference/externalsyncservice/listexternalsyncruns.md): List historical external sync runs for the organization (newest first by default)
+- [ListExternalSyncTokens](https://docs.siftstack.com/api-reference/externalsyncservice/listexternalsynctokens.md): List all tokens created by org
+- [ListFamilies](https://docs.siftstack.com/api-reference/familyservice/listfamilies.md): Retrieves families using an optional filter.
+- [CreateFamily](https://docs.siftstack.com/api-reference/familyservice/createfamily.md): Creates a new family.
+- [ListFamilyAlignmentPoints](https://docs.siftstack.com/api-reference/familyservice/listfamilyalignmentpoints.md): Lists all alignment points for a specific family version alignment.
+- [ListFamilyCandidateRuns](https://docs.siftstack.com/api-reference/familyservice/listfamilycandidateruns.md): Lists runs that match a candidate-run CEL filter. Supports `include_archived` as a CEL directive (archived runs are excluded by default; pass `include_archived == true` in the filter to include them). When `family_id` is provided, runs already on that family's persisted membership (both included and…
+- [GetFamily](https://docs.siftstack.com/api-reference/familyservice/getfamily.md): Retrieves the latest version of a family.
+- [UpdateFamily](https://docs.siftstack.com/api-reference/familyservice/updatefamily.md): Updates an existing family using the list of fields specified in `update_mask`.
+- [ExportFamily](https://docs.siftstack.com/api-reference/familyservice/exportfamily.md): Exports a family to YAML.
+- [ImportUpdateFamily](https://docs.siftstack.com/api-reference/familyservice/importupdatefamily.md): Updates an existing family from YAML.
+- [GenerateFamilyStatRangeName](https://docs.siftstack.com/api-reference/familyservice/generatefamilystatrangename.md): Derives a name for a family range based on the range configuration. Nothing is persisted to the database.
+- [ListFamilyVersions](https://docs.siftstack.com/api-reference/familyservice/listfamilyversions.md): Lists all versions of a family.
+- [GetFamilyVersion](https://docs.siftstack.com/api-reference/familyservice/getfamilyversion.md): Retrieves a specific version of a family.
+- [ListFamilyAlignments](https://docs.siftstack.com/api-reference/familyservice/listfamilyalignments.md): Lists all alignments for a specific family version.
+- [GetFamilyCandidateRunCount](https://docs.siftstack.com/api-reference/familyservice/getfamilycandidateruncount.md): Returns the count of candidate runs for a family version that are not already included or excluded.
+- [GetFamilyCandidateRuns](https://docs.siftstack.com/api-reference/familyservice/getfamilycandidateruns.md): Retrieves the candidate runs for a family version based on the run query stored in the family version.
+- [ExportFamily](https://docs.siftstack.com/api-reference/familyservice/exportfamily-1.md): Exports a family to YAML.
+- [ListFamilyMembers](https://docs.siftstack.com/api-reference/familyservice/listfamilymembers.md): Lists all members of a family version.
+- [GetFamily](https://docs.siftstack.com/api-reference/familyservice/getfamily-1.md): Retrieves the latest version of a family.
+- [UpdateFamily](https://docs.siftstack.com/api-reference/familyservice/updatefamily-1.md): Updates an existing family using the list of fields specified in `update_mask`.
+- [ExportFamily](https://docs.siftstack.com/api-reference/familyservice/exportfamily-2.md): Exports a family to YAML.
+- [ImportUpdateFamily](https://docs.siftstack.com/api-reference/familyservice/importupdatefamily-1.md): Updates an existing family from YAML.
+- [GetFamilyRuleDependencies](https://docs.siftstack.com/api-reference/familyservice/getfamilyruledependencies.md): Retrieves all rules that reference the specified family across any of its stats.
+- [GetFamilies](https://docs.siftstack.com/api-reference/familyservice/getfamilies.md): Retrieves the latest versions of multiple families.
+- [ImportFamily](https://docs.siftstack.com/api-reference/familyservice/importfamily.md): Imports a new family from YAML.
+- [ValidateFamilyClientKey](https://docs.siftstack.com/api-reference/familyservice/validatefamilyclientkey.md): Used to validate whether or not a client key is valid.
+- [ValidateFamilyName](https://docs.siftstack.com/api-reference/familyservice/validatefamilyname.md): Used to validate whether or not a family name is valid.
+- [CreateFamilyStatRanges](https://docs.siftstack.com/api-reference/familyservice/createfamilystatranges.md): Creates family stat ranges for existing family stats (within a given family).
+- [GetFamilyStat](https://docs.siftstack.com/api-reference/familyservice/getfamilystat.md): Retrieves a family stat configuration.
+- [GetFamilyStats](https://docs.siftstack.com/api-reference/familyservice/getfamilystats.md): Retrieves family stats configurations for a family version.
+- [ListIngestionConfigs](https://docs.siftstack.com/api-reference/ingestionconfigservice/listingestionconfigs.md): List ingestion configs using an optional filter.
+- [CreateIngestionConfig](https://docs.siftstack.com/api-reference/ingestionconfigservice/createingestionconfig.md): Create an ingestion config.
+- [GetIngestionConfig](https://docs.siftstack.com/api-reference/ingestionconfigservice/getingestionconfig.md): Retrieves an ingestion config.
+- [ListIngestionConfigFlows](https://docs.siftstack.com/api-reference/ingestionconfigservice/listingestionconfigflows.md): List ingestion config flows using an optional filter.
+- [CreateIngestionConfigFlows](https://docs.siftstack.com/api-reference/ingestionconfigservice/createingestionconfigflows.md): Create ingestion config flows.
+- [ListIngestionConfigs](https://docs.siftstack.com/api-reference/ingestionconfigservice/listingestionconfigs-1.md): List ingestion configs using an optional filter.
+- [CreateIngestionConfig](https://docs.siftstack.com/api-reference/ingestionconfigservice/createingestionconfig-1.md): Create an ingestion config.
+- [GetIngestionConfig](https://docs.siftstack.com/api-reference/ingestionconfigservice/getingestionconfig-1.md): Retrieves an ingestion config.
+- [ListIngestionConfigFlows](https://docs.siftstack.com/api-reference/ingestionconfigservice/listingestionconfigflows-1.md): List ingestion config flows using an optional filter.
+- [CreateIngestionConfigFlows](https://docs.siftstack.com/api-reference/ingestionconfigservice/createingestionconfigflows-1.md): Create ingestion config flows.
+- [ListJobs](https://docs.siftstack.com/api-reference/jobservice/listjobs.md): List jobs.
+- [CancelJob](https://docs.siftstack.com/api-reference/jobservice/canceljob.md): Requests cancellation of a job.
+- [RetryJob](https://docs.siftstack.com/api-reference/jobservice/retryjob.md): Manually retries a job.
+- [ListMetadataUsage](https://docs.siftstack.com/api-reference/metadataservice/listmetadatausage.md): List metadata key usage.
+- [ListMetadataKeys](https://docs.siftstack.com/api-reference/metadataservice/listmetadatakeys.md): List metadata keys.
+- [CreateMetadataKey](https://docs.siftstack.com/api-reference/metadataservice/createmetadatakey.md): Create a metadata key.
+- [ArchiveMetadataKeys](https://docs.siftstack.com/api-reference/metadataservice/archivemetadatakeys.md): Archive metadata keys.
+- [DeleteMetadataKeys](https://docs.siftstack.com/api-reference/metadataservice/deletemetadatakeys.md): Delete metadata keys.
+- [UnarchiveMetadataKeys](https://docs.siftstack.com/api-reference/metadataservice/unarchivemetadatakeys.md): Unarchive metadata keys.
+- [ListMetadataValues](https://docs.siftstack.com/api-reference/metadataservice/listmetadatavalues.md): List metadata values.
+- [Create a metadata value.](https://docs.siftstack.com/api-reference/metadataservice/create-a-metadata-value.md)
+- [ArchiveMetadataValues](https://docs.siftstack.com/api-reference/metadataservice/archivemetadatavalues.md): Archive metadata values.
+- [DeleteMetadataValues](https://docs.siftstack.com/api-reference/metadataservice/deletemetadatavalues.md): Delete metadata values.
+- [UnarchiveMetadataValues](https://docs.siftstack.com/api-reference/metadataservice/unarchivemetadatavalues.md): Unarchive metadata values.
+- [ListNotifications](https://docs.siftstack.com/api-reference/notificationservice/listnotifications.md): Retrieves notifications using an optional filter.
+- [BatchUpdateNotifications](https://docs.siftstack.com/api-reference/notificationservice/batchupdatenotifications.md): Batch updates a list of notifications using the list of fields specified in their respective `update_mask`s.
+- [ListPanelConfigurations](https://docs.siftstack.com/api-reference/panelconfigurationservice/listpanelconfigurations.md): Retrieves panel configurations using an optional filter.
+- [CreatePanelConfiguration](https://docs.siftstack.com/api-reference/panelconfigurationservice/createpanelconfiguration.md): Creates a panel configuration.
+- [UpdatePanelConfiguration](https://docs.siftstack.com/api-reference/panelconfigurationservice/updatepanelconfiguration.md): Updates an existing panel configuration using using the list of fields specified in `update_mask`.
+- [GetPanelConfiguration](https://docs.siftstack.com/api-reference/panelconfigurationservice/getpanelconfiguration.md): Retrieves a panel configuration.
+- [Get apiv1ping](https://docs.siftstack.com/api-reference/pingservice/get-apiv1ping.md)
+- [ListPolicies](https://docs.siftstack.com/api-reference/policyservice/listpolicies.md): Retrieve policies using an optional filter.
+- [CreatePolicy](https://docs.siftstack.com/api-reference/policyservice/createpolicy.md): Create a new policy.
+- [UpdatePolicy](https://docs.siftstack.com/api-reference/policyservice/updatepolicy.md): Update a policy.
+- [GetPolicy](https://docs.siftstack.com/api-reference/policyservice/getpolicy.md): Retrieve a policy.
+- [ArchivePolicy](https://docs.siftstack.com/api-reference/policyservice/archivepolicy.md): Archive a policy.
+- [UnarchivePolicy](https://docs.siftstack.com/api-reference/policyservice/unarchivepolicy.md): Unarchive a previously-archived policy.
+- [ValidatePolicy](https://docs.siftstack.com/api-reference/policyservice/validatepolicy.md): Validate a Cedar policy configuration.
+- [CreatePrincipalAttributeEnumValue](https://docs.siftstack.com/api-reference/principalattributeservice/createprincipalattributeenumvalue.md): Create a principal attribute enum value.
+- [BatchArchivePrincipalAttributeEnumValues](https://docs.siftstack.com/api-reference/principalattributeservice/batcharchiveprincipalattributeenumvalues.md): Archives multiple principal attribute enum values and migrates all principal attribute values with those enum values to their respective replacement enum values.
+- [BatchUnarchivePrincipalAttributeEnumValues](https://docs.siftstack.com/api-reference/principalattributeservice/batchunarchiveprincipalattributeenumvalues.md): Unarchives multiple principal attribute enum values.
+- [ArchivePrincipalAttributeEnumValue](https://docs.siftstack.com/api-reference/principalattributeservice/archiveprincipalattributeenumvalue.md): Archives a principal attribute enum value and migrates all principal attribute values with that enum value to a replacement enum value.
+- [GetPrincipalAttributeEnumValue](https://docs.siftstack.com/api-reference/principalattributeservice/getprincipalattributeenumvalue.md): Retrieves a principal attribute enum value.
+- [UpdatePrincipalAttributeEnumValue](https://docs.siftstack.com/api-reference/principalattributeservice/updateprincipalattributeenumvalue.md): Updates an existing principal attribute enum value.
+- [UnarchivePrincipalAttributeEnumValue](https://docs.siftstack.com/api-reference/principalattributeservice/unarchiveprincipalattributeenumvalue.md): Unarchives a principal attribute enum value.
+- [ListPrincipalAttributeKeys](https://docs.siftstack.com/api-reference/principalattributeservice/listprincipalattributekeys.md): Lists principal attribute keys.
+- [CreatePrincipalAttributeKey](https://docs.siftstack.com/api-reference/principalattributeservice/createprincipalattributekey.md): Create a principal attribute key.
+- [ArchivePrincipalAttributeKeys](https://docs.siftstack.com/api-reference/principalattributeservice/archiveprincipalattributekeys.md): Archive principal attribute keys.
+- [UnarchivePrincipalAttributeKeys](https://docs.siftstack.com/api-reference/principalattributeservice/unarchiveprincipalattributekeys.md): Unarchive principal attribute keys.
+- [GetPrincipalAttributeKey](https://docs.siftstack.com/api-reference/principalattributeservice/getprincipalattributekey.md): Retrieves a principal attribute key.
+- [UpdatePrincipalAttributeKey](https://docs.siftstack.com/api-reference/principalattributeservice/updateprincipalattributekey.md): Updates an existing principal attribute key.
+- [CheckPrincipalAttributeKeyArchiveImpact](https://docs.siftstack.com/api-reference/principalattributeservice/checkprincipalattributekeyarchiveimpact.md): Returns the count of active user principal-attribute values that would be archived with this key, and the count of active user-group principal-attribute value rows for this key (those rows stop contributing to evaluation once the key is archived).
+- [ListPrincipalAttributeEnumValues](https://docs.siftstack.com/api-reference/principalattributeservice/listprincipalattributeenumvalues.md): Lists principal attribute enum values for a given principal attribute key.
+- [ListPrincipalAttributeKeyValues](https://docs.siftstack.com/api-reference/principalattributeservice/listprincipalattributekeyvalues.md): Lists principal attribute values for a given principal attribute key.
+- [ListPrincipalAttributeValues](https://docs.siftstack.com/api-reference/principalattributeservice/listprincipalattributevalues.md): Lists principal attribute values.
+- [ArchivePrincipalAttributeValues](https://docs.siftstack.com/api-reference/principalattributeservice/archiveprincipalattributevalues.md): Archive principal attribute values.
+- [BatchCreatePrincipalAttributeValue](https://docs.siftstack.com/api-reference/principalattributeservice/batchcreateprincipalattributevalue.md): Creates a principal attribute value for multiple principals in a single operation.
+- [UnarchivePrincipalAttributeValues](https://docs.siftstack.com/api-reference/principalattributeservice/unarchiveprincipalattributevalues.md): Unarchive principal attribute values.
+- [GetPrincipalAttributeValue](https://docs.siftstack.com/api-reference/principalattributeservice/getprincipalattributevalue.md): Retrieves a principal attribute value.
+- [ListProtobufDescriptors](https://docs.siftstack.com/api-reference/protobufdescriptorservice/listprotobufdescriptors.md): Retrieve protobuf descriptors using an optional filter.
+- [DeleteProtobufDescriptors](https://docs.siftstack.com/api-reference/protobufdescriptorservice/deleteprotobufdescriptors.md): Delete protobuf descriptors of that match the provided `namespace` and `message_type_full_name`.
+- [AddProtobufDescriptor](https://docs.siftstack.com/api-reference/protobufdescriptorservice/addprotobufdescriptor.md): Used to register a protobuf message to be ingested.
+- [ListProtobufDescriptors](https://docs.siftstack.com/api-reference/protobufdescriptorservice/listprotobufdescriptors-1.md): Retrieve protobuf descriptors using an optional filter.
+- [DeleteProtobufDescriptors](https://docs.siftstack.com/api-reference/protobufdescriptorservice/deleteprotobufdescriptors-1.md): Delete protobuf descriptors of that match the provided `namespace` and `message_type_full_name`.
+- [AddProtobufDescriptor](https://docs.siftstack.com/api-reference/protobufdescriptorservice/addprotobufdescriptor-1.md): Used to register a protobuf message to be ingested.
+- [CheckProtobufDescriptorCompatibility](https://docs.siftstack.com/api-reference/protobufdescriptorservice/checkprotobufdescriptorcompatibility.md): Used to check if a protobuf descriptor is compatible with the existing descriptors.
+- [ListRemoteFiles](https://docs.siftstack.com/api-reference/remotefileservice/listremotefiles.md): List remote files.
+- [CreateRemoteFile](https://docs.siftstack.com/api-reference/remotefileservice/createremotefile.md): Create a remote file.
+- [UpdateRemoteFile](https://docs.siftstack.com/api-reference/remotefileservice/updateremotefile.md): Updates an existing remote file using using the list of fields specified in `update_mask`.
+- [GetRemoteFile](https://docs.siftstack.com/api-reference/remotefileservice/getremotefile.md): Retrieve a remote file.
+- [DeleteRemoteFile](https://docs.siftstack.com/api-reference/remotefileservice/deleteremotefile.md): Delete a remote file.
+- [GetRemoteFileUrl](https://docs.siftstack.com/api-reference/remotefileservice/getremotefileurl.md): Gets a download URL for the remote file.
+- [BatchDeleteRemoteFiles](https://docs.siftstack.com/api-reference/remotefileservice/batchdeleteremotefiles.md): Batch delete remote files. Each batch is limited to 1000 records.
+- [ListReportTemplates](https://docs.siftstack.com/api-reference/reporttemplateservice/listreporttemplates.md): List report templates.
+- [CreateReportTemplate](https://docs.siftstack.com/api-reference/reporttemplateservice/createreporttemplate.md): Create a report template.
+- [UpdateReportTemplate](https://docs.siftstack.com/api-reference/reporttemplateservice/updatereporttemplate.md): Updates an existing report template using the list of fields specified in `update_mask`.
+- [GetReportTemplate](https://docs.siftstack.com/api-reference/reporttemplateservice/getreporttemplate.md): Retrieve a report template.
+- [GetReportTemplate](https://docs.siftstack.com/api-reference/reporttemplateservice/getreporttemplate-1.md): Retrieve a report template.
+- [ListReports](https://docs.siftstack.com/api-reference/reportservice/listreports.md): List reports.
+- [UpdateReport](https://docs.siftstack.com/api-reference/reportservice/updatereport.md): Update a report.
+- [CreateReport](https://docs.siftstack.com/api-reference/reportservice/createreport.md): Create a report.
+- [GetReport](https://docs.siftstack.com/api-reference/reportservice/getreport.md): Retrieve a report.
+- [ListReportMetadataValues](https://docs.siftstack.com/api-reference/reportservice/listreportmetadatavalues.md): List paginated metadata values for a specific report.
+- [ListReportRuleSummaries](https://docs.siftstack.com/api-reference/reportservice/listreportrulesummaries.md): List paginated rule summaries for a specific report.
+- [CancelReport](https://docs.siftstack.com/api-reference/reportservice/cancelreport.md): Canceling a report will stop the evaluation of the report and mark it as canceled. Any results that have been calculated up to the point of cancellation will be saved.
+- [RerunReport](https://docs.siftstack.com/api-reference/reportservice/rerunreport.md): Rerunning a report will create a new report with the same rule versions and run as the original report and run the evaluation again using the most up-to-date set of data.
+- [ListReportsWithCumulativeSummary](https://docs.siftstack.com/api-reference/reportservice/listreportswithcumulativesummary.md): List reports with cumulative summary.
+- [GetRule](https://docs.siftstack.com/api-reference/ruleservice/getrule.md): Retrieves the latest version of a rule.
+- [UpdateRule](https://docs.siftstack.com/api-reference/ruleservice/updaterule.md): Updates an existing rule.
+- [CreateRule](https://docs.siftstack.com/api-reference/ruleservice/createrule.md): Creates a rule.
+- [ArchiveRule](https://docs.siftstack.com/api-reference/ruleservice/archiverule.md): Archives a rule.
+- [BatchArchiveRules](https://docs.siftstack.com/api-reference/ruleservice/batcharchiverules.md): Batch archives rules.
+- [BatchDeleteRules](https://docs.siftstack.com/api-reference/ruleservice/batchdeleterules.md): Archives multiple rules. Deprecated: Use BatchArchiveRules instead.
+- [BatchUnarchiveRules](https://docs.siftstack.com/api-reference/ruleservice/batchunarchiverules.md): Batch unarchives rules.
+- [BatchUndeleteRules](https://docs.siftstack.com/api-reference/ruleservice/batchundeleterules.md): Deprecated: Use BatchUnarchiveRules instead.
+- [DeleteRule](https://docs.siftstack.com/api-reference/ruleservice/deleterule.md): Archives a rule. Deprecated: Use ArchiveRule instead.
+- [EvaluateRules](https://docs.siftstack.com/api-reference/ruleservice/evaluaterules.md): Evaluates the provided rules and generate annotations based on the result.
+- [SearchRules](https://docs.siftstack.com/api-reference/ruleservice/searchrules.md): Queries rules based on provided search parameters.
+- [UnarchiveRule](https://docs.siftstack.com/api-reference/ruleservice/unarchiverule.md): Unarchives a rule.
+- [UndeleteRule](https://docs.siftstack.com/api-reference/ruleservice/undeleterule.md): Deprecated: Use UnarchiveRule instead.
+- [ListRuleVersions](https://docs.siftstack.com/api-reference/ruleservice/listruleversions.md): Retrieves a list of rule versions for the given rule.
+- [BatchGetRules](https://docs.siftstack.com/api-reference/ruleservice/batchgetrules.md): Retrieves multiple rules.
+- [BatchGetRuleVersions](https://docs.siftstack.com/api-reference/ruleservice/batchgetruleversions.md): Retrieves multiple rules by rule versions.
+- [BatchUpdateRules](https://docs.siftstack.com/api-reference/ruleservice/batchupdaterules.md): Updates existing rules or creates rules that do not exist.
+- [ListRules](https://docs.siftstack.com/api-reference/ruleservice/listrules.md): Retrieves a list of rules.
+- [UpdateHumanFriendlyRules](https://docs.siftstack.com/api-reference/ruleservice/updatehumanfriendlyrules.md): Batch update rules given the `rules_json` which is a JSON list of rules.
+- [UpdateJsonRules](https://docs.siftstack.com/api-reference/ruleservice/updatejsonrules.md): Batch update rules given the `rules_json` which is a JSON list of rules.
+- [ValidateJsonRules](https://docs.siftstack.com/api-reference/ruleservice/validatejsonrules.md): Validate a batch update for rules given the `rules_json` which is a JSON list of rules.
+- [GetRuleVersion](https://docs.siftstack.com/api-reference/ruleservice/getruleversion.md): Retrieves a specific version of a rule.
+- [ViewHumanFriendlyRules](https://docs.siftstack.com/api-reference/ruleservice/viewhumanfriendlyrules.md): Retrieve a JSON object containing all of the rules for a given asset.
+- [ViewJsonRules](https://docs.siftstack.com/api-reference/ruleservice/viewjsonrules.md): Retrieve a JSON object containing all of the rules for a given asset.
+- [EvaluateRules](https://docs.siftstack.com/api-reference/ruleevaluationservice/evaluaterules.md): Evaluate rules from a designated source against a run or asset and return the total amount of annotations created and the ID of the generated report.
+- [EvaluateRulesPreview](https://docs.siftstack.com/api-reference/ruleevaluationservice/evaluaterulespreview.md): Perform a dry run evaluation for existing rules or rule configurations against a run and return the annotations that would be generated.
+- [ListSavedSearches](https://docs.siftstack.com/api-reference/savedsearchservice/listsavedsearches.md): List saved searches.
+- [CreateSavedSearch](https://docs.siftstack.com/api-reference/savedsearchservice/createsavedsearch.md): Create a saved search.
+- [UpdateSavedSearch](https://docs.siftstack.com/api-reference/savedsearchservice/updatesavedsearch.md): Updates an existing saved search using using the list of fields specified in `update_mask`.
+- [GetSavedSearch](https://docs.siftstack.com/api-reference/savedsearchservice/getsavedsearch.md): Retrieve a saved search.
+- [DeleteSavedSearch](https://docs.siftstack.com/api-reference/savedsearchservice/deletesavedsearch.md): Delete a saved search.
+- [BatchDeleteSavedSearches](https://docs.siftstack.com/api-reference/savedsearchservice/batchdeletesavedsearches.md): Batch delete saved searches.
+- [ListTags](https://docs.siftstack.com/api-reference/tagservice/listtags.md): Retrieves tags using an optional filter.
+- [CreateTag](https://docs.siftstack.com/api-reference/tagservice/createtag.md): Create a tag.
+- [ListTags](https://docs.siftstack.com/api-reference/tagservice/listtags-1.md): Retrieves tags using an optional filter.
+- [CreateTag](https://docs.siftstack.com/api-reference/tagservice/createtag-1.md): Create a tag.
+- [ListTestMeasurements](https://docs.siftstack.com/api-reference/testreportservice/listtestmeasurements.md): Lists test measurements with optional filtering
+- [CreateTestMeasurement](https://docs.siftstack.com/api-reference/testreportservice/createtestmeasurement.md): Creates a test measurement
+- [UpdateTestMeasurement](https://docs.siftstack.com/api-reference/testreportservice/updatetestmeasurement.md): Updates a test measurement
+- [CountTestMeasurements](https://docs.siftstack.com/api-reference/testreportservice/counttestmeasurements.md): Counts test measurements with optional filtering
+- [DeleteTestMeasurement](https://docs.siftstack.com/api-reference/testreportservice/deletetestmeasurement.md): Deletes a test measurement
+- [CreateTestMeasurements](https://docs.siftstack.com/api-reference/testreportservice/createtestmeasurements.md): Creates multiple test measurements in a single request
+- [ListTestReports](https://docs.siftstack.com/api-reference/testreportservice/listtestreports.md): Lists test reports with optional filtering
+- [CreateTestReport](https://docs.siftstack.com/api-reference/testreportservice/createtestreport.md): Creates a test report
+- [UpdateTestReport](https://docs.siftstack.com/api-reference/testreportservice/updatetestreport.md): Updates a test report
+- [GetTestReport](https://docs.siftstack.com/api-reference/testreportservice/gettestreport.md): Gets a single test report
+- [DeleteTestReport](https://docs.siftstack.com/api-reference/testreportservice/deletetestreport.md): Deletes a test report
+- [ImportTestReport](https://docs.siftstack.com/api-reference/testreportservice/importtestreport.md): Imports a test report from an already-uploaded file.
+- [ListTestSteps](https://docs.siftstack.com/api-reference/testreportservice/listteststeps.md): Lists test steps with optional filtering
+- [CreateTestStep](https://docs.siftstack.com/api-reference/testreportservice/createteststep.md): Creates a test step
+- [UpdateTestStep](https://docs.siftstack.com/api-reference/testreportservice/updateteststep.md): Updates a test step
+- [CountTestSteps](https://docs.siftstack.com/api-reference/testreportservice/countteststeps.md): Counts test steps with optional filtering
+- [DeleteTestStep](https://docs.siftstack.com/api-reference/testreportservice/deleteteststep.md): Deletes a test step
+- [ListUserDefinedFunctions](https://docs.siftstack.com/api-reference/userdefinedfunctionservice/listuserdefinedfunctions.md): Retrieve the latest versions of user defined functions based on an optional filter.
+- [CreateUserDefinedFunction](https://docs.siftstack.com/api-reference/userdefinedfunctionservice/createuserdefinedfunction.md): Create a user defined function.
+- [UpdateUserDefinedFunction](https://docs.siftstack.com/api-reference/userdefinedfunctionservice/updateuserdefinedfunction.md): Update and create a new version of a user defined function.
+- [GetUserDefinedFunctionDependents](https://docs.siftstack.com/api-reference/userdefinedfunctionservice/getuserdefinedfunctiondependents.md): Retrieve dependents of a user defined function.
+- [CheckUpdatableFields](https://docs.siftstack.com/api-reference/userdefinedfunctionservice/checkupdatablefields.md): Check if given update paths are allowed to update for the user defined function
+- [GetUserDefinedFunctionVersions](https://docs.siftstack.com/api-reference/userdefinedfunctionservice/getuserdefinedfunctionversions.md): Retrieve versions of user defined functions.
+- [GetUserDefinedFunctionVersion](https://docs.siftstack.com/api-reference/userdefinedfunctionservice/getuserdefinedfunctionversion.md): Retrieve a specific version of a user defined function.
+- [GetUserDefinedFunction](https://docs.siftstack.com/api-reference/userdefinedfunctionservice/getuserdefinedfunction.md): Retrieve the latest version of a user defined function.
+- [ListUserDefinedFunctionVersions](https://docs.siftstack.com/api-reference/userdefinedfunctionservice/listuserdefinedfunctionversions.md): List versions of a particular user defined function with an optional filter.
+- [ValidateUserDefinedFunction](https://docs.siftstack.com/api-reference/userdefinedfunctionservice/validateuserdefinedfunction.md): Validates a potential user defined function.
+- [ListViews](https://docs.siftstack.com/api-reference/viewservice/listviews.md): Retrieves views using an optional filter.
+- [CreateView](https://docs.siftstack.com/api-reference/viewservice/createview.md): Creates a view.
+- [UpdateView](https://docs.siftstack.com/api-reference/viewservice/updateview.md): Updates an existing view using using the list of fields specified in `update_mask`.
+- [GetView](https://docs.siftstack.com/api-reference/viewservice/getview.md): Retrieves a view.
+- [DeleteView](https://docs.siftstack.com/api-reference/viewservice/deleteview.md): Deletes a view.
+- [PinView](https://docs.siftstack.com/api-reference/viewservice/pinview.md): Pins a view.
+- [UnpinView](https://docs.siftstack.com/api-reference/viewservice/unpinview.md): Unpins a view.
+- [Lists views that apply to assets/runs.](https://docs.siftstack.com/api-reference/viewservice/lists-views-that-apply-to-assetsruns.md)
+- [ListViews](https://docs.siftstack.com/api-reference/viewservice/listviews-1.md): Retrieves views using an optional filter.
+- [CreateView](https://docs.siftstack.com/api-reference/viewservice/createview-1.md): Creates a view.
+- [UpdateView](https://docs.siftstack.com/api-reference/viewservice/updateview-1.md): Updates an existing view using using the list of fields specified in `update_mask`.
+- [GetView](https://docs.siftstack.com/api-reference/viewservice/getview-1.md): Retrieves a view.
+- [DeleteView](https://docs.siftstack.com/api-reference/viewservice/deleteview-1.md): Deletes a view.
+- [PinView](https://docs.siftstack.com/api-reference/viewservice/pinview-1.md): Pins a view.
+- [UnpinView](https://docs.siftstack.com/api-reference/viewservice/unpinview-1.md): Unpins a view.
+- [ListApplicableViews](https://docs.siftstack.com/api-reference/viewservice/listapplicableviews.md): Lists views that apply to assets/runs.
+- [ListWebhooks](https://docs.siftstack.com/api-reference/webhookservice/listwebhooks.md): Retrieve and optionally filter a list of webhooks.
+- [CreateWebhook](https://docs.siftstack.com/api-reference/webhookservice/createwebhook.md): Create a webhook.
+- [UpdateWebhook](https://docs.siftstack.com/api-reference/webhookservice/updatewebhook.md): Update select fields of an existing webhook.
+- [ListWebhookLogs](https://docs.siftstack.com/api-reference/webhookservice/listwebhooklogs.md): Retrieve and optionally filter a list of webhook logs.
+- [BatchCreateWebhookLogs](https://docs.siftstack.com/api-reference/webhookservice/batchcreatewebhooklogs.md): Create a batch of webhook logs. Users should not have to call this directly.
+- [GetWebhookSignatureKey](https://docs.siftstack.com/api-reference/webhookservice/getwebhooksignaturekey.md): Retrieve the current webhook signature key. Will return a not found error if one doesn't yet exist.
+- [ToggleWebhookSignatureKeyActivation](https://docs.siftstack.com/api-reference/webhookservice/togglewebhooksignaturekeyactivation.md): Generate a new webhook signature key and replace the previous one. The activation state of the new key will match the activation state of the previous.
+- [CreateOrUpdateWebhookSignatureKey](https://docs.siftstack.com/api-reference/webhookservice/createorupdatewebhooksignaturekey.md): Create a webhook signature key and set its activation state. If a webhook signature key is active, the bodies of all webhooks will be signed using the signature key with HMAC-SHA-256.The signature generated will then included in the `X-Sift-Signature` HTTP header. Only one key can be held per organi…
+- [ToggleWebhookSignatureKeyActivation](https://docs.siftstack.com/api-reference/webhookservice/togglewebhooksignaturekeyactivation-1.md): Set the activation state of the organization's current webhook signature key. Will return a not found error if one doesn't yet exist.
+- [GetWebhook](https://docs.siftstack.com/api-reference/webhookservice/getwebhook.md): Retrieve a webhook by ID.
+- [TestWebhook](https://docs.siftstack.com/api-reference/webhookservice/testwebhook.md): Test an existing webhook or a webhook create request. This RPC will attempt to send an actual webhook with the provided parameters and forward back the response from the target.
+- [ListApiKeys](https://docs.siftstack.com/api-reference/apikeyservice/listapikeys.md): Retrieves API keys using an optional filter.
+- [CreateApiKey](https://docs.siftstack.com/api-reference/apikeyservice/createapikey.md): Creates an API key.
+- [ApiKeyOrganization](https://docs.siftstack.com/api-reference/apikeyservice/apikeyorganization.md): Retrieves the organization for an API key.
+- [DeleteApiKey](https://docs.siftstack.com/api-reference/apikeyservice/deleteapikey.md): Deletes an API key.
+- [ListCalculatedChannels](https://docs.siftstack.com/api-reference/calculatedchannelservice/listcalculatedchannels.md): Retrieve the latest versions of calculated channels based on an optional filter.
+- [CreateCalculatedChannel](https://docs.siftstack.com/api-reference/calculatedchannelservice/createcalculatedchannel.md): Create a calculated channel.
+- [UpdateCalculatedChannel](https://docs.siftstack.com/api-reference/calculatedchannelservice/updatecalculatedchannel.md): Update and create a new version of a calculated channel.
+- [GetCalculatedChannelDependents](https://docs.siftstack.com/api-reference/calculatedchannelservice/getcalculatedchanneldependents.md): Retrieve calculated channels that depend on a given calculated channel.
+- [ResolveCalculatedChannel](https://docs.siftstack.com/api-reference/calculatedchannelservice/resolvecalculatedchannel.md): Resolve a calculated channel into an expression with references
+- [BatchResolveCalculatedChannel](https://docs.siftstack.com/api-reference/calculatedchannelservice/batchresolvecalculatedchannel.md): Resolve a batch of calculated channels into expressions with references
+- [ListResolvedCalculatedChannels](https://docs.siftstack.com/api-reference/calculatedchannelservice/listresolvedcalculatedchannels.md): Retrieve the latest versions of calculated channels based on an optional filter.
+- [GetCalculatedChannelVersions](https://docs.siftstack.com/api-reference/calculatedchannelservice/getcalculatedchannelversions.md): Retrieve calculated channel versions by their version IDs.
+- [GetCalculatedChannel](https://docs.siftstack.com/api-reference/calculatedchannelservice/getcalculatedchannel.md): Retrieve the latest version of a calculated channel.
+- [ListCalculatedChannelVersions](https://docs.siftstack.com/api-reference/calculatedchannelservice/listcalculatedchannelversions.md): List versions of a particular calculated channel with an optional filter.
+- [GetCalculatedChannel](https://docs.siftstack.com/api-reference/calculatedchannelservice/getcalculatedchannel-1.md): Retrieve the latest version of a calculated channel.
+- [ListCalculatedChannelVersions](https://docs.siftstack.com/api-reference/calculatedchannelservice/listcalculatedchannelversions-1.md): List versions of a particular calculated channel with an optional filter.
+- [ListChannels](https://docs.siftstack.com/api-reference/channelservice/listchannels.md): Retrieve channels using an optional filter.
+- [GetChannel](https://docs.siftstack.com/api-reference/channelservice/getchannel.md): Retrieve a channel.
+- [ListChannels](https://docs.siftstack.com/api-reference/channelservice/listchannels-1.md): Retrieve channels using an optional filter.
+- [UpdateChannel](https://docs.siftstack.com/api-reference/channelservice/updatechannel.md): Update a channel.
+- [GetChannel](https://docs.siftstack.com/api-reference/channelservice/getchannel-1.md): Retrieve a channel.
+- [BatchArchiveChannels](https://docs.siftstack.com/api-reference/channelservice/batcharchivechannels.md): Batch archives channels by setting active to false.
+- [BatchUnarchiveChannels](https://docs.siftstack.com/api-reference/channelservice/batchunarchivechannels.md): Batch unarchives channels by setting active to true.
+- [ListDataImports](https://docs.siftstack.com/api-reference/dataimportservice/listdataimports.md): Lists all data imports.
+- [GetDataImport](https://docs.siftstack.com/api-reference/dataimportservice/getdataimport.md): Gets a data import.
+- [RetryDataImport](https://docs.siftstack.com/api-reference/dataimportservice/retrydataimport.md): Retries a data import.
+- [DetectConfig](https://docs.siftstack.com/api-reference/dataimportservice/detectconfig.md): Detects the config for a data import.
+- [CreateDataImportFromUpload](https://docs.siftstack.com/api-reference/dataimportservice/createdataimportfromupload.md): Creates a data import from a file upload.
+- [CreateDataImportFromUrl](https://docs.siftstack.com/api-reference/dataimportservice/createdataimportfromurl.md): Creates a data import from a file hosted at a url.
+- [List Ingestion Dead Letter Queue Errors](https://docs.siftstack.com/api-reference/dlqerrorsservice/list-ingestion-dead-letter-queue-errors.md): Retrieve Ingestion errors.
+- [Get My User Information](https://docs.siftstack.com/api-reference/meservice/get-my-user-information.md): Retrieve a user's information.
+- [ListRoles](https://docs.siftstack.com/api-reference/roleservice/listroles.md): Retrieves roles using an optional filter.
+- [ListRuns](https://docs.siftstack.com/api-reference/runservice/listruns.md): Retrieve runs using an optional filter.
+- [CreateRun](https://docs.siftstack.com/api-reference/runservice/createrun.md): Create a run.
+- [UpdateRun](https://docs.siftstack.com/api-reference/runservice/updaterun.md): Updates an existing run using using the list of fields specified in `update_mask`.
+- [GetRun](https://docs.siftstack.com/api-reference/runservice/getrun.md): Retrieve a run.
+- [DeleteRun](https://docs.siftstack.com/api-reference/runservice/deleterun.md): Permanently delete a given run. Deprecated: Use update with is_archived.
+- [CreateAutomaticRunAssociationForAssets](https://docs.siftstack.com/api-reference/runservice/createautomaticrunassociationforassets.md): Associates a list of assets with a given run.
+- [CreateAdhocRun](https://docs.siftstack.com/api-reference/runservice/createadhocrun.md): Create an adhoc run.
+- [StopRun](https://docs.siftstack.com/api-reference/runservice/stoprun.md): Set the stop time of a run to the current time. To set the stop time of a run to an arbitrary time see `UpdateRun`.
+- [ValidateRunFilter](https://docs.siftstack.com/api-reference/runservice/validaterunfilter.md): Validates a CEL filter expression against the available run filter fields.
+- [ListUnits](https://docs.siftstack.com/api-reference/unitservice/listunits.md): Used to list units.
+- [CreateUnit](https://docs.siftstack.com/api-reference/unitservice/createunit.md): Used to create a unit.
+- [ListUserGroups](https://docs.siftstack.com/api-reference/usergroupservice/listusergroups.md): Retrieves user groups using an optional filter.
+- [CreateUserGroup](https://docs.siftstack.com/api-reference/usergroupservice/createusergroup.md): Creates a user group.
+- [UpdateUserGroup](https://docs.siftstack.com/api-reference/usergroupservice/updateusergroup.md): Updates a user group.
+- [GetUserGroup](https://docs.siftstack.com/api-reference/usergroupservice/getusergroup.md): Retrieves a user group.
+- [DeleteUserGroup](https://docs.siftstack.com/api-reference/usergroupservice/deleteusergroup.md): Deletes a user group.
+- [AddUserToUserGroup](https://docs.siftstack.com/api-reference/usergroupservice/addusertousergroup.md): Adds a user to a user group.
+- [GetUserGroupsForAssets](https://docs.siftstack.com/api-reference/usergroupservice/getusergroupsforassets.md): Retrieves user groups for a list of assets.
+- [RemoveUserFromUserGroup](https://docs.siftstack.com/api-reference/usergroupservice/removeuserfromusergroup.md): Removes a user from a user group.
+- [UpdateUserUserGroups](https://docs.siftstack.com/api-reference/usergroupservice/updateuserusergroups.md): Updates a user's user groups.
+- [ListActiveUsers](https://docs.siftstack.com/api-reference/userservice/listactiveusers.md): List active users.
+- [GetUser](https://docs.siftstack.com/api-reference/userservice/getuser.md): Retrieves a user object.
+- [UpdateUserOrganizationActive](https://docs.siftstack.com/api-reference/userservice/updateuserorganizationactive.md): Used to toggle a user's active status within their organization.
+- [ListUsers](https://docs.siftstack.com/api-reference/userservice/listusers.md): List users.
+- [gRPC](https://docs.siftstack.com/api/reference/protocol-buffers/index.md): Use Sift's gRPC API with official client libraries or grpcurl.
+- [action_type](https://docs.siftstack.com/api/reference/protocol-buffers/action_type.md): sift/common/v1/action_type.proto
+- [annotation_logs](https://docs.siftstack.com/api/reference/protocol-buffers/annotation_logs.md): sift/annotation_logs/v1/annotation_logs.proto
+- [annotations](https://docs.siftstack.com/api/reference/protocol-buffers/annotations.md): sift/annotations/v1/annotations.proto
+- [api_keys](https://docs.siftstack.com/api/reference/protocol-buffers/api_keys.md): sift/api_keys/v2/api_keys.proto
+- [assets](https://docs.siftstack.com/api/reference/protocol-buffers/assets.md): sift/assets/v1/assets.proto
+- [automation](https://docs.siftstack.com/api/reference/protocol-buffers/automation.md): sift/automation/v1/automation.proto
+- [calculated_channels](https://docs.siftstack.com/api/reference/protocol-buffers/calculated_channels.md): sift/calculated_channels/v2/calculated_channels.proto
+- [campaigns](https://docs.siftstack.com/api/reference/protocol-buffers/campaigns.md): sift/campaigns/v1/campaigns.proto
+- [canvas](https://docs.siftstack.com/api/reference/protocol-buffers/canvas.md): sift/canvas/v1/canvas.proto
+- [channel_bit_field_element](https://docs.siftstack.com/api/reference/protocol-buffers/channel_bit_field_element.md): sift/common/type/v1/channel_bit_field_element.proto
+- [channel_config](https://docs.siftstack.com/api/reference/protocol-buffers/channel_config.md): sift/common/type/v1/channel_config.proto
+- [channel_data_type](https://docs.siftstack.com/api/reference/protocol-buffers/channel_data_type.md): sift/common/type/v1/channel_data_type.proto
+- [channel_enum_type](https://docs.siftstack.com/api/reference/protocol-buffers/channel_enum_type.md): sift/common/type/v1/channel_enum_type.proto
+- [channel_parsing_options](https://docs.siftstack.com/api/reference/protocol-buffers/channel_parsing_options.md): sift/protobuf_descriptors/v2/channel_parsing_options.proto
+- [channel_schemas](https://docs.siftstack.com/api/reference/protocol-buffers/channel_schemas.md): sift/channel_schemas/v2/channel_schemas.proto
+- [channels](https://docs.siftstack.com/api/reference/protocol-buffers/channels.md): sift/channels/v3/channels.proto
+- [comment](https://docs.siftstack.com/api/reference/protocol-buffers/comment.md): sift/comment/v1/comment.proto
+- [data](https://docs.siftstack.com/api/reference/protocol-buffers/data.md): sift/data/v2/data.proto
+- [data_imports](https://docs.siftstack.com/api/reference/protocol-buffers/data_imports.md): sift/data_imports/v2/data_imports.proto
+- [dlq_errors](https://docs.siftstack.com/api/reference/protocol-buffers/dlq_errors.md): sift/dlq_errors/v2/dlq_errors.proto
+- [docs](https://docs.siftstack.com/api/reference/protocol-buffers/docs.md): sift/docs/v1/docs.proto
+- [exports](https://docs.siftstack.com/api/reference/protocol-buffers/exports.md): sift/exports/v1/exports.proto
+- [external_sync](https://docs.siftstack.com/api/reference/protocol-buffers/external_sync.md): sift/external_sync/v1/external_sync.proto
+- [families](https://docs.siftstack.com/api/reference/protocol-buffers/families.md): sift/families/v1/families.proto
+- [ingest](https://docs.siftstack.com/api/reference/protocol-buffers/ingest.md): sift/ingest/v1/ingest.proto
+- [ingestion_configs](https://docs.siftstack.com/api/reference/protocol-buffers/ingestion_configs.md): sift/ingestion_configs/v2/ingestion_configs.proto
+- [jobs](https://docs.siftstack.com/api/reference/protocol-buffers/jobs.md): sift/jobs/v1/jobs.proto
+- [me](https://docs.siftstack.com/api/reference/protocol-buffers/me.md): sift/me/v2/me.proto
+- [metadata](https://docs.siftstack.com/api/reference/protocol-buffers/metadata.md): sift/metadata/v1/metadata.proto
+- [notifications](https://docs.siftstack.com/api/reference/protocol-buffers/notifications.md): sift/notifications/v1/notifications.proto
+- [organization](https://docs.siftstack.com/api/reference/protocol-buffers/organization.md): sift/common/type/v1/organization.proto
+- [panel_configuration](https://docs.siftstack.com/api/reference/protocol-buffers/panel_configuration.md): sift/panel_configurations/v1/panel_configuration.proto
+- [ping](https://docs.siftstack.com/api/reference/protocol-buffers/ping.md): sift/ping/v1/ping.proto
+- [policies](https://docs.siftstack.com/api/reference/protocol-buffers/policies.md): sift/policies/v1/policies.proto
+- [principal_attributes](https://docs.siftstack.com/api/reference/protocol-buffers/principal_attributes.md): sift/principal_attributes/v1/principal_attributes.proto
+- [protobuf_descriptors](https://docs.siftstack.com/api/reference/protocol-buffers/protobuf_descriptors.md): sift/protobuf_descriptors/v2/protobuf_descriptors.proto
+- [remote_files](https://docs.siftstack.com/api/reference/protocol-buffers/remote_files.md): sift/remote_files/v1/remote_files.proto
+- [report_templates](https://docs.siftstack.com/api/reference/protocol-buffers/report_templates.md): sift/report_templates/v1/report_templates.proto
+- [reports](https://docs.siftstack.com/api/reference/protocol-buffers/reports.md): sift/reports/v1/reports.proto
+- [resource_attribute](https://docs.siftstack.com/api/reference/protocol-buffers/resource_attribute.md): sift/resource_attribute/v1/resource_attribute.proto
+- [resource_identifier](https://docs.siftstack.com/api/reference/protocol-buffers/resource_identifier.md): sift/common/type/v1/resource_identifier.proto
+- [resource_ref](https://docs.siftstack.com/api/reference/protocol-buffers/resource_ref.md): sift/common/type/v1/resource_ref.proto
+- [resource_type](https://docs.siftstack.com/api/reference/protocol-buffers/resource_type.md): sift/common/v1/resource_type.proto
+- [roles](https://docs.siftstack.com/api/reference/protocol-buffers/roles.md): sift/roles/v2/roles.proto
+- [rule_evaluation](https://docs.siftstack.com/api/reference/protocol-buffers/rule_evaluation.md): sift/rule_evaluation/v1/rule_evaluation.proto
+- [rules](https://docs.siftstack.com/api/reference/protocol-buffers/rules.md): sift/rules/v1/rules.proto
+- [runs](https://docs.siftstack.com/api/reference/protocol-buffers/runs.md): sift/runs/v2/runs.proto
+- [saved_searches](https://docs.siftstack.com/api/reference/protocol-buffers/saved_searches.md): sift/saved_searches/v1/saved_searches.proto
+- [tags](https://docs.siftstack.com/api/reference/protocol-buffers/tags.md): sift/tags/v2/tags.proto
+- [test_reports](https://docs.siftstack.com/api/reference/protocol-buffers/test_reports.md): sift/test_reports/v1/test_reports.proto
+- [unit](https://docs.siftstack.com/api/reference/protocol-buffers/unit.md): sift/unit/v2/unit.proto
+- [user](https://docs.siftstack.com/api/reference/protocol-buffers/user.md): sift/common/type/v1/user.proto
+- [user_defined_functions](https://docs.siftstack.com/api/reference/protocol-buffers/user_defined_functions.md): sift/common/type/v1/user_defined_functions.proto
+- [user_groups](https://docs.siftstack.com/api/reference/protocol-buffers/user_groups.md): sift/user_groups/v2/user_groups.proto
+- [users](https://docs.siftstack.com/api/reference/protocol-buffers/users.md): sift/users/v2/users.proto
+- [views](https://docs.siftstack.com/api/reference/protocol-buffers/views.md): sift/views/v2/views.proto
+- [webhooks](https://docs.siftstack.com/api/reference/protocol-buffers/webhooks.md): sift/webhooks/v1/webhooks.proto
+- [Release notes](https://docs.siftstack.com/release-notes/overview.md): Stay up to date with the latest major montly updates
+- [Import flight logs, reuse investigations, and shape your Channel tree](https://docs.siftstack.com/release-notes/2026/august-2026.md): Release notes · August 2026
+- [New Panels, faster rendering, and Saved Explorations](https://docs.siftstack.com/release-notes/2026/july-2026.md): Release notes · July 2026
+- [Control access, catch drift, and automate your thresholds](https://docs.siftstack.com/release-notes/2026/may-2026.md): Release notes · May 2026
+- [April 2026](https://docs.siftstack.com/release-notes/2026/april-2026.md): New ways to investigate telemetry and build on your calculated metrics
+- [March 2026](https://docs.siftstack.com/release-notes/2026/march-2026.md): New tools for comparison, export, and investigation
+- [February 2026](https://docs.siftstack.com/release-notes/2026/february-2026.md): Scalable data analysis in context
+- [January 2026](https://docs.siftstack.com/release-notes/2026/january-2026.md): Collaborative analysis and data portability
+- [December 2025](https://docs.siftstack.com/release-notes/december-2025.md): Clear correlation finding and modular logic
+- [November 2025](https://docs.siftstack.com/release-notes/november-2025.md): Clearer ways to understand telemetry changes
+- [October 2025](https://docs.siftstack.com/release-notes/october-2025.md): Connecting data, insight, and support
+- [September 2025](https://docs.siftstack.com/release-notes/september-2025.md): Faster data ingestion, rich insights: simpler access
+- [August 2025](https://docs.siftstack.com/release-notes/august-2025.md): Accelerating the journey from data to decisions
+- [July 2025](https://docs.siftstack.com/release-notes/july-2025.md)
+- [June 2025](https://docs.siftstack.com/release-notes/june-2025.md)
+- [May 2025](https://docs.siftstack.com/release-notes/may-2025.md)
+- [Changelog](https://docs.siftstack.com/changelog.md): Record of all notable updates made to Sift
+
+## OpenAPI Specs
+
+- [openapi](/openapi.json)

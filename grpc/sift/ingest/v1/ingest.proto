@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package sift.ingest.v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service IngestService {
+  rpc IngestWithConfigDataStream(stream IngestWithConfigDataStreamRequest) returns (IngestWithConfigDataStreamResponse);
+  rpc IngestArbitraryProtobufDataStream(stream IngestArbitraryProtobufDataStreamRequest) returns (IngestArbitraryProtobufDataStreamResponse);
+}
+
+// INTERNAL NOTE (remove from public protos): Any updates to this proto message MUST also update the
+// `IngestWithConfigDataStreamRequestLite` and `IngestWithConfigDataStreamChannelValuesOnly` proto messages
+// in sift_internal/ingest/v1/ingest.proto.
+// For performance, only the minimal set of fields is deserialized on ingest by the
+// `IngestWithConfigDataStreamRequestLite` proto message definition; other fields that are expensive and/or
+// large and that are not required to be parsed should not be included there. Additionally, the field number
+// __MUST__ match exactly as we depend on the field numbers to correctly decode the fields despite technically
+// different message definitions.
+message IngestWithConfigDataStreamRequest {
+  string ingestion_config_id = 1;
+  string flow = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  repeated IngestWithConfigDataChannelValue channel_values = 4;
+  // The run_id MUST be included if this data is part of a run.
+  string run_id = 5;
+  // By default, if this request contains any channel values that do not match
+  // the supplied ingestion config, the request is stored in an error queue and
+  // the stream continues to accept data. This ensures all data is saved, but
+  // only valid data is fully ingested. If this is set to `true`, any validation
+  // errors end the stream and return the error to the client.
+  bool end_stream_on_validation_error = 6;
+  string organization_id = 7;
+}
+
+message IngestWithConfigDataStreamResponse {}
+
+message IngestWithConfigDataChannelValue {
+  oneof type {
+    string string = 1;
+    double double = 2;
+    float float = 3;
+    bool bool = 4;
+    int32 int32 = 5;
+    uint32 uint32 = 6;
+    int64 int64 = 7;
+    uint64 uint64 = 8;
+    bytes bit_field = 9;
+    uint32 enum = 10;
+    // If there's not a new data point for a channel at the given timestamp, pass empty to skip it
+    google.protobuf.Empty empty = 11;
+    bytes bytes = 12;
+  }
+}
+
+message IngestArbitraryProtobufDataStreamRequest {
+  string message_type_identifier = 1;
+  optional string message_type_display_name = 2;
+  string asset_name = 3;
+  google.protobuf.Timestamp timestamp = 4;
+  bytes value = 5;
+  string run_id = 6;
+  string namespace = 7;
+  string organization_id = 8;
+
+  // By default, if this request fails to parse for any reason, the request is
+  // stored in an error queue and the stream continues to accept data. This
+  // ensures all data is saved, but only valid data is fully ingested. If this
+  // is set to `true`, any validation errors end the stream and return the error to the client.
+  bool end_stream_on_validation_error = 9;
+}
+
+message IngestArbitraryProtobufDataStreamResponse {}

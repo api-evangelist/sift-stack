@@ -1,0 +1,93 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  Registry metadata endpoints probed 2026-08-27 — pypi.org/pypi/sift-stack-py/json (200),
+  crates.io/api/v1/crates/sift_rs (200), proxy.golang.org/github.com/sift-stack/sift/go/@latest (200),
+  registry.npmjs.org (404 for every candidate), api.github.com/repos/sift-stack/sift (200);
+  cross-checked against https://docs.siftstack.com/api/clients and the sift-stack/sift monorepo.
+name: Sift client libraries and distributions
+note: >-
+  Sift ships every first-party client from one MIT-licensed monorepo, github.com/sift-stack/sift, with
+  language subtrees (python/, rust/, go/, cpp/) generated from the protos/ directory. Only the Python and
+  Rust clients are published to a package registry; the Go client is consumed as a Go module and the C++
+  client is source-only. The CLI is distributed as prebuilt binaries from GitHub Releases via a
+  cargo-dist installer script, not from crates.io.
+official_count: 6
+packages:
+- name: sift-stack-py
+  registry: pypi
+  url: https://pypi.org/project/sift-stack-py/
+  official: true
+  language: python
+  version: 0.20.0
+  published: '2026-08-25'
+  repository: https://github.com/sift-stack/sift/tree/main/python
+  docs: https://docs.siftstack.com/sift_py/sift_py.html
+  changelog: https://github.com/sift-stack/sift/blob/main/python/CHANGELOG.md
+  note: >-
+    Distribution name is sift-stack-py; the import package is sift_py. Most actively released first-party
+    client — the release cadence tracks the API (python/v0.19.1 2026-07-28, python/v0.20.0 2026-08-25).
+- name: sift_rs
+  registry: crates.io
+  url: https://crates.io/crates/sift_rs
+  official: true
+  language: rust
+  version: 0.11.0
+  published: '2026-08-21'
+  repository: https://github.com/sift-stack/sift
+  note: Rust client generated from the same protos/ tree; 88,443 lifetime downloads at probe time.
+- name: github.com/sift-stack/sift/go
+  registry: go
+  url: https://pkg.go.dev/github.com/sift-stack/sift/go
+  official: true
+  language: go
+  version: v0.4.0
+  published: '2025-06-13'
+  repository: https://github.com/sift-stack/sift/tree/main/go
+  note: >-
+    DECAY SIGNAL — proxy.golang.org reports the latest tagged version as go/v0.4.0 from 2025-06-13, more
+    than fourteen months behind the Python client (0.20.0, 2026-08-25) and the Rust client (0.11.0,
+    2026-08-21). The generated stubs in go/gen may still be current on main, but no Go module version has
+    been tagged since, so `go get` resolves to a 2025 contract.
+- name: sift-cli
+  registry: github-releases
+  url: https://github.com/sift-stack/sift/releases/tag/sift_cli-v0.4.4
+  official: true
+  language: rust
+  version: 0.4.4
+  published: '2026-08-24'
+  install: 'curl --proto "=https" --tlsv1.2 -LsSf https://github.com/sift-stack/sift/releases/latest/download/sift_cli-installer.sh | sh'
+  artifacts:
+  - sift_cli-aarch64-apple-darwin.tar.xz
+  - sift_cli-x86_64-apple-darwin.tar.xz
+  - sift_cli-aarch64-unknown-linux-gnu.tar.xz
+  - sift_cli-x86_64-unknown-linux-gnu.tar.xz
+  - sift_cli-x86_64-pc-windows-msvc.zip
+  note: >-
+    Distributed as cargo-dist prebuilt binaries with sha256 sums and PowerShell/shell installers — there is
+    no crates.io or npm entry for it. The unrelated crates.io crate named `sift-cli` (keywords
+    cli/debug/error/filter/llm) is a DIFFERENT project and is not Sift Stack's; it is recorded here only so
+    a later pass does not mistake it for a first-party package.
+- name: sift-labview
+  registry: github
+  url: https://github.com/sift-stack/sift-labview
+  official: true
+  language: labview
+  version: null
+  published: '2025-10-10'
+  note: >-
+    version null — LabVIEW client is distributed from the repository itself, not from a package registry,
+    and the repo carries no tagged release; `published` is the last push date reported by the GitHub API.
+    Checked, nothing to record.
+- name: sift-grafana-datasource
+  registry: github
+  url: https://github.com/sift-stack/sift-grafana-datasource
+  official: true
+  language: typescript
+  version: null
+  published: '2026-08-11'
+  note: >-
+    version null — Grafana datasource plugin. Not on npm (registry.npmjs.org returned 404 for
+    sift-grafana-datasource); Grafana plugins install from the Grafana catalog or a release zip. The
+    changelog references release tag v1.3.0 but the version was not read from a registry metadata endpoint,
+    so it is not asserted here. `published` is the last push date from the GitHub API.

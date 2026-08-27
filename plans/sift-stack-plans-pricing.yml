@@ -1,0 +1,22 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://www.siftstack.com/sitemap.xml (200, 172 URLs, no /pricing entry),
+  https://www.siftstack.com/pricing (404), https://www.siftstack.com/platform (200),
+  https://www.siftstack.com/weekly-demo (200), https://docs.siftstack.com/llms.txt (200) — probed 2026-08-27.
+name: Sift plans and pricing
+plan_count: 0
+public_pricing: false
+model: enterprise-contact-sales
+note: >-
+  Sift publishes NO pricing page and no plan tiers. /pricing returns 404 and the 172-URL sitemap contains no
+  pricing, plans or billing page at all; neither the marketing llms.txt nor the docs mention a price, a tier
+  name, a free tier, a trial, or a usage meter. The published routes to buy are a weekly group demo
+  (https://www.siftstack.com/weekly-demo) and direct contact. This is consistent with the deployment model —
+  the platform is sold with on-prem, private-cloud, airgapped and AWS GovCloud options and an ITAR/CMMC
+  compliance posture, which is a sales-led rather than self-serve shape. There is also no self-serve sign-up:
+  https://app.siftstack.com is a login for existing customers.
+plans: []
+signals:
+- {name: startup program, url: 'https://www.siftstack.com/startup', note: 'A startup page exists in the sitemap; it was not read for prices and no price is asserted here.'}
+- {name: deployment options, values: [SaaS, private cloud, on-premises, airgapped, AWS GovCloud (US)]}

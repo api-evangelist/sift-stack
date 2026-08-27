@@ -1,0 +1,57 @@
+generated: '2026-08-27'
+method: probed
+source: https://docs.siftstack.com/.well-known/agent-card.json
+name: Sift A2A Agent Card
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: docs.siftstack.com
+x-evidence:
+  fetched: '2026-08-27'
+  url: https://docs.siftstack.com/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json
+  body_shape: JSON object with name, url, version, protocolVersion, capabilities, skills
+card_file: a2a/sift-stack-agent-card.json
+card:
+  name: Sift
+  url: https://docs.siftstack.com/
+  version: '1.0.0'
+  protocolVersion: '0.3'
+  preferredTransport: HTTP+JSON
+  provider_organization: Sift
+  documentationUrl: https://docs.siftstack.com/
+  skill_count: 1
+  skill_ids:
+  - sift
+grade: conformant
+grade_basis: >-
+  Graded against A2A 1.0.0 hard checks — capabilities is an OBJECT ({streaming,pushNotifications}),
+  protocolVersion is present ("0.3"), and skills is an ARRAY. All three pass, and the optional fields
+  preferredTransport, defaultInputModes and defaultOutputModes are all present, so this is not merely
+  near-conformant.
+deviations:
+- field: protocolVersion
+  observed: '0.3'
+  note: >-
+    Declares A2A protocol 0.3 rather than 1.0.0. Not a hard-check failure — the card is structurally
+    conformant — but a consumer negotiating 1.0 should expect a 0.3 vintage.
+- field: capabilities
+  observed: streaming=false, pushNotifications=false
+  note: Both optional capabilities are explicitly declined; this is a discovery/skill card, not a task-executing agent.
+- field: skills[0].tags
+  observed: '[]'
+  note: The single skill declares no tags, so tag-based agent routing cannot select it.
+- field: url / supportedInterfaces[0].url
+  observed: https://docs.siftstack.com/
+  note: >-
+    Both point at the documentation site root rather than an A2A JSON-RPC endpoint. The card's real payload
+    is the linked Agent Skill (skills[0].url ->
+    https://docs.siftstack.com/.well-known/agent-skills/sift/skill.md, saved verbatim to
+    skills/sift-stack-sift.md) and the co-located MCP server at https://docs.siftstack.com/mcp.
+note: >-
+  Served from the documentation host, not the marketing host or the API host —
+  https://www.siftstack.com/.well-known/agent-card.json returned 404 ("Invalid .well-known request") and
+  https://api.siftstack.com/.well-known/agent-card.json returned 401. The legacy pre-0.3 path
+  /.well-known/agent.json returned 404 on both public hosts. Card body verified as a real JSON object
+  (content-type application/json), not an SPA HTML shell.

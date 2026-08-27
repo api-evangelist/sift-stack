@@ -1,0 +1,404 @@
+generated: '2026-08-27'
+method: searched
+source: https://github.com/sift-stack/sift/tree/main/protos (MIT, cloned from codeload.github.com/sift-stack/sift
+  tar.gz refs/heads/main, HTTP 200, 2026-08-27)
+name: Sift gRPC / Protocol Buffers contract
+note: Saved verbatim from the sift-stack/sift monorepo, which the provider publishes under MIT and which
+  backs the Python, Rust, Go, C++ and LabVIEW client libraries. The gRPC surface is the primary contract
+  for high-frequency telemetry ingestion; the REST/OpenAPI surface at docs.siftstack.com/openapi.json
+  is a grpc-gateway transcoding of the same services. Directory layout preserved so imports resolve.
+buf:
+  repo: https://github.com/sift-stack/sift
+  buf_yaml: protos/buf.yaml present in upstream repo
+  client_generation_docs: https://docs.siftstack.com/api/clients
+endpoints:
+  grpc_production: api.siftstack.com
+  grpc_gov: gov.api.siftstack.com
+  transport: 'gRPC over TLS; API key passed as `authorization: Bearer <key>` metadata'
+totals:
+  proto_files: 66
+  services: 51
+  rpcs: 330
+  messages: 970
+files:
+- file: grpc/sift/resource_attribute/v1/resource_attribute.proto
+  package: sift.resource_attribute.v1
+  services:
+  - ResourceAttributeService
+  rpc_count: 26
+  message_count: 57
+- file: grpc/sift/api_keys/v2/api_keys.proto
+  package: sift.api_keys.v2
+  services:
+  - ApiKeyService
+  rpc_count: 4
+  message_count: 10
+- file: grpc/sift/unit/v2/unit.proto
+  package: sift.unit.v2
+  services:
+  - UnitService
+  rpc_count: 2
+  message_count: 5
+- file: grpc/sift/channel_schemas/v1/channel_schemas.proto
+  package: sift.channel_schemas.v1
+  services:
+  - ChannelSchemaService
+  rpc_count: 2
+  message_count: 4
+- file: grpc/sift/channel_schemas/v2/channel_schemas.proto
+  package: sift.channel_schemas.v2
+  services:
+  - ChannelSchemaService
+  rpc_count: 2
+  message_count: 4
+- file: grpc/sift/ping/v1/ping.proto
+  package: sift.ping.v1
+  services:
+  - PingService
+  rpc_count: 1
+  message_count: 2
+- file: grpc/sift/comment/v1/comment.proto
+  package: sift.comment.v1
+  services:
+  - CommentService
+  rpc_count: 4
+  message_count: 11
+- file: grpc/sift/saved_searches/v1/saved_searches.proto
+  package: sift.saved_searches.v1
+  services:
+  - SavedSearchService
+  rpc_count: 6
+  message_count: 17
+- file: grpc/sift/ingest/v1/ingest.proto
+  package: sift.ingest.v1
+  services:
+  - IngestService
+  rpc_count: 2
+  message_count: 5
+- file: grpc/sift/user_defined_functions/v1/user_defined_functions.proto
+  package: sift.user_defined_functions.v1
+  services:
+  - UserDefinedFunctionService
+  rpc_count: 10
+  message_count: 20
+- file: grpc/sift/roles/v2/roles.proto
+  package: sift.roles.v2
+  services:
+  - RoleService
+  rpc_count: 1
+  message_count: 3
+- file: grpc/sift/principal_attributes/v1/principal_attributes.proto
+  package: sift.principal_attributes.v1
+  services:
+  - PrincipalAttributeService
+  rpc_count: 21
+  message_count: 46
+- file: grpc/sift/data_imports/v2/data_imports.proto
+  package: sift.data_imports.v2
+  services:
+  - DataImportService
+  rpc_count: 6
+  message_count: 35
+- file: grpc/sift/protobuf_descriptors/v2/channel_parsing_options.proto
+  package: sift.protobuf_descriptors.v2
+  services: []
+  rpc_count: 0
+  message_count: 2
+- file: grpc/sift/protobuf_descriptors/v2/protobuf_descriptors.proto
+  package: sift.protobuf_descriptors.v2
+  services:
+  - ProtobufDescriptorService
+  rpc_count: 4
+  message_count: 10
+- file: grpc/sift/docs/v1/docs.proto
+  package: sift.docs.v1
+  services:
+  - DocsService
+  rpc_count: 2
+  message_count: 5
+- file: grpc/sift/annotation_logs/v1/annotation_logs.proto
+  package: sift.annotation_logs.v1
+  services:
+  - AnnotationLogService
+  rpc_count: 3
+  message_count: 12
+- file: grpc/sift/policies/v1/policies.proto
+  package: sift.policies.v1
+  services:
+  - PolicyService
+  rpc_count: 7
+  message_count: 16
+- file: grpc/sift/canvas/v1/canvas.proto
+  package: sift.canvas.v1
+  services: []
+  rpc_count: 0
+  message_count: 0
+- file: grpc/sift/tags/v1/tags.proto
+  package: sift.tags.v1
+  services: []
+  rpc_count: 0
+  message_count: 2
+- file: grpc/sift/tags/v2/tags.proto
+  package: sift.tags.v2
+  services:
+  - TagService
+  rpc_count: 2
+  message_count: 5
+- file: grpc/sift/exports/v1/exports.proto
+  package: sift.exports.v1
+  services:
+  - ExportService
+  rpc_count: 2
+  message_count: 9
+- file: grpc/sift/annotations/v1/annotations.proto
+  package: sift.annotations.v1
+  services:
+  - AnnotationService
+  rpc_count: 10
+  message_count: 25
+- file: grpc/sift/common/v1/action_type.proto
+  package: sift.common.v1
+  services: []
+  rpc_count: 0
+  message_count: 0
+- file: grpc/sift/common/v1/resource_type.proto
+  package: sift.common.v1
+  services: []
+  rpc_count: 0
+  message_count: 0
+- file: grpc/sift/common/type/v1/calculated_channels.proto
+  package: sift.common.type.v1
+  services: []
+  rpc_count: 0
+  message_count: 1
+- file: grpc/sift/common/type/v1/channel_bit_field_element.proto
+  package: sift.common.type.v1
+  services: []
+  rpc_count: 0
+  message_count: 1
+- file: grpc/sift/common/type/v1/channel_config.proto
+  package: sift.common.type.v1
+  services: []
+  rpc_count: 0
+  message_count: 1
+- file: grpc/sift/common/type/v1/channel_data_type.proto
+  package: sift.common.type.v1
+  services: []
+  rpc_count: 0
+  message_count: 0
+- file: grpc/sift/common/type/v1/channel_enum_type.proto
+  package: sift.common.type.v1
+  services: []
+  rpc_count: 0
+  message_count: 1
+- file: grpc/sift/common/type/v1/organization.proto
+  package: sift.common.type.v1
+  services: []
+  rpc_count: 0
+  message_count: 1
+- file: grpc/sift/common/type/v1/resource_identifier.proto
+  package: sift.common.type.v1
+  services: []
+  rpc_count: 0
+  message_count: 7
+- file: grpc/sift/common/type/v1/resource_ref.proto
+  package: sift.common.type.v1
+  services: []
+  rpc_count: 0
+  message_count: 2
+- file: grpc/sift/common/type/v1/user.proto
+  package: sift.common.type.v1
+  services: []
+  rpc_count: 0
+  message_count: 1
+- file: grpc/sift/common/type/v1/user_defined_functions.proto
+  package: sift.common.type.v1
+  services: []
+  rpc_count: 0
+  message_count: 3
+- file: grpc/sift/rule_evaluation/v1/rule_evaluation.proto
+  package: sift.rule_evaluation.v1
+  services:
+  - RuleEvaluationService
+  rpc_count: 2
+  message_count: 12
+- file: grpc/sift/calculated_channels/v1/calculated_channels.proto
+  package: sift.calculated_channels.v1
+  services:
+  - CalculatedChannelsService
+  rpc_count: 2
+  message_count: 9
+- file: grpc/sift/calculated_channels/v2/calculated_channels.proto
+  package: sift.calculated_channels.v2
+  services:
+  - CalculatedChannelService
+  rpc_count: 10
+  message_count: 30
+- file: grpc/sift/me/v2/me.proto
+  package: sift.me.v2
+  services:
+  - MeService
+  rpc_count: 1
+  message_count: 5
+- file: grpc/sift/users/v2/users.proto
+  package: sift.users.v2
+  services:
+  - UserService
+  rpc_count: 4
+  message_count: 8
+- file: grpc/sift/rules/v1/rules.proto
+  package: sift.rules.v1
+  services:
+  - RuleService
+  rpc_count: 24
+  message_count: 73
+- file: grpc/sift/remote_files/v1/remote_files.proto
+  package: sift.remote_files.v1
+  services:
+  - RemoteFileService
+  rpc_count: 7
+  message_count: 18
+- file: grpc/sift/automation/v1/automation.proto
+  package: sift.automation.v1
+  services:
+  - AutomationService
+  rpc_count: 6
+  message_count: 20
+- file: grpc/sift/campaigns/v1/campaigns.proto
+  package: sift.campaigns.v1
+  services:
+  - CampaignService
+  rpc_count: 6
+  message_count: 16
+- file: grpc/sift/test_reports/v1/test_reports.proto
+  package: sift.test_reports.v1
+  services:
+  - TestReportService
+  rpc_count: 17
+  message_count: 40
+- file: grpc/sift/report_templates/v1/report_templates.proto
+  package: sift.report_templates.v1
+  services:
+  - ReportTemplateService
+  rpc_count: 4
+  message_count: 13
+- file: grpc/sift/jobs/v1/jobs.proto
+  package: sift.jobs.v1
+  services:
+  - JobService
+  rpc_count: 3
+  message_count: 15
+- file: grpc/sift/dlq_errors/v2/dlq_errors.proto
+  package: sift.dlq_errors.v2
+  services:
+  - DlqErrorsService
+  rpc_count: 1
+  message_count: 3
+- file: grpc/sift/webhooks/v1/webhooks.proto
+  package: sift.webhooks.v1
+  services:
+  - WebhookService
+  rpc_count: 11
+  message_count: 27
+- file: grpc/sift/data/v1/data.proto
+  package: sift.data.v1
+  services:
+  - DataService
+  rpc_count: 1
+  message_count: 29
+- file: grpc/sift/data/v2/data.proto
+  package: sift.data.v2
+  services:
+  - DataService
+  rpc_count: 1
+  message_count: 32
+- file: grpc/sift/views/v1/views.proto
+  package: sift.views.v1
+  services:
+  - ViewService
+  rpc_count: 8
+  message_count: 17
+- file: grpc/sift/views/v2/views.proto
+  package: sift.views.v2
+  services:
+  - ViewService
+  rpc_count: 8
+  message_count: 17
+- file: grpc/sift/assets/v1/assets.proto
+  package: sift.assets.v1
+  services:
+  - AssetService
+  rpc_count: 6
+  message_count: 13
+- file: grpc/sift/user_groups/v2/user_groups.proto
+  package: sift.user_groups.v2
+  services:
+  - UserGroupService
+  rpc_count: 9
+  message_count: 19
+- file: grpc/sift/runs/v2/runs.proto
+  package: sift.runs.v2
+  services:
+  - RunService
+  rpc_count: 9
+  message_count: 19
+- file: grpc/sift/metadata/v1/metadata.proto
+  package: sift.metadata.v1
+  services:
+  - MetadataService
+  rpc_count: 11
+  message_count: 26
+- file: grpc/sift/notifications/v1/notifications.proto
+  package: sift.notifications.v1
+  services:
+  - NotificationService
+  rpc_count: 2
+  message_count: 6
+- file: grpc/sift/panel_configurations/v1/panel_configuration.proto
+  package: sift.panel_configurations.v1
+  services:
+  - PanelConfigurationService
+  rpc_count: 4
+  message_count: 10
+- file: grpc/sift/ingestion_configs/v1/ingestion_configs.proto
+  package: sift.ingestion_configs.v1
+  services:
+  - IngestionConfigService
+  rpc_count: 5
+  message_count: 13
+- file: grpc/sift/ingestion_configs/v2/ingestion_configs.proto
+  package: sift.ingestion_configs.v2
+  services:
+  - IngestionConfigService
+  rpc_count: 5
+  message_count: 13
+- file: grpc/sift/reports/v1/reports.proto
+  package: sift.reports.v1
+  services:
+  - ReportService
+  rpc_count: 9
+  message_count: 38
+- file: grpc/sift/external_sync/v1/external_sync.proto
+  package: sift.external_sync.v1
+  services:
+  - ExternalSyncService
+  rpc_count: 7
+  message_count: 22
+- file: grpc/sift/channels/v2/channels.proto
+  package: sift.channels.v2
+  services:
+  - ChannelService
+  rpc_count: 2
+  message_count: 5
+- file: grpc/sift/channels/v3/channels.proto
+  package: sift.channels.v3
+  services:
+  - ChannelService
+  rpc_count: 5
+  message_count: 14
+- file: grpc/sift/families/v1/families.proto
+  package: sift.families.v1
+  services:
+  - FamilyService
+  rpc_count: 23
+  message_count: 65

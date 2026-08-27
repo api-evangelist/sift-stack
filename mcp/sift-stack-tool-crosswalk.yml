@@ -1,0 +1,71 @@
+generated: '2026-08-27'
+method: derived
+source: >-
+  mcp/sift-stack-docs-mcp-tools.json (live tools/list from https://docs.siftstack.com/mcp, HTTP 200,
+  2026-08-27), https://docs.siftstack.com/documentation/cli/sift-mcp (200, the only published inventory of
+  the product server's tools), and openapi/sift-stack-openapi.json.
+name: Sift MCP <-> REST tool crosswalk
+surfaces:
+- {kind: openapi, url: https://docs.siftstack.com/openapi.json, file: openapi/sift-stack-openapi.json, operations: 343, gated: false}
+- {kind: grpc, source: https://github.com/sift-stack/sift/tree/main/protos, dir: grpc/, rpcs: 330, gated: false}
+- {kind: mcp, id: docs-remote, url: https://docs.siftstack.com/mcp, tools: 3, gated: false, note: 'Anonymous; full inputSchemas captured live.'}
+- {kind: mcp, id: product-local, install: 'sift-cli mcp', tools: unknown, gated: true, note: 'Local stdio, API-key authenticated. Not introspected — a full tools/list requires credentials and a local install, so inputSchemas for this server are NOT captured.'}
+- {kind: graphql, present: false}
+confidence_note: >-
+  Two servers, two very different evidence levels. Rows for the docs-remote server are HIGH confidence —
+  the tool names and inputSchemas were read from a live tools/list. Rows for the product-local server are
+  MEDIUM at best: the tool names are quoted verbatim from Sift's own documentation, but the mapping to REST
+  operationIds is by name and semantics, not by introspection, and the docs publish only a partial
+  inventory (the gated writes, the additive writes, and two read tools named in passing). No tool was
+  invented, and no inputSchema is asserted for the local server.
+crosswalk:
+- {tool: search_sift, server: docs-remote, category: documentation, rest: [], binding: none, confidence: high, note: 'Full-text search over published docs. No REST equivalent — Sift''s API has no documentation-search operation. DocsService exists in the spec but serves in-product docs resources, not this index.'}
+- {tool: query_docs_filesystem_sift, server: docs-remote, category: documentation, rest: [], binding: none, confidence: high, note: 'Read-only shell over a virtualized docs filesystem that also contains /openapi/openapi.json. It is the mechanism by which an agent reads the REST contract, not a projection of it.'}
+- {tool: submit_feedback, server: docs-remote, category: feedback, rest: [], binding: none, confidence: high, note: 'Files a docs defect. The only non-read-only tool on the anonymous server, and it has no public REST counterpart.'}
+- {tool: create_annotation, server: product-local, category: review, rest: [AnnotationService_CreateAnnotation], binding: direct, confidence: medium}
+- {tool: update_annotation, server: product-local, category: review, rest: [AnnotationService_UpdateAnnotation], binding: direct, confidence: medium, gated: true, note: 'Gated behind --allow-destructive. Sift warns it REPLACES tags, metadata and other collections rather than merging them.'}
+- {tool: create_report, server: product-local, category: validation, rest: [ReportService_CreateReport], binding: direct, confidence: medium}
+- {tool: update_report, server: product-local, category: validation, rest: [ReportService_UpdateReport], binding: direct, confidence: medium, gated: true}
+- {tool: create_rule, server: product-local, category: detection, rest: [RuleService_CreateRule], binding: direct, confidence: medium}
+- {tool: update_rule, server: product-local, category: detection, rest: [RuleService_UpdateRule], binding: direct, confidence: medium, gated: true}
+- {tool: archive_rule, server: product-local, category: detection, rest: [RuleService_ArchiveRule, RuleService_BatchArchiveRules], binding: direct, confidence: medium, gated: true}
+- {tool: unarchive_rule, server: product-local, category: detection, rest: [RuleService_UnarchiveRule, RuleService_BatchUnarchiveRules], binding: direct, confidence: medium, gated: true}
+- {tool: update_asset, server: product-local, category: catalog, rest: [AssetService_UpdateAsset], binding: direct, confidence: medium, gated: true}
+- {tool: update_run, server: product-local, category: catalog, rest: [RunService_UpdateRun], binding: direct, confidence: medium, gated: true}
+- {tool: create_test_report, server: product-local, category: validation, rest: [TestReportService_CreateTestReport], binding: probable, confidence: low, note: 'TestReportService exists in the spec; the exact backing operation was not confirmed.'}
+- {tool: append_test_measurements, server: product-local, category: validation, rest: [], binding: unknown, confidence: low, note: 'No REST operation with a matching name was found in the spec. Likely a TestReportService or gRPC-side operation; recorded rather than guessed.'}
+- {tool: upload_dataset, server: product-local, category: ingest, rest: [DataImportService_CreateDataImportFromUploadV2], binding: probable, confidence: low, note: 'Sift describes this as streaming a computed series back into Sift as a dataset; the backing operation may be a gRPC ingest RPC rather than the REST import.'}
+- {tool: data/get_data, server: product-local, category: data, rest: [DataService_GetDataV2, DataService_GetData], binding: direct, confidence: medium, note: 'Named in the "Why the server runs locally" section — downloads channel data locally, typically to Parquet.'}
+mcp_only:
+- {tool: 'data/sql', reason: 'Runs SQL LOCALLY over data already downloaded with data/get_data. There is no Sift API operation behind it at all — it is compute the MCP server performs on the client machine, and it is the stated reason the product server is local rather than hosted. This is the single most important MCP-only capability in this provider.'}
+- {tool: search_sift, reason: 'Documentation search index; no API operation exists.'}
+- {tool: query_docs_filesystem_sift, reason: 'Virtualized docs filesystem; no API operation exists.'}
+- {tool: submit_feedback, reason: 'Docs feedback channel; no public API operation exists.'}
+rest_only_summary:
+  operations_total: 343
+  operations_with_a_named_tool: 15
+  note: >-
+    At least 328 REST operations have no tool named in the published MCP inventory. That number is a ceiling
+    on the gap, not a measurement of it — the docs publish only the gated and additive-write tools plus two
+    read tools, so the local server almost certainly exposes read tools for Assets, Runs, Channels, Reports,
+    Campaigns and Families that are simply not enumerated anywhere public. An authenticated tools/list
+    against `sift-cli mcp` is the only way to close this, and it needs a customer credential.
+  entirely_unrepresented_services:
+  - ExportService
+  - IngestionConfigService
+  - IngestService
+  - CalculatedChannelService
+  - FamilyService
+  - CampaignService
+  - WebhookService
+  - AutomationService
+  - PolicyService / RoleService / UserGroupService (governance)
+  - ExternalSyncService
+  - DlqErrorsService
+coverage:
+  mcp_tools_documented: 15
+  mapped_to_rest: 11
+  mcp_only: 4
+  rest_operations: 343
+  rest_operations_unmapped: 328
+  confidence: {high: 3, medium: 9, low: 3}

@@ -1,0 +1,36 @@
+generated: '2026-08-27'
+name: Sift Agent Skills
+note: >-
+  One provider-published skill saved verbatim, plus two generated skills grounded in operationIds that were
+  each verified present in openapi/sift-stack-openapi.json. Sift also ships a versioned SKILL.md inside the
+  sift-cli binary (`sift-cli agent install` writes it to ~/.claude/skills/sift and ~/.agents/skills/sift);
+  that file is distributed with the CLI, not served over HTTP, so it is referenced rather than captured.
+skills:
+- file: skills/sift-stack-sift.md
+  name: Sift
+  method: searched
+  source: https://docs.siftstack.com/.well-known/agent-skills/sift/skill.md
+  http_status: 200
+  content_type: text/markdown
+  note: >-
+    Provider-published, saved verbatim. Referenced by the A2A agent card (skills[0].url) and served as the
+    MCP resource mintlify://skills/sift. Covers ingest, rules, families, calculated channels, campaigns and
+    export, and documents the sift-cli command surface.
+- file: skills/sift-stack-run-telemetry-review.md
+  name: sift-run-telemetry-review
+  method: generated
+  source: openapi/sift-stack-openapi.json
+  operations: 11
+  note: Review a Run — preview rule evaluation, evaluate, read the Report, annotate; carries the archive/unarchive reversibility rules.
+- file: skills/sift-stack-ingest-and-export.md
+  name: sift-ingest-and-export
+  method: generated
+  source: openapi/sift-stack-openapi.json
+  operations: 20
+  note: Ingest by file import or gRPC streaming, watch the job, check the dead-letter queue, then export.
+external:
+- name: sift (bundled with sift-cli)
+  distribution: sift-cli agent install
+  clients: [Claude Code, Codex, Cursor, OpenCode]
+  docs: https://docs.siftstack.com/documentation/cli/sift-mcp
+  note: Not captured — shipped inside the CLI binary and versioned with the MCP server, not served over HTTP.

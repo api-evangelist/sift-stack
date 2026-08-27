@@ -1,0 +1,214 @@
+syntax = "proto3";
+
+package sift.assets.v1;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sift/metadata/v1/metadata.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {title: "Asset Service"}
+};
+
+service AssetService {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
+    description: "Service to programmatically interact with [assets](/glossary#asset)."
+    external_docs: {
+      url: "/data-model"
+      description: "Read more about what assets are."
+    }
+  };
+
+  // Delete will archive an asset.
+  // Deprecated: Use ArchiveAsset instead.
+  rpc DeleteAsset(DeleteAssetRequest) returns (DeleteAssetResponse) {
+    option deprecated = true;
+    option (google.api.http) = {delete: "/api/v1/assets/{asset_id}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "DeleteAsset"
+      description: "Deletes an asset."
+    };
+  }
+
+  // Creates a new, empty asset.
+  rpc CreateAsset(CreateAssetRequest) returns (CreateAssetResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/assets"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "CreateAsset"
+      description: "Creates a new, empty asset."
+    };
+  }
+
+  // Retrieves an asset.
+  rpc GetAsset(GetAssetRequest) returns (GetAssetResponse) {
+    option (google.api.http) = {get: "/api/v1/assets/{asset_id}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "GetAsset"
+      description: "Retrieves an asset."
+    };
+  }
+
+  // Retrieves assets using an optional filter.
+  rpc ListAssets(ListAssetsRequest) returns (ListAssetsResponse) {
+    option (google.api.http) = {get: "/api/v1/assets"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "ListAssets"
+      description: "Retrieves assets using an optional filter."
+    };
+  }
+
+  rpc UpdateAsset(UpdateAssetRequest) returns (UpdateAssetResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/assets"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "UpdateAsset"
+      description: "Update fields on an asset."
+    };
+  }
+
+  // Archive an asset.
+  rpc ArchiveAsset(ArchiveAssetRequest) returns (ArchiveAssetResponse) {
+    option (google.api.http) = {post: "/api/v1/assets/{asset_id}/archive"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "ArchiveAsset"
+      description: "Archives an asset."
+    };
+  }
+}
+
+message Asset {
+  string asset_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 2 [(google.api.field_behavior) = REQUIRED];
+  string organization_id = 4 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.Timestamp created_date = 5 [(google.api.field_behavior) = REQUIRED];
+  string created_by_user_id = 6 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.Timestamp modified_date = 7 [(google.api.field_behavior) = REQUIRED];
+  string modified_by_user_id = 8 [(google.api.field_behavior) = REQUIRED];
+
+  // The names of the tags associated with this asset.
+  repeated string tags = 9 [(google.api.field_behavior) = REQUIRED];
+
+  // The metadata values associated with this asset.
+  repeated sift.metadata.v1.MetadataValue metadata = 10 [(google.api.field_behavior) = REQUIRED];
+
+  // The date the asset was archived.
+  google.protobuf.Timestamp archived_date = 11 [(google.api.field_behavior) = OPTIONAL];
+
+  // Whether the asset is archived. This is inferred from whether archived_date is set.
+  bool is_archived = 12 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request for a call to `AssetService_ListAssets`.
+message ListAssetsRequest {
+  // The maximum number of assets to return.
+  // The service may return fewer than this value.
+  // If unspecified, at most 50 assets will be returned.
+  // The maximum value is 1000; values above 1000 will be coerced to 1000.
+  uint32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // A page token, received from a previous `ListAssets` call.
+  // Provide this to retrieve the subsequent page.
+  // When paginating, all other parameters provided to `ListAssets` must match
+  // the call that provided the page token.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+  // Available fields to filter by are `asset_id`, `created_by_user_id`, `modified_by_user_id`,
+  // `created_date`, `modified_date`, `name`, 'name_lower', `tag_id`, `tag_name`, 'archived_date', `is_archived`, and `metadata`. Metadata can be used in filters by using `metadata.{metadata_key_name}` as the field name.
+  // For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).
+  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // How to order the retrieved assets. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+  // Available fields to order_by are `name`, `created_date`, `modified_date` and `archived_date`.
+  // If left empty, items are ordered by `created_date` in descending order (newest-first).
+  // For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+  // Example: "created_date desc,modified_date"
+  string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The result of a call to `AssetService_ListAssets`.
+message ListAssetsResponse {
+  repeated Asset assets = 1;
+  string next_page_token = 5;
+}
+
+// The request for a call to `AssetService_DeleteAsset` to archive a single existing asset by its asset_id.
+// Deprecated: Use ArchiveAssetRequest instead.
+message DeleteAssetRequest {
+  // The id of the asset to be archived. Required.
+  string asset_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // If true, will archive all runs associated with the asset.
+  bool archive_runs = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The response of a call to `AssetService_DeleteAsset`.
+// Deprecated: Use ArchiveAssetResponse instead.
+message DeleteAssetResponse {}
+
+// The request for a call to `AssetService_CreateAsset` to create a single new, empty asset.
+message CreateAssetRequest {
+  // The name of the asset to create. Must be unique within the organization. Required.
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The names of the tags to associate with this asset. Optional.
+  repeated string tags = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // The metadata values to associate with this asset. Optional.
+  repeated sift.metadata.v1.MetadataValue metadata = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The response of a call to `AssetService_CreateAsset`.
+message CreateAssetResponse {
+  // The newly created asset.
+  Asset asset = 1;
+}
+
+// The request for a call to `AssetService_GetAsset` to retrieve a single existing asset by its asset_id.
+message GetAssetRequest {
+  // The id of the asset to be retrieved. Required.
+  string asset_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetAssetResponse {
+  Asset asset = 1;
+}
+
+// The request for a call to `AssetService_UpdateAsset` to update a single existing asset.
+message UpdateAssetRequest {
+  // The asset to update. The asset's `asset_id` field is used to identify asset run to update
+  // and is required.
+  Asset asset = 1;
+
+  // The list of fields to be updated. The fields available to be updated are `tags`, `metadata`, `archived_date`, and `is_archived`.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The response of a call to `AssetService_UpdateAsset`.
+message UpdateAssetResponse {
+  Asset asset = 1;
+}
+
+// The request for a call to `AssetService_ArchiveAsset` to archive a single existing asset by its asset_id.
+message ArchiveAssetRequest {
+  // The id of the asset to be archived. Required.
+  string asset_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // If true, will archive all runs associated with the asset.
+  bool archive_runs = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The response of a call to `AssetService_ArchiveAsset`.
+message ArchiveAssetResponse {
+  // List of run IDs that were archived when archive_runs was set to true.
+  // This field will be empty if archive_runs was false or if no runs were archived.
+  repeated string archived_run_ids = 1 [(google.api.field_behavior) = OPTIONAL];
+}

@@ -1,0 +1,140 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://docs.siftstack.com/documentation/manage/set-up-api-access (200),
+  https://docs.siftstack.com/documentation/reference/rule-settings (200),
+  https://docs.siftstack.com/documentation/reference/reports-reference (200),
+  https://docs.siftstack.com/documentation/reference/naming-rules (200),
+  read via the provider's own docs MCP server; cross-derived from openapi/sift-stack-openapi.json.
+name: Sift API conventions
+interface_styles: [grpc, rest]
+note: >-
+  The gRPC service definitions in grpc/ are the primary contract; the REST surface is a grpc-gateway
+  transcoding of the same services, which is why REST paths carry Google-AIP custom-verb syntax
+  (`:archive`, `:batchGet`, `:preview`) and why errors are gRPC-status shaped rather than problem+json.
+authentication:
+  style: api-key-as-bearer
+  transport_rest: 'authorization: Bearer <api key> HTTP header'
+  transport_grpc: 'authorization: Bearer <api key> call metadata'
+  scopes: none
+  note: >-
+    Keys are user-associated and inherit that user's permissions; they never expire unless deleted, and the
+    value is shown once at creation. One key per environment. There is no OAuth flow, so scopes/ is not
+    applicable for this provider.
+  docs: https://docs.siftstack.com/documentation/manage/set-up-api-access
+versioning:
+  style: path
+  versions_in_use: [v1, v2, v3]
+  example: /api/v1/annotations, /api/v2/runs, /api/v3/channels
+  note: >-
+    Versions are per-service, not global — Channels is on v3, Runs and Me on v2, most services on v1, and
+    several services expose both a v1 and a v2 operation simultaneously (e.g. DataService_GetData and
+    DataService_GetDataV2). A client cannot assume one version prefix across the API.
+pagination:
+  style: page-token
+  request_params: [pageSize, pageToken, filter, orderBy]
+  response_field: nextPageToken
+  default_page_size: 50
+  max_page_size: 1000
+  operations_with_pagination: 77
+  rules:
+  - Values above the maximum are coerced down rather than rejected.
+  - Every parameter other than pageToken must match the call that issued the token.
+  - Default ordering is created_date descending when orderBy is empty.
+  agent_note: >-
+    The MCP server applies a tighter default of 50 capped at 200, deliberately below the API default, to
+    protect an agent's context window.
+filtering:
+  style: cel
+  spec: https://github.com/google/cel-spec
+  param: filter
+  operations_with_filter: 74
+  note: >-
+    `filter` is a Common Expression Language string, not a bespoke query DSL. Each list operation documents
+    its own filterable field set in the operation description. `orderBy` follows Google AIP-132 comma-separated
+    "FIELD_NAME[ desc]" form.
+archived_records:
+  param: includeArchived
+  default: false
+  note: Archived entities are excluded from list results unless includeArchived=true is passed.
+idempotency:
+  supported: false
+  header: null
+  status: not-documented
+  note: >-
+    Sift documents NO idempotency-key protocol — there is no Idempotency-Key header, no replay window and no
+    stated replay semantics, and this artifact deliberately emits no Idempotency pointer. What exists instead
+    is `client_key`: a client-supplied identifier that is "immutable after creation" on Rules, Calculated
+    Channels, Families, Campaigns and Runs, and which several services accept in place of a server id
+    (e.g. GET /v2/organizations/{organizationId}/calculated-channels/{clientKey}). That makes creates
+    addressable and de-duplicable by the caller, but it is an external-key/upsert mechanism, not a
+    guaranteed-safe request replay. Batch operations ARE documented atomic — "Batch[Verb]Rules requests are
+    atomic: if any Rule in the request fails, Sift does not apply the request to any Rule in that batch."
+  partial_mechanisms:
+  - {name: client_key, kind: client-supplied immutable external key, scope: 'rules, calculated channels, families, campaigns, runs'}
+  - {name: batch atomicity, kind: all-or-nothing batch semantics, scope: 'Batch[Verb]Rules', source: https://docs.siftstack.com/documentation/reference/rule-settings}
+  - {name: safe retry on exhaustion, kind: 'the API states a 429 / RESOURCE_EXHAUSTED request was not processed and retry has no unintended side effects', source: https://docs.siftstack.com/documentation/manage/set-up-api-access}
+dry_run_mode:
+  supported: true
+  status: verified
+  mechanisms:
+  - {operationId: RuleEvaluationService_EvaluateRulesPreview, path: 'POST /api/v1/rules/evaluate-rules:preview', returns: v1DryRunAnnotation, note: 'Returns the annotations rule evaluation WOULD produce, without creating them.'}
+  - {operationId: PrincipalAttributeService_CheckPrincipalAttributeKeyArchiveImpact, note: 'Reports what archiving a key would affect before the archive is performed.'}
+  - {operationId: ResourceAttributeService_CheckResourceAttributeKeyArchiveImpact, note: 'Same, for resource attributes.'}
+  - {kind: validators, note: 'Nine Validate* operations let a caller check an input before committing it — ValidateExpression, ValidateJsonRules, ValidatePolicy, ValidateUserDefinedFunction, ValidateRunFilter, ValidateFamilyName, ValidateFamilyClientKey.'}
+  - {kind: cli, command: 'sift-cli import --preview', note: 'CLI dry run for file import.'}
+reversibility:
+  grade: documented
+  grade_basis: >-
+    A reversal path is documented for the archive family and for in-flight jobs, but Sift publishes NO
+    retention or restore window for any of them, so this cannot be graded verified. Never tell a user how
+    long they have to undo a Sift archive — the number is not published.
+  write_surface: true
+  operations:
+  - {action: archive an Annotation, reversal: AnnotationService_UnarchiveAnnotation, batch_reversal: AnnotationService_BatchUnarchiveAnnotations, window: not-published}
+  - {action: archive a Rule, reversal: RuleService_UnarchiveRule, batch_reversal: RuleService_BatchUnarchiveRules, window: not-published}
+  - {action: delete a Rule, reversal: RuleService_BatchUndeleteRules, window: not-published, note: 'Rules are the only entity in the spec with an undelete; every other DELETE is terminal.'}
+  - {action: archive Channels, reversal: ChannelService_BatchUnarchiveChannels, window: not-published}
+  - {action: archive a Policy, reversal: PolicyService_UnarchivePolicy, window: not-published}
+  - {action: archive Metadata keys/values, reversal: 'MetadataService_UnarchiveMetadataKeys / MetadataService_UnarchiveMetadataValues', window: not-published}
+  - {action: archive Principal/Resource attributes, reversal: 'PrincipalAttributeService_Unarchive* / ResourceAttributeService_Unarchive* (11 operations)', window: not-published}
+  - {action: run a Report, reversal: ReportService_CancelReport, window: 'while the report is still running', note: 'ReportService_RerunReport re-executes rather than reverses.'}
+  - {action: run a Job (import/export), reversal: JobService_CancelJob, window: 'while the job is in flight', note: JobService_RetryJob for the failure case.}
+  - {action: start a streaming Run, reversal: RunService_StopRun, window: 'while the run is open'}
+  counts: {archive_operations: 21, unarchive_operations: 20, delete_operations: 24, undelete_operations: 1}
+  caveats:
+  - 'Reports "can be archived but not deleted. Archiving removes a Report from the default view without destroying its data." (reports-reference)'
+  - 'Uniqueness constraints apply only to non-archived entities, so a name freed by archiving can be taken by a new entity — an unarchive is therefore not guaranteed to restore cleanly into the same namespace. (naming-rules#name-reuse-after-archiving)'
+  - 'Ingestion has no single reversal operation; unwinding an import means archiving or deleting the Channels, Run or Asset it created.'
+  - 'The MCP integration treats update_* and archive/unarchive as destructive and gates them behind --allow-destructive, defaulting agents to read-only.'
+error_envelope:
+  format: grpc-status
+  media_type: application/json
+  schema: rpcStatus
+  fields: [code, message, 'details[] (google.protobuf.Any)']
+  rfc9457: false
+  note: >-
+    Every one of the 343 REST operations declares exactly two responses — 200 and `default` — and the
+    default body is rpcStatus. HTTP status granularity is produced by the grpc-gateway status mapping, not
+    declared per-operation in the spec, so the spec cannot tell a client which 4xx codes an operation emits.
+rate_limit_signaling:
+  documented: true
+  headers_published: false
+  rest_status: 429
+  grpc_status: RESOURCE_EXHAUSTED
+  see: rate-limits/sift-stack-rate-limits.yml
+metadata:
+  supported: true
+  note: Free-form organisation-scoped metadata keys/values attachable to resources, with archive semantics; see MetadataService and ResourceAttributeService.
+request_id_tracing:
+  documented: false
+  note: No request-id or correlation header is documented in the API access docs or declared in the spec.
+webhooks:
+  supported: true
+  see: asyncapi/sift-stack-webhooks.yml
+cross_links:
+  errors: errors/sift-stack-problem-types.yml
+  lifecycle: lifecycle/sift-stack-lifecycle.yml
+  authentication: authentication/sift-stack-authentication.yml
+  rate_limits: rate-limits/sift-stack-rate-limits.yml
+  data_model: data-model/sift-stack-data-model.yml

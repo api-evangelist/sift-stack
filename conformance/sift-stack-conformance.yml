@@ -1,0 +1,65 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://www.siftstack.com/trust-and-security (200), https://www.siftstack.com/fedramp (200),
+  https://www.siftstack.com/llms.txt (200), https://docs.siftstack.com/documentation/manage/set-up-api-access (200),
+  https://docs.siftstack.com/documentation/reference/supported-file-formats (200),
+  and openapi/sift-stack-openapi.json + grpc/.
+name: Sift standards conformance
+compliance_program:
+  monitoring_vendor: Vanta
+  note: >-
+    Sift states reports are available through a Vanta portal on request. No public trust-center URL
+    (trust.siftstack.com did not resolve — curl exit 6, no DNS), so certifications are asserted on the
+    marketing page rather than served from an evidence portal.
+certifications:
+- {id: soc-2-type-ii, name: SOC 2 Type II, conforms: true, evidence: '"Sift is SOC 2 Type II certified, ensuring compliance with AICPA standards for security, availability, and confidentiality" — https://www.siftstack.com/trust-and-security'}
+- {id: nist-sp-800-171, name: NIST SP 800-171, conforms: true, evidence: '"Sift meets all 110 security controls of NIST SP 800-171, protecting Controlled Unclassified Information (CUI)" — https://www.siftstack.com/trust-and-security'}
+- {id: itar, name: ITAR, conforms: true, evidence: '"Sift is ITAR-compliant, adhering to U.S. Department of State regulations that protect defense-related data and technologies" — https://www.siftstack.com/trust-and-security; described as ITAR-registered in https://www.siftstack.com/llms.txt'}
+- {id: fedramp, name: FedRAMP, conforms: partial, evidence: '"Sift meets FedRAMP security requirements for federal cloud systems" — https://www.siftstack.com/trust-and-security; dedicated page at https://www.siftstack.com/fedramp (200). Recorded as partial: the wording is "meets requirements", not an authorization, and no FedRAMP Marketplace package ID or authorization date is published.'}
+- {id: cmmc-level-2, name: CMMC Level 2, conforms: false, evidence: 'The trust page describes a PATH to CMMC Level 2 certification, not a certification. The marketing llms.txt separately says "CMMC2 ... compliant". Recorded false because the more specific of the two claims describes it as not yet certified.'}
+deployment_assurance:
+- {id: aws-govcloud, name: AWS GovCloud (US), conforms: true, evidence: 'https://www.siftstack.com/trust-and-security — "a secure, isolated environment designed for sensitive and regulated data"; the OpenAPI declares a second server https://gov.api.siftstack.com labelled "Gov".'}
+- {id: airgapped-onprem, name: Airgapped / on-premises deployment, conforms: true, evidence: 'https://www.siftstack.com/llms.txt and https://www.siftstack.com/trust-and-security'}
+security_practices:
+- {id: encryption-in-transit-and-at-rest, conforms: true, evidence: 'https://www.siftstack.com/trust-and-security — "encryption of sensitive data at rest and in transit"'}
+- {id: penetration-testing, conforms: true, evidence: 'https://www.siftstack.com/trust-and-security — "regular penetration testing"'}
+- {id: mfa, conforms: true, evidence: 'https://www.siftstack.com/trust-and-security'}
+- {id: sso-idp, conforms: true, evidence: 'https://docs.siftstack.com/documentation/manage/connect-an-identity-provider (identity provider connection is documented)'}
+- {id: rbac, conforms: true, evidence: 'RoleService, PolicyService, UserGroupService, PrincipalAttributeService and ResourceAttributeService in openapi/sift-stack-openapi.json; https://docs.siftstack.com/documentation/manage/set-up-data-access-governance'}
+- {id: audit-logging, conforms: true, evidence: 'https://www.siftstack.com/platform#governance — "RBAC, fine-grained access policies, and audit logging"'}
+api_standards:
+- {id: openapi, conforms: true, version: 3.0.0, evidence: 'openapi/sift-stack-openapi.json served at https://docs.siftstack.com/openapi.json'}
+- {id: grpc, conforms: true, evidence: '66 .proto files, 51 services, 330 RPCs published under MIT at https://github.com/sift-stack/sift/tree/main/protos'}
+- {id: protobuf, conforms: true, version: proto3, evidence: 'grpc/ — every service definition is proto3'}
+- {id: mcp, conforms: true, evidence: 'Remote server at https://docs.siftstack.com/mcp (protocolVersion 2025-06-18, probed 200) plus a local-stdio product server in sift-cli; manifest at /.well-known/mcp.json'}
+- {id: a2a, conforms: true, version: '0.3', evidence: 'https://docs.siftstack.com/.well-known/agent-card.json (200); graded conformant in a2a/sift-stack-a2a.yml'}
+- {id: agent-skills, conforms: true, evidence: 'https://docs.siftstack.com/.well-known/agent-skills/sift/skill.md (200, text/markdown)'}
+- {id: llmstxt, conforms: true, evidence: 'https://docs.siftstack.com/llms.txt and https://www.siftstack.com/llms.txt both 200'}
+- {id: cel, conforms: true, name: 'Common Expression Language (google/cel-spec)', evidence: 'The `filter` parameter on 74 operations is documented as a CEL string linking to https://github.com/google/cel-spec; Rules are CEL expressions.'}
+- {id: google-aip, conforms: true, name: Google API Improvement Proposals, evidence: 'orderBy documented against AIP-132 form; pageSize/pageToken pagination; custom-verb REST paths (:archive, :batchGet, :preview) consistent with AIP-136 — a consequence of the grpc-gateway transcoding.'}
+- {id: oauth2, conforms: false, evidence: 'The spec declares one securityScheme, http/bearer (JWT-format API key). No OAuth flow, no scopes, and /.well-known/oauth-authorization-server 404s on the docs host and 401s on the API host.'}
+- {id: rfc9457, conforms: false, evidence: 'Errors are google.rpc.Status (rpcStatus), not application/problem+json. See errors/sift-stack-problem-types.yml.'}
+- {id: rfc8594, conforms: false, name: 'Sunset / Deprecation headers', evidence: 'No Sunset or Deprecation header is documented or declared; deprecation appears only in field descriptions.'}
+- {id: asyncapi, conforms: false, evidence: 'Webhooks and gRPC streaming exist but no AsyncAPI document is published. See asyncapi/sift-stack-webhooks.yml.'}
+- {id: rfc9116, conforms: false, name: security.txt, evidence: '/.well-known/security.txt returned 404 on docs.siftstack.com and www.siftstack.com. A SECURITY.md exists in the GitHub monorepo instead.'}
+data_format_standards:
+- {id: parquet, conforms: true, role: 'import and export'}
+- {id: hdf5, conforms: true, role: import}
+- {id: tdms, conforms: true, role: import, note: 'National Instruments TDMS — the incumbent format in test-stand data acquisition.'}
+- {id: ulog, conforms: true, role: import, note: 'PX4 flight logs, added 2026-08; the closest thing to a domain standard in Sift''s market.'}
+- {id: csv, conforms: true, role: 'import and export'}
+- {id: influxdb-line-protocol, conforms: true, role: ingest, evidence: 'https://www.siftstack.com/llms.txt names ILP among supported ingestion formats.'}
+- {id: mqtt, conforms: true, role: ingest, evidence: 'https://www.siftstack.com/llms.txt names MQTT among supported ingestion formats.'}
+domain_standard:
+  declared: false
+  note: >-
+    REWARD-ONLY AND HONESTLY EMPTY. Sift's market — mission-critical hardware telemetry for aerospace,
+    defense, energy, robotics and autonomous vehicles — has no single interchange standard that a contract
+    can declare the way a health API declares FHIR or an identity API declares a SCIM schema URN. Nothing in
+    the contract or the docs declares CCSDS, MCAP, Sparkplug, OPC UA, ASAM ODS or any comparable domain
+    schema, and none was invented to fill the slot. What Sift does implement instead is a set of adjacent
+    format and expression standards — ULog, TDMS, HDF5, Parquet, InfluxDB line protocol, MQTT, Protocol
+    Buffers, CEL — recorded above under data_format_standards and api_standards.
+  probed_for: [ccsds, mcap, sparkplug, opc-ua, asam-ods, ros-bag, iso-20022, scim, odata, openrtb, activitypub, oai-pmh]
+  probe_note: 'Full-text search across the entire documentation corpus via the provider''s own docs MCP returned no hit for CCSDS, MCAP or Sparkplug.'

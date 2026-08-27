@@ -1,0 +1,72 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://docs.siftstack.com/documentation/manage/set-up-api-access (HTTP 200),
+  https://docs.siftstack.com/api/authenticate (HTTP 200),
+  https://docs.siftstack.com/documentation/manage/connect-an-identity-provider (HTTP 200),
+  https://docs.siftstack.com/documentation/manage/set-up-data-access-governance (HTTP 200);
+  scheme derived from openapi/sift-stack-openapi.json.
+docs: https://docs.siftstack.com/documentation/manage/set-up-api-access
+name: Sift authentication
+summary:
+  types: [http]
+  model: api-key-as-bearer
+  oauth2: false
+  scopes: false
+  mtls: false
+  openid_connect_for_api: false
+schemes:
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  applied: global
+  sources: [openapi/sift-stack-openapi.json]
+  description: >-
+    A Sift API key. Despite bearerFormat: JWT the credential is a long-lived issued key, not a token
+    obtained from an authorization server — there is no token endpoint and no refresh flow.
+credential:
+  kind: api-key
+  binding: user
+  lifetime: indefinite
+  revocation: 'delete the key (ApiKeyService_DeleteApiKey, or Manage -> API Keys in the app)'
+  retrievable_after_creation: false
+  rotation_policy: none-published
+  environment_scoped: true
+  notes:
+  - 'Keys are user-associated and inherit the permissions of the user they are attached to — there is no service-account or machine identity with its own permission set.'
+  - 'The value is displayed once at creation and cannot be retrieved later; lose it and you issue a new one.'
+  - 'Each environment (production, GovCloud, on-prem) requires its own key. Keys are not portable across environments.'
+  - 'Keys can be created and managed programmatically via ApiKeyService as well as in the UI.'
+transport:
+  rest: 'authorization: Bearer <api key> HTTP header'
+  grpc: 'authorization: Bearer <api key> call metadata'
+  note: One credential, one header name, both transports — a genuinely simple story for an agent.
+authorization:
+  model: rbac-plus-policy
+  roles_api: RoleService
+  policies_api: PolicyService
+  groups_api: UserGroupService
+  attributes_api: [PrincipalAttributeService, ResourceAttributeService]
+  docs: https://docs.siftstack.com/documentation/manage/set-up-data-access-governance
+  note: >-
+    Authorization is NOT expressed in the credential. There are no scopes on the token, so an agent cannot
+    reduce its own blast radius by requesting a narrower credential — the only lever is which user the key is
+    attached to. Fine-grained control lives server-side in roles, data-access policies and principal/resource
+    attributes. This is why the bundled MCP integration implements its own client-side write gate
+    (--read-only by default, --allow-destructive to enable mutating tools) rather than relying on token scope.
+human_sso:
+  supported: true
+  docs: https://docs.siftstack.com/documentation/manage/connect-an-identity-provider
+  note: Identity-provider connection for human console access; unrelated to API credentials.
+oauth_metadata_probes:
+- {url: 'https://docs.siftstack.com/.well-known/oauth-authorization-server', status: 404}
+- {url: 'https://docs.siftstack.com/.well-known/openid-configuration', status: 404}
+- {url: 'https://www.siftstack.com/.well-known/oauth-authorization-server', status: 404}
+- {url: 'https://api.siftstack.com/.well-known/oauth-authorization-server', status: 401}
+- {url: 'https://api.siftstack.com/.well-known/openid-configuration', status: 401}
+scopes_artifact: 'not applicable — no OAuth flow, so scopes/ is deliberately not emitted'
+gaps:
+- 'No key rotation policy, no expiry, no last-used telemetry documented.'
+- 'No scoped or least-privilege credential: a key is as powerful as its user.'
+- 'No mTLS option documented for the SaaS endpoints despite an ITAR/CUI customer base.'

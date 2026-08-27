@@ -1,0 +1,127 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Sift API
+  version: 1.0.0
+extends: ../openapi/sift-stack-openapi.json
+x-generated: '2026-08-27'
+x-method: generated
+x-source: >-
+  Derived from artifacts in this repository — conventions/sift-stack-conventions.yml,
+  errors/sift-stack-problem-types.yml, rate-limits/sift-stack-rate-limits.yml,
+  authentication/sift-stack-authentication.yml, lifecycle/sift-stack-lifecycle.yml,
+  asyncapi/sift-stack-webhooks.yml — plus the provider docs each of those cites. The original
+  openapi/sift-stack-openapi.json is never mutated.
+x-note: >-
+  These actions add the runtime semantics Sift documents in prose but does not carry in the contract:
+  contact/licence/description on info, external docs, per-service tag descriptions, the rate-limit and
+  dry-run/reversibility annotations, and the tightened server descriptions. Nothing here invents behaviour —
+  every value traces to a cited Sift page.
+actions:
+- target: $.info
+  description: Add the identity, contact, licence and description the served spec omits.
+  update:
+    description: >-
+      Sift is a unified observability platform for mission-critical hardware telemetry. This REST surface is
+      a grpc-gateway transcoding of the gRPC services published at github.com/sift-stack/sift; the .proto
+      files are the primary contract. Authentication is a user-associated API key sent as a bearer token.
+      Errors are google.rpc.Status shaped. Lists use pageSize/pageToken with CEL `filter` and AIP-132
+      `orderBy`.
+    termsOfService: https://www.siftstack.com/termsandconditions
+    contact:
+      name: Sift Support
+      url: https://customer.support.siftstack.com/servicedesk/customer/portal/2
+    license:
+      name: MIT
+      url: https://github.com/sift-stack/sift/blob/main/LICENSE
+    x-api-evangelist:
+      provider: Sift Stack
+      docs: https://docs.siftstack.com
+      grpc_contract: https://github.com/sift-stack/sift/tree/main/protos
+      mcp_remote: https://docs.siftstack.com/mcp
+      agent_card: https://docs.siftstack.com/.well-known/agent-card.json
+      agent_skill: https://docs.siftstack.com/.well-known/agent-skills/sift/skill.md
+- target: $
+  description: Add external documentation.
+  update:
+    externalDocs:
+      description: Sift documentation
+      url: https://docs.siftstack.com/documentation/home
+    x-rate-limits:
+      documented: true
+      values_published: false
+      scopes: [per-organization, per-endpoint]
+      exhaustion_rest: 429
+      exhaustion_grpc: RESOURCE_EXHAUSTED
+      safe_to_retry: true
+      response_headers: none
+      source: https://docs.siftstack.com/documentation/manage/set-up-api-access
+    x-idempotency:
+      header: null
+      supported: false
+      alternative: 'client_key — a client-supplied identifier, immutable after creation, on Rules, Calculated Channels, Families, Campaigns and Runs. Not a replay-safe idempotency token.'
+      batch_atomicity: 'Batch[Verb]Rules requests are atomic.'
+      source: https://docs.siftstack.com/documentation/reference/rule-settings
+    x-pagination:
+      style: page-token
+      params: [pageSize, pageToken, filter, orderBy]
+      default_page_size: 50
+      max_page_size: 1000
+      filter_language: 'CEL (https://github.com/google/cel-spec)'
+    x-error-envelope:
+      schema: rpcStatus
+      format: grpc-status
+      rfc9457: false
+      note: 'Every operation declares only 200 and `default`; 4xx granularity comes from the grpc-gateway status mapping. See errors/sift-stack-problem-types.yml.'
+    x-webhooks:
+      events: [WEBHOOK_EVENT_TYPE_RULE_VIOLATION]
+      signature: 'HMAC-SHA256 over sent_at + raw_payload, header X-Sift-Signature, opt-in'
+      constraint: 'Fires only on LIVE rule evaluation, never on historical replay.'
+      see: asyncapi/sift-stack-webhooks.yml
+- target: $.servers
+  description: Describe what each server actually is.
+  update:
+  - url: https://api.siftstack.com
+    description: 'Production (commercial SaaS). REST base; the gRPC base is the same host.'
+  - url: https://gov.api.siftstack.com
+    description: 'AWS GovCloud (US) environment for regulated/CUI workloads. Requires a separate API key — keys are not portable between environments.'
+- target: $.components.securitySchemes.BearerAuth
+  description: Explain that the bearer token is an API key, not an OAuth access token.
+  update:
+    description: >-
+      A Sift API key sent as `authorization: Bearer <key>`. Keys are user-associated and inherit that
+      user's permissions, never expire unless deleted, and the value is displayed once at creation. For gRPC
+      the same header is passed as call metadata. There is no OAuth flow and there are no scopes — authorization
+      is governed by roles and data-access policies, not by token scope. One key per environment.
+    x-docs: https://docs.siftstack.com/documentation/manage/set-up-api-access
+- target: $.paths['/api/v1/rules/evaluate-rules:preview'].post
+  description: Flag the dry-run operation so an agent can find it.
+  update:
+    x-dry-run: true
+    x-dry-run-for: RuleEvaluationService_EvaluateRules
+    x-agent-note: 'Rehearsal path — returns the annotations evaluation WOULD produce (v1DryRunAnnotation) without creating them. Prefer this before RuleEvaluationService_EvaluateRules.'
+- target: $.paths['/api/v1/annotations/{annotationId}:archive'].post
+  description: Record the reversal path for archiving an annotation.
+  update:
+    x-reversible-by: AnnotationService_UnarchiveAnnotation
+    x-reversal-window: not-published
+    x-agent-note: 'Archive is a soft delete. The reversal exists but Sift publishes no restore window — do not promise the user one.'
+- target: $.paths['/api/v1/rules/archive'].post
+  description: Record the reversal path for archiving a rule.
+  update:
+    x-reversible-by: RuleService_UnarchiveRule
+    x-reversal-window: not-published
+- target: $.tags[?(@.name=='IngestService')]
+  description: Note that the REST projection is not the real ingest path.
+  update:
+    description: >-
+      High-frequency telemetry ingestion. The production path is gRPC bidirectional streaming
+      (sift.ingest.v1); the REST transcoding here is not a substitute for it. Use the Python or Rust client.
+    externalDocs:
+      url: https://docs.siftstack.com/documentation/ingest
+- target: $.tags[?(@.name=='WebhookService')]
+  update:
+    description: >-
+      Outbound webhook configuration and delivery logs. One event type (Rule Violation), fired only on live
+      rule evaluation. Signing is opt-in via a rotatable signature key.
+    externalDocs:
+      url: https://docs.siftstack.com/documentation/reference/manage/webhooks-settings

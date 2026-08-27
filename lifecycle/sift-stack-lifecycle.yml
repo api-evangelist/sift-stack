@@ -1,0 +1,68 @@
+generated: '2026-08-27'
+method: searched
+source: https://status.siftstack.com (200), https://docs.siftstack.com/changelog (200), https://docs.siftstack.com/release-notes/overview
+  (200), https://github.com/sift-stack/sift/releases (200), openapi/sift-stack-openapi.json.
+name: Sift API lifecycle
+status_page:
+  url: https://status.siftstack.com
+  http_status: 200
+  provider: hosted status page (title "Sift Status")
+  note: Verified live 2026-08-27.
+changelog:
+  product: https://docs.siftstack.com/changelog
+  release_notes: https://docs.siftstack.com/release-notes/overview
+  client_releases: https://github.com/sift-stack/sift/releases
+  see: changelog/sift-stack-changelog.yml
+versioning:
+  scheme: path-per-service
+  policy_published: false
+  note: Versions are carried in the path and are per-service (v1, v2, v3 coexist across the same API).
+    Sift publishes no written API versioning policy, no stated support window per version, and no migration
+    guide for moving between service versions — the versions are simply present in the reference. Client
+    libraries version independently (Python 0.20.0, Rust 0.11.0, CLI 0.4.4, Go v0.4.0).
+deprecation:
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  mechanism: in-spec field/enum notes
+  note: 'There is no deprecation policy page, no RFC 8594 Sunset/Deprecation header, and no announced
+    end-of-life dates. Deprecation is signalled inside the contract itself, in field and enum descriptions,
+    and only for fields — no operation in the spec carries `deprecated: true`. This is a real but weak
+    signal: a client only learns a field is going away by reading the description of the field it is already
+    using.'
+  examples:
+  - location: CalculatedChannelConfig / rules[].conditions[].expression.singleChannelComparison
+    text: Deprecated - use CalculatedChannelConfig.
+  - location: rules[].contextualChannels.channels[].component
+    text: Deprecated - use name instead. If provided, name will be joined with the component as `component.name`.
+  - location: ListResolvedCalculatedChannels / ResolveCalculatedChannel / ValidateExpression
+    text: This is deprecated and should be passed in expression_channel_references instead.
+  - location: ApiKeyService_CreateApiKey
+    text: existing clients and may be marked deprecated in a future revision.
+  forward_compatibility_note: The contract does state a forward-compatibility convention on enums — new
+    enum values may be added "without a breaking change", and the reference repeats an "…breaking changes."
+    caution on 300+ operation pages. Clients must treat unknown enum values as tolerable rather than fatal.
+  deprecated_operations: 0
+sla:
+  published: false
+  note: No public SLA or uptime commitment was found on siftstack.com or docs.siftstack.com; commercial
+    terms are at https://www.siftstack.com/termsandconditions.
+support:
+  portal: https://customer.support.siftstack.com/servicedesk/customer/portal/2
+  public: false
+  http_status: 404
+  note: 'Jira Service Management portal named in https://github.com/sift-stack/sift SECURITY.md as the
+    destination for bug and vulnerability reports. Verified 2026-08-27: it returns a real 404 to anonymous
+    callers at every path including the host root, so it is customer-only. Sift publishes no public support
+    or contact page anywhere in its 172-URL sitemap — the only public routes in are the weekly demo signup
+    and the GitHub repositories. The Support pointer was therefore removed from apis.yml rather than left
+    asserting a page the public cannot reach.'
+maturity:
+  api_versions_live:
+  - v1
+  - v2
+  - v3
+  operations: 343
+  grpc_rpcs: 330
+  beta_features_flagged_in_release_notes: true

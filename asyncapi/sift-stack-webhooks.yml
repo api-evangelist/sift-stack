@@ -1,0 +1,91 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://docs.siftstack.com/documentation/reference/manage/webhooks-settings (HTTP 200),
+  https://docs.siftstack.com/documentation/manage/get-alerted-when-a-limit-is-breached (HTTP 200),
+  https://docs.siftstack.com/api/reference/protocol-buffers/webhooks (HTTP 200), and the WebhookService
+  operations + v1Webhook* schemas in openapi/sift-stack-openapi.json. Read via the provider's docs MCP 2026-08-27.
+name: Sift webhooks
+asyncapi_published: false
+asyncapi_note: >-
+  Sift publishes NO AsyncAPI document. It has two genuine event surfaces — outbound HTTP webhooks (below)
+  and gRPC bidirectional streaming ingest (sift.ingest.v1) — and neither is described by an event contract.
+  Nothing was fabricated to fill the gap; this file is the webhook catalog, emitted as type Webhooks.
+transport: https-post
+delivery: at-least-once
+event_count: 1
+events:
+- name: Rule Violation
+  enum: WEBHOOK_EVENT_TYPE_RULE_VIOLATION
+  description: >-
+    Fires each time a Rule associated with the webhook is violated OR resolved during live data ingestion.
+    Violation and resolution are two separate events distinguished by the Status variable.
+  statuses: [violated, resolved]
+  variables:
+  - {name: '{{.RuleName}}', type: string}
+  - {name: '{{.Status}}', type: 'enum: violated | resolved'}
+  - {name: '{{.WebhookId}}', type: string}
+  - {name: '{{.EventId}}', type: string}
+  - {name: '{{.RuleId}}', type: string}
+  - {name: '{{.RuleVersion}}', type: number}
+  - {name: '{{.AssetName}}', type: string}
+  - {name: '{{.RunId}}', type: string}
+  - {name: '{{.SentAt}}', type: 'string (RFC3339)'}
+constraint: >-
+  IMPORTANT — "Webhooks only fire during live Rule evaluations and do not execute when Rules are run on
+  historical data." A backfill or a rerun of an existing Report produces no webhook traffic.
+correlation:
+  documented: true
+  note: >-
+    Sift documents the correlation trap explicitly: violation and resolution events for the same occurrence
+    each carry their OWN EventId, so they cannot be correlated by EventId or by a deduplication_key derived
+    from it. Both are tied to the same underlying Annotation — the violation opens it, the resolution closes
+    it — so a consumer must key off the Annotation together with Status.
+payload:
+  customizable: true
+  formats: [text, json]
+  templating: 'Go text/template style — built-in variables plus if/else control flow'
+  prebuilt_templates: [Slack, OpsGenie, Jira, PagerDuty]
+  note: There is no fixed payload schema. The body is whatever the customer's template renders, which means a consumer's contract is per-webhook rather than per-provider.
+security:
+  signature: true
+  algorithm: HMAC-SHA256
+  header: X-Sift-Signature
+  formula: HMAC_SHA256(signing_key, sent_at + raw_payload)
+  conditional: true
+  caveats:
+  - 'Signing is OPT-IN and off by default: "Webhooks are only signed if your Sift environment has a webhook signing key configured. If no signing key exists, webhooks will not include an X-Sift-Signature header and should not be trusted for secure operations."'
+  - 'The signature covers sent_at + raw_payload, and sentAt is NOT added automatically — the customer must place {{.SentAt}} in the payload template or verification fails. A signed webhook can therefore be unverifiable through template misconfiguration alone.'
+  destination_requirement: Destination URL must be a valid HTTPS URL.
+  custom_headers: 'Arbitrary key/value HTTP headers may be attached; the Authorization header value is obfuscated in the UI and encrypted at rest.'
+management_api:
+  service: WebhookService
+  operations:
+  - {operationId: WebhookService_ListWebhooks, method: GET, path: /api/v1/webhooks}
+  - {operationId: WebhookService_CreateWebhook, method: POST, path: /api/v1/webhooks}
+  - {operationId: WebhookService_UpdateWebhook, method: PATCH, path: /api/v1/webhooks}
+  - {operationId: WebhookService_GetWebhook, method: GET, path: '/api/v1/webhooks/{webhookId}'}
+  - {operationId: WebhookService_TestWebhook, method: POST, path: /api/v1/webhooks:test}
+  - {operationId: WebhookService_ListWebhookLogs, method: GET, path: /api/v1/webhooks/logs}
+  - {operationId: WebhookService_BatchCreateWebhookLogs, method: POST, path: /api/v1/webhooks/logs:batch-create}
+  - {operationId: WebhookService_GetWebhookSignatureKey, method: GET, path: /api/v1/webhooks/signature-key}
+  - {operationId: WebhookService_CreateWebhookSignatureKey, method: POST, path: /api/v1/webhooks/signature-key}
+  - {operationId: WebhookService_RotateWebhookSignatureKey, method: PUT, path: /api/v1/webhooks/signature-key}
+  - {operationId: WebhookService_ToggleWebhookSignatureKeyActivation, method: PATCH, path: /api/v1/webhooks/signature-key}
+  note: Signature keys are first-class and rotatable through the API, which is unusual and worth noting — most providers make key rotation a console-only action.
+observability:
+  delivery_log: true
+  schema: v1WebhookLog
+  fields: [webhookLogId, webhookId, eventId, organizationId, status, payload, retryAttemptNumber, errorReason, sentDate]
+  note: Retry attempts are recorded per delivery (retryAttemptNumber) with an errorReason, so a consumer can audit failures. The retry schedule itself is not published.
+streaming_surface:
+  protocol: gRPC
+  service: sift.ingest.v1
+  proto: grpc/sift/ingest/v1/ingest.proto
+  direction: inbound (client streams telemetry to Sift)
+  note: >-
+    Sift's high-volume event path is inbound gRPC streaming ingest, not outbound events. It is described by
+    the .proto contract in grpc/, not by AsyncAPI, and is not expressible over the REST transcoding.
+rbac:
+  admin_editor: Create, view and edit webhooks
+  collaborator_viewonly: View-only

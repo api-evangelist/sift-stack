@@ -1,18 +1,117 @@
 aid: sift-stack
 name: Sift Stack
-description: 'Sift Stack is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'Sift (siftstack.com) is a unified observability platform for mission-critical hardware —
+  the telemetry layer for rockets, aircraft, robots, energy systems and autonomous vehicles. Founded by
+  former SpaceX engineers Austin Spiegel and Karthik Gollapudi and headquartered in Marina del Rey, California,
+  Sift ingests, stores and analyzes high-rate, high-cardinality sensor data, then layers automated rule-based
+  anomaly detection, run-to-run comparison and certification-ready reporting on top of it. The product
+  surface is unusually complete for a company this size: a 343-operation REST API transcoded from 330
+  gRPC RPCs across 66 MIT-licensed .proto files, first-party Python, Rust, Go, C++ and LabVIEW clients,
+  a sift-cli binary, outbound HMAC-signed webhooks, and a Grafana datasource. It is also one of the more
+  agent-ready providers in the catalog — it publishes an A2A agent card, an Agent Skill, llms.txt on two
+  hosts, an anonymous remote MCP documentation server, and a second MCP server that ships inside the CLI
+  and talks to a customer''s own Sift environment. Deployment spans SaaS, private cloud, on-premises,
+  airgapped and AWS GovCloud, backed by SOC 2 Type II, NIST SP 800-171 and ITAR compliance.'
+image: https://www.siftstack.com/favicon.ico
 url: https://raw.githubusercontent.com/api-evangelist/sift-stack/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: full enrichment pass 2026-08-27
 specificationVersion: '0.20'
 created: '2026-08-27'
 modified: '2026-08-27'
 tags:
-- Company
-apis: []
+- Observability
+- Telemetry
+- Aerospace
+- Defense
+- Robotics
+- Time Series
+- Sensor Data
+- gRPC
+- Data Ingestion
+- Anomaly Detection
+- Manufacturing
+- Energy
+- Autonomous Vehicles
+- Machine Data
+- Agent Ready
+apis:
+- name: Sift API
+  description: The Sift REST API — 343 operations across 46 services covering assets, channels, runs,
+    ingestion configs, data imports, rules, rule evaluation, reports, annotations, campaigns, families,
+    calculated channels, exports, webhooks, jobs, metadata and governance. It is a grpc-gateway transcoding
+    of the gRPC contract, so paths carry Google-AIP custom verbs and errors are google.rpc.Status shaped.
+    Authentication is a user-associated API key sent as a bearer token; lists use pageSize/pageToken with
+    CEL filters.
+  humanURL: https://docs.siftstack.com/api/overview
+  baseURL: https://api.siftstack.com
+  tags:
+  - Observability
+  - Telemetry
+  - Time Series
+  - Sensor Data
+  - Data Ingestion
+  properties:
+  - type: OpenAPI
+    url: openapi/sift-stack-openapi.json
+  - type: Overlay
+    url: overlays/sift-stack-openapi-overlay.yaml
+  - type: Documentation
+    url: https://docs.siftstack.com/documentation/home
+  - type: APIReference
+    url: https://docs.siftstack.com/api-reference
+  - type: Authentication
+    url: authentication/sift-stack-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sift-stack-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/sift-stack-rate-limits.yml
+  - type: Conventions
+    url: conventions/sift-stack-conventions.yml
+  - type: DataModel
+    url: data-model/sift-stack-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sift-stack-webhooks.yml
+- name: Sift gRPC API
+  description: The gRPC contract that is Sift's primary API — 51 services and 330 RPCs defined across
+    66 proto3 files published under MIT in the sift-stack/sift monorepo, including the bidirectional streaming
+    ingest path (sift.ingest.v1) that the REST transcoding cannot express. Every first-party client library
+    is generated from these definitions.
+  humanURL: https://docs.siftstack.com/api/reference/protocol-buffers
+  baseURL: https://api.siftstack.com
+  tags:
+  - gRPC
+  - Protobuf
+  - Streaming
+  - Telemetry
+  properties:
+  - type: Protobuf
+    url: grpc/sift-stack-grpc-index.yml
+  - type: SourceCode
+    url: https://github.com/sift-stack/sift/tree/main/protos
+  - type: Documentation
+    url: https://docs.siftstack.com/api/clients
+- name: Sift MCP Server
+  description: Two Model Context Protocol servers. A public, anonymous remote server at https://docs.siftstack.com/mcp
+    exposing search and a virtualized read-only docs filesystem, advertised at /.well-known/mcp.json.
+    And the product server, which runs locally over stdio from the sift-cli binary (`sift-cli mcp`), authenticates
+    with an API key and reaches a customer's own Sift environment — read-only by default with mutating
+    tools gated behind --allow-destructive.
+  humanURL: https://docs.siftstack.com/documentation/cli/sift-mcp
+  baseURL: https://docs.siftstack.com/mcp
+  tags:
+  - MCP
+  - Agents
+  - AI
+  properties:
+  - type: MCPServer
+    url: mcp/sift-stack-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/sift-stack-tool-crosswalk.yml
+  - type: Documentation
+    url: https://docs.siftstack.com/documentation/cli/sift-mcp
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -20,4 +119,117 @@ maintainers:
   email: info@apis.io
 common:
 - type: Website
-  url: https://forgeglobal.com/sift-stack_stock/
+  url: https://www.siftstack.com/
+- type: DeveloperPortal
+  url: https://docs.siftstack.com/
+- type: Documentation
+  url: https://docs.siftstack.com/documentation/home
+- type: APIReference
+  url: https://docs.siftstack.com/api-reference
+- type: GettingStarted
+  url: https://docs.siftstack.com/documentation/get-started
+- type: Tutorials
+  url: https://docs.siftstack.com/learning-path/overview
+- type: Blog
+  url: https://www.siftstack.com/mission-critical
+- type: GitHubOrganization
+  url: https://github.com/sift-stack
+- type: SignUp
+  url: https://www.siftstack.com/weekly-demo
+- type: Login
+  url: https://app.siftstack.com
+- type: TermsOfService
+  url: https://www.siftstack.com/termsandconditions
+- type: PrivacyPolicy
+  url: https://www.siftstack.com/privacy-policy
+- type: StatusPage
+  url: https://status.siftstack.com
+- type: ChangeLog
+  url: https://docs.siftstack.com/changelog
+- type: Glossary
+  url: https://www.siftstack.com/glossary
+- type: FAQ
+  url: https://www.siftstack.com/about/faq
+- type: Packages
+  url: packages/sift-stack-packages.yml
+- type: SDKs
+  url: packages/sift-stack-packages.yml
+- type: CLI
+  url: cli/sift-stack-cli.yml
+- type: AgentCard
+  url: a2a/sift-stack-a2a.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/sift-stack-llms.txt
+- type: WellKnown
+  url: well-known/sift-stack-well-known.yml
+- type: Lifecycle
+  url: lifecycle/sift-stack-lifecycle.yml
+- type: Conformance
+  url: conformance/sift-stack-conformance.yml
+- type: Compliance
+  url: conformance/sift-stack-conformance.yml
+- type: TrustCenter
+  url: security/sift-stack-trust-center.yml
+- type: Security
+  url: security/sift-stack-vulnerability-disclosure.yml
+- type: VulnerabilityDisclosure
+  url: security/sift-stack-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/sift-stack-domain-security.yml
+- type: Plans
+  url: plans/sift-stack-plans-pricing.yml
+x-pointer-verification:
+  checked: '2026-08-27'
+  method: Every common[] and properties[] URL fetched with a browser User-Agent; body read, not just the
+    status code.
+  live: 21
+  dead_removed: 1
+  repo_files: 28
+  removed:
+  - type: Support
+    url: https://customer.support.siftstack.com/servicedesk/customer/portal/2
+    status: 404
+    reason: The Jira Service Management portal named in the provider's own SECURITY.md returns a real
+      404 ("Atlassian Cloud Notifications - Page Unavailable") to anonymous callers at every path, including
+      the host root and /servicedesk/customer/portals. It is a customer-only portal, not a public support
+      channel, and Sift publishes no public contact or support page anywhere in its 172-URL sitemap. Removed
+      rather than left as a claim we make on Sift's behalf; recorded here and in lifecycle/sift-stack-lifecycle.yml
+      so the finding is not lost.
+  pointers_withheld:
+  - type: Idempotency
+    reason: conventions/sift-stack-conventions.yml records idempotency.supported=false — no Idempotency-Key
+      header, no replay window, no stated replay semantics. client_key is an immutable external key, not
+      an idempotency token. Emitting the pointer would claim a 9-point agent-readiness capability Sift
+      does not ship.
+  - type: Deprecation
+    reason: lifecycle/sift-stack-lifecycle.yml records policy_published=false — no deprecation policy
+      page, no RFC 8594 Sunset/Deprecation headers, no operation marked deprecated. Deprecation appears
+      only inside field descriptions.
+  - type: Pricing
+    reason: plans/sift-stack-plans-pricing.yml records plan_count=0 — /pricing is a 404 and the 172-URL
+      sitemap contains no pricing page. Sales-led enterprise motion.
+  - type: AsyncAPI
+    reason: No AsyncAPI document is published. The webhook surface is captured as type Webhooks instead;
+      the gRPC streaming surface is captured as Protobuf.
+  - type: SecurityTxt
+    reason: /.well-known/security.txt returned 404 on docs.siftstack.com and www.siftstack.com. The disclosure
+      policy lives in a GitHub SECURITY.md, captured under type Security.
+  - type: Sandbox
+    reason: No sandbox, test environment, test credentials or magic test identifiers are documented. app.siftstack.com
+      is a customer login, not a console/playground.
+  - type: Roadmap
+    reason: No public roadmap page was found on siftstack.com or docs.siftstack.com.
+  - type: Postman
+    reason: No public Postman collection or workspace was found.
+  - type: OAuthScopes
+    reason: The API has no OAuth flow and no scopes — one http/bearer securityScheme. scopes/ deliberately
+      not emitted; authentication/ carries the model.
+  - type: DeclineCodes
+    reason: Not a payments or authorization provider.
+x-enrichment:
+  date: '2026-08-27'
+  status: enriched
+  artifacts_added: 24
+  pass: local-v1

@@ -1,0 +1,35 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://www.siftstack.com/trust-and-security (HTTP 200) and https://www.siftstack.com/fedramp (HTTP 200),
+  read 2026-08-27; https://trust.siftstack.com did not resolve (curl exit 6, DNS failure).
+name: Sift trust and security
+published: true
+url: https://www.siftstack.com/trust-and-security
+dedicated_portal: false
+portal_note: >-
+  There is a trust PAGE but not a trust PORTAL — trust.siftstack.com does not resolve, and evidence
+  documents are not self-serve. Sift names Vanta as its compliance-monitoring vendor and states detailed
+  reports are available through the Vanta portal, which means an NDA/request step stands between a buyer and
+  the artifacts.
+certifications:
+- {name: SOC 2 Type II, status: certified}
+- {name: NIST SP 800-171, status: 'meets all 110 controls'}
+- {name: ITAR, status: compliant / registered}
+- {name: FedRAMP, status: 'meets FedRAMP security requirements (no authorization ID published)', page: https://www.siftstack.com/fedramp}
+- {name: CMMC Level 2, status: 'path to certification — not certified'}
+controls:
+- Encryption of sensitive data at rest and in transit
+- Regular penetration testing
+- Multi-factor authentication and encrypted connections
+- Role-based access control, fine-grained access policies and audit logging (Sift Governance)
+data_residency:
+- {name: AWS GovCloud (US), note: 'Isolated environment for sensitive and regulated data; the OpenAPI declares a matching server https://gov.api.siftstack.com labelled "Gov".'}
+- {name: On-premises}
+- {name: Airgapped}
+- {name: Private cloud}
+subprocessors_published: false
+documents_self_serve: false
+note: >-
+  Read alongside conformance/sift-stack-conformance.yml, which carries the per-claim evidence quotations,
+  and security/sift-stack-vulnerability-disclosure.yml, which records the one gap in this posture.

@@ -1,0 +1,94 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://docs.siftstack.com/.well-known/mcp.json (HTTP 200, application/json) and
+  https://docs.siftstack.com/documentation/cli/sift-mcp (HTTP 200); live server probed at
+  https://docs.siftstack.com/mcp with initialize + tools/list + resources/list on 2026-08-27.
+name: Sift MCP servers
+status: published
+note: >-
+  Sift ships TWO distinct MCP servers and they are not interchangeable. (1) A public, anonymous, remote
+  documentation server at https://docs.siftstack.com/mcp — advertised at /.well-known/mcp.json, three
+  read-mostly tools over the published docs and OpenAPI spec, callable by an agent right now with no
+  credential. (2) The product MCP server, which is NOT hosted: it ships inside the sift-cli binary and runs
+  locally over stdio (`sift-cli mcp`), authenticating with the API key in a local CLI profile, and exposes
+  Sift's own resources (assets, runs, channels, rules, annotations, reports, datasets). Sift documents why
+  it is local rather than hosted: the server ships a `data/sql` tool that runs SQL locally over data pulled
+  with `data/get_data`, and shipping in the CLI lets the SKILL.md be versioned alongside the MCP.
+deployment:
+  mode: both
+  endpoint: https://docs.siftstack.com/mcp
+  install: sift-cli mcp
+  package: https://github.com/sift-stack/sift/releases/latest/download/sift_cli-installer.sh
+  auth: none
+  verified: probed
+  note: >-
+    auth: none applies to the REMOTE endpoint only — /.well-known/mcp.json declares
+    servers[0].authentication "none" and an unauthenticated initialize/tools/list succeeded. The
+    local-stdio product server requires an API key configured in a sift-cli profile (api-key auth); it was
+    not probed, because doing so would require credentials.
+servers:
+- id: docs-remote
+  name: Sift (documentation)
+  mode: remote
+  endpoint: https://docs.siftstack.com/mcp
+  transport: http
+  manifest: https://docs.siftstack.com/.well-known/mcp.json
+  auth: none
+  protocol_version: '2025-06-18'
+  server_info: {name: Sift, version: 1.0.0}
+  capabilities: {tools: {listChanged: true}, resources: {listChanged: true}}
+  probe: {date: '2026-08-27', http_status: 200, method: 'initialize + tools/list + resources/list'}
+  tools_file: mcp/sift-stack-docs-mcp-tools.json
+  tools:
+  - name: search_sift
+    title: Search documentation
+    read_only: true
+    input: {query: string (required)}
+  - name: query_docs_filesystem_sift
+    read_only: true
+    input: {command: string (required)}
+    note: >-
+      Read-only shell-like query (rg/grep/find/tree/ls/cat/head/tail/jq and friends) against a virtualized
+      in-memory filesystem containing only the Sift docs pages and the OpenAPI spec at /openapi/openapi.json.
+      Stateless per call; output truncated to 30KB.
+  - name: submit_feedback
+    read_only: false
+    input: {path: string (required), feedback: string (required)}
+    note: The only non-read-only tool; files a documentation defect with the docs team.
+  resources:
+  - uri: mintlify://skills/sift
+    name: sift
+    mimeType: text/markdown
+    note: Same content as the published Agent Skill saved to skills/sift-stack-sift.md.
+  instructions: >-
+    Server-supplied instructions state it is read-only and scoped to Sift apart from submit_feedback, and
+    that it must not claim access to private or authenticated content unless the session is authenticated.
+- id: product-local
+  name: Sift (product)
+  mode: local-stdio
+  install: sift-cli mcp
+  client_config: '{"mcpServers":{"sift":{"command":"sift-cli","args":["mcp"]}}}'
+  package: https://github.com/sift-stack/sift/releases/tag/sift_cli-v0.4.4
+  auth: api-key
+  docs: https://docs.siftstack.com/documentation/cli/sift-mcp
+  verified: searched
+  probe: {date: '2026-08-27', note: 'Not probed — requires an API key and a local sift-cli install.'}
+  managed_install: >-
+    `sift-cli agent install` detects Claude Code, Codex, Cursor and OpenCode and registers the server plus a
+    SKILL.md for each; `sift-cli agent doctor` reports drift; `sift-cli agent update --read-only` /
+    `--allow-destructive` switches the access mode; `sift-cli agent update --profile <name>` switches profile.
+  access_model:
+    default: read-only
+    write_gate: --allow-destructive
+    gated_tools: [update_asset, update_run, update_report, update_annotation, update_rule, archive_rule, unarchive_rule]
+    ungated_writes: [create_annotation, create_report, create_rule, create_test_report, append_test_measurements, upload_dataset]
+    note: >-
+      Tool names above are quoted verbatim from https://docs.siftstack.com/documentation/cli/sift-mcp. This
+      is a partial list — the docs name the gated and additive-write tools explicitly but do not publish the
+      complete tool inventory, and the read tools are only named incidentally (data/get_data, data/sql).
+      A full inputSchema inventory requires authenticated local introspection.
+  guardrails:
+  - List-style tools default to a page size of 50, capped at 200 — lower than the web and API defaults, to protect agent context.
+  - Tools prompt the agent to filter broad queries rather than page through large result sets.
+  - Failed API calls retry automatically with backoff to avoid triggering rate limiting.

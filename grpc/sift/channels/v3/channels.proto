@@ -1,0 +1,239 @@
+syntax = "proto3";
+
+package sift.channels.v3;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sift/common/type/v1/channel_bit_field_element.proto";
+import "sift/common/type/v1/channel_data_type.proto";
+import "sift/common/type/v1/channel_enum_type.proto";
+import "sift/metadata/v1/metadata.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {title: "Channel service"}
+};
+
+service ChannelService {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
+    description: "Service to programmatically interact with [channels](/glossary#channel)."
+    external_docs: {
+      url: "https://customer.support.siftstack.com/servicedesk/customer/portal/2/article/265453943"
+      description: "Read more about what channels are."
+    }
+  };
+
+  // Retrieve a channel
+  rpc GetChannel(GetChannelRequest) returns (GetChannelResponse) {
+    option (google.api.http) = {get: "/api/v3/channels/{channel_id}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "GetChannel"
+      description: "Retrieve a channel."
+      operation_id: "ChannelService_GetChannelV2"
+    };
+  }
+
+  // Retrieve channels using an optional filter.
+  rpc ListChannels(ListChannelsRequest) returns (ListChannelsResponse) {
+    option (google.api.http) = {get: "/api/v3/channels"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "ListChannels"
+      description: "Retrieve channels using an optional filter."
+      operation_id: "ChannelService_ListChannelsV2"
+    };
+  }
+
+  // EXPERIMENTAL: This RPC is experimental and only available to a limited set of users.
+
+  // Update a channel
+  rpc UpdateChannel(UpdateChannelRequest) returns (UpdateChannelResponse) {
+    option (google.api.http) = {
+      patch: "/api/v3/channels"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "UpdateChannel"
+      description: "Update a channel."
+      operation_id: "ChannelService_UpdateChannelV3"
+    };
+  }
+
+  // Batch archives channels by setting active to false.
+  rpc BatchArchiveChannels(BatchArchiveChannelsRequest) returns (BatchArchiveChannelsResponse) {
+    option (google.api.http) = {
+      post: "/api/v3/channels:batchArchive"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "BatchArchiveChannels"
+      description: "Batch archives channels by setting active to false."
+      operation_id: "ChannelService_BatchArchiveChannels"
+    };
+  }
+
+  // Batch unarchives channels by setting active to true.
+  rpc BatchUnarchiveChannels(BatchUnarchiveChannelsRequest) returns (BatchUnarchiveChannelsResponse) {
+    option (google.api.http) = {
+      post: "/api/v3/channels:batchUnarchive"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "BatchUnarchiveChannels"
+      description: "Batch unarchives channels by setting active to true."
+      operation_id: "ChannelService_BatchUnarchiveChannels"
+    };
+  }
+}
+
+message Channel {
+  string channel_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The full name of the channel.
+  string name = 2 [(google.api.field_behavior) = REQUIRED];
+  string asset_id = 3 [(google.api.field_behavior) = REQUIRED];
+  string description = 4 [(google.api.field_behavior) = REQUIRED];
+  string unit_id = 5 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.Timestamp created_date = 6 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.Timestamp modified_date = 7 [(google.api.field_behavior) = REQUIRED];
+  string created_by_user_id = 8 [(google.api.field_behavior) = REQUIRED];
+  string modified_by_user_id = 9 [(google.api.field_behavior) = REQUIRED];
+  sift.common.type.v1.ChannelDataType data_type = 10 [(google.api.field_behavior) = REQUIRED];
+  repeated sift.common.type.v1.ChannelEnumType enum_types = 11;
+  repeated sift.common.type.v1.ChannelBitFieldElement bit_field_elements = 12;
+  string display_description = 13;
+  string display_unit_id = 14;
+  repeated sift.metadata.v1.MetadataValue metadata = 15 [(google.api.field_behavior) = REQUIRED];
+  bool active = 16;
+}
+
+// The request for a call to `ChannelService_GetChannel`.
+message GetChannelRequest {
+  string channel_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The response of a call to `ChannelService_GetChannel`.
+message GetChannelResponse {
+  Channel channel = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request for a call to `ChannelService_ListChannels` to retrieve channels.
+message ListChannelsRequest {
+  // The maximum number of channels to return. The service may return fewer than this value.
+  // If unspecified, at most 50 channels will be returned. The maximum value is 10,000; values above
+  // 10,000 will be coerced to 10,000. Optional.
+  uint32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // A page token, received from a previous `ListChannels` call.
+  // Provide this to retrieve the subsequent page.
+  // When paginating, all other parameters provided to `ListChannels` must match
+  // the call that provided the page token. Optional.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+  // Available fields to filter by are `channel_id`, `asset_id`, `name`, `description`
+  // `run_id`, `run_name`, `run_client_key`, `created_date`, `modified_date`, `created_by_user_id`, and `modified_by_user_id`.
+  // For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).
+  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // How to order the retrieved channels. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+  // Available fields to order_by are `name`, `created_date` and `modified_date`, `active`.
+  // If left empty, items are ordered by `created_date` in ascending order (oldest-first).
+  // For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+  // Example: "created_date desc,modified_date"
+  string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The result of a call to ChannelService_ListChannels.
+message ListChannelsResponse {
+  repeated Channel channels = 1;
+  string next_page_token = 2;
+}
+
+message FilterChannel {
+  string channel_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 2 [(google.api.field_behavior) = REQUIRED];
+  reserved 3;
+  string organization_id = 4 [(google.api.field_behavior) = REQUIRED];
+  string asset_id = 5 [(google.api.field_behavior) = REQUIRED];
+  string asset_name = 6 [(google.api.field_behavior) = REQUIRED];
+  string description = 7;
+  string display_description = 8;
+  string unit_id = 9;
+  string display_unit_id = 10;
+  string unit = 11;
+  string display_unit = 12;
+  sift.common.type.v1.ChannelDataType data_type = 13 [(google.api.field_behavior) = REQUIRED];
+  repeated sift.common.type.v1.ChannelEnumType enum_types = 14;
+  repeated sift.common.type.v1.ChannelBitFieldElement bit_field_elements = 15;
+  repeated sift.metadata.v1.MetadataValue metadata = 16 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request for a call to ChannelService_FilterChannels.
+message FilterChannelsRequest {
+  uint32 page_size = 1;
+  string page_token = 2;
+
+  // The search term to match against channel names, components and descriptions. Optional.
+  string search_term = 4;
+
+  // If true, the search term is case sensitive. Optional, default false.
+  bool is_search_case_sensitive = 5;
+
+  // If true, the search term is treated as a regular expression. Optional, default false.
+  bool is_search_regexp = 6;
+
+  // If provided, only channels matching these asset_ids are returned. Optional
+  repeated string asset_ids = 7;
+
+  // Only channels for these runs are returned. Optional
+  repeated string run_ids = 8;
+
+  // If provided, only channels matching these channel_ids are returned. Optional
+  repeated string channel_ids = 9;
+
+  // If provided, only channels with assets with these tag_ids are returned. Optional
+  repeated string asset_tag_ids = 10;
+
+  // If provide, only channels with these data types are returned. Optional.
+  repeated sift.common.type.v1.ChannelDataType data_types = 11;
+
+  // If provided, only channels with this metadata are returned. Optional.
+  repeated string metadata_keys = 12;
+  repeated string metadata_values = 13;
+}
+
+// The result of a call to ChannelService_FilterChannels.
+message FilterChannelsResponse {
+  repeated FilterChannel channels = 1;
+  string next_page_token = 2;
+}
+
+// The request for a call to ChannelService_UpdateChannel.
+message UpdateChannelRequest {
+  Channel channel = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The list of fields to be updated. The fields available to be updated are `display_description`, `display_units`, `metadata`, and `active`.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The result of a call to ChannelService_UpdateChannel.
+message UpdateChannelResponse {
+  Channel channel = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request for a call to ChannelService_BatchArchiveChannels.
+message BatchArchiveChannelsRequest {
+  repeated string channel_ids = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The result of a call to ChannelService_BatchArchiveChannels.
+message BatchArchiveChannelsResponse {}
+
+// The request for a call to ChannelService_BatchUnarchiveChannels.
+message BatchUnarchiveChannelsRequest {
+  repeated string channel_ids = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The result of a call to ChannelService_BatchUnarchiveChannels.
+message BatchUnarchiveChannelsResponse {}

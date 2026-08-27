@@ -1,0 +1,28 @@
+generated: '2026-08-27'
+method: searched
+source: 'https://docs.siftstack.com/changelog (200) and https://docs.siftstack.com/release-notes/overview (200), read 2026-08-27'
+name: Sift changelog
+scheme: dated-entries
+surfaces:
+- {name: Changelog, url: 'https://docs.siftstack.com/changelog', style: 'dated Update blocks labelled New feature / Improvement / Improvements'}
+- {name: Release notes, url: 'https://docs.siftstack.com/release-notes/overview', style: 'monthly narrative posts, 2025-05 through 2026-08, with New / Beta / Event badges'}
+- {name: Client library releases, url: 'https://github.com/sift-stack/sift/releases', style: 'per-language tags — python/vX.Y.Z, sift_cli-vX.Y.Z'}
+breaking_change_policy: none-published
+note: >-
+  Two separate dated surfaces. The changelog carries product changes with an explicit change class per entry;
+  the monthly release notes carry the narrative version. Neither marks entries as breaking vs additive, and no
+  API deprecation appears in either — API-level deprecations live only in field descriptions inside the spec
+  (see lifecycle/sift-stack-lifecycle.yml). Entries below are the recent window only.
+entries:
+- {date: '2026-08', source: https://docs.siftstack.com/release-notes/2026/august-2026, type: additions, highlights: ['Import PX4 ULog flight logs natively via UI, CLI, Python client and API (REST and gRPC)', 'Saved Explorations generally available — reopen a full Explore session state', 'Beta: Channel name prefix delimiter and Channel leaf keywords settings for shaping the Channel tree', 'Sift Edge released — capture telemetry offline at the test stand and upload on reconnect']}
+- {date: '2026-07', source: https://docs.siftstack.com/release-notes/2026/july-2026}
+- {date: '2026-05-07', source: https://docs.siftstack.com/changelog, type: improvement, highlights: ['Min/Max replaces LTTB as the default sampling method']}
+- {date: '2025-12-10', source: https://docs.siftstack.com/changelog, type: addition, highlights: ['Calculated Channels can reference other Calculated Channels as inputs to their expressions']}
+- {date: '2025-12-05', source: https://docs.siftstack.com/changelog, type: improvements, highlights: ['Live Mode performance and streaming stability', 'Table Panel filtering and column sizing', 'Y-axis pan and zoom', 'Sync Time consolidation of the global time picker']}
+- {date: '2025-12-04', source: https://docs.siftstack.com/changelog, type: addition, highlights: ['Open Explore v1 directly from Grafana with a dynamic URL selecting Asset, Run and Channels (sift-grafana-datasource v1.3.0)']}
+- {date: '2025-11-05', source: https://docs.siftstack.com/changelog, type: addition, highlights: ['Panel Configurations (Beta) — capture and reuse a full Panel visualization setup across Runs and Assets']}
+client_releases_recent:
+- {package: sift-stack-py, version: 0.20.0, date: '2026-08-25'}
+- {package: sift_cli, version: 0.4.4, date: '2026-08-24'}
+- {package: sift_rs, version: 0.11.0, date: '2026-08-21'}
+- {package: sift-stack-py, version: 0.19.1, date: '2026-07-28'}

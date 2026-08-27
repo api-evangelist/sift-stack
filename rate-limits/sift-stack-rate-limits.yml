@@ -1,0 +1,39 @@
+generated: '2026-08-27'
+method: searched
+source: 'https://docs.siftstack.com/documentation/manage/set-up-api-access#api-rate-limits (HTTP 200, read 2026-08-27)'
+name: Sift API rate limits
+limit_count: 0
+documented: true
+values_published: false
+note: >-
+  Sift documents its rate-limiting BEHAVIOUR in full but deliberately publishes no numbers: "Sift does not
+  publish specific per-endpoint limits, and they can change over time as the platform develops." limit_count
+  is therefore an honest 0 — there is no published limit value to record — even though the policy itself is
+  one of the better-documented ones in this catalog. Customers with a planned high-throughput operation are
+  told to contact Sift support in advance for a temporary raise.
+scopes:
+- {scope: per-organization, window: not-published, limit: not-published, burst: not-published}
+- {scope: per-endpoint, window: not-published, limit: not-published, burst: not-published}
+positioning: 'Set well above typical usage — Sift states most callers will never see a limit.'
+exhaustion:
+  rest: {status: 429, name: Too Many Requests, body: 'rpcStatus with a message indicating how long to wait before retrying'}
+  grpc: {status: RESOURCE_EXHAUSTED, code: 8, body: 'status message indicating how long to wait before retrying'}
+  safe_to_retry: true
+  safety_statement: 'These responses are safe to retry because the request was not processed. Retrying after the indicated delay has no unintended side effects.'
+response_headers:
+  published: false
+  x_ratelimit: false
+  ratelimit_draft: false
+  retry_after: false
+  note: >-
+    THE GAP THAT MATTERS FOR AGENTS. Sift publishes no rate-limit response headers — not X-RateLimit-*, not
+    the RFC 9238-draft RateLimit-* family, and not Retry-After. The wait is described as being carried in the
+    error MESSAGE STRING, which a client must parse prose to obtain. An agent therefore cannot read its
+    remaining budget before it is exhausted, and cannot get a machine-readable backoff after it is. None was
+    observed on live probes either — api.siftstack.com returns 401 with no body to unauthenticated callers,
+    so a header could not be observed without credentials.
+client_side_mitigations:
+- 'Batch where the API supports it rather than looping single-record calls (the spec exposes 20+ Batch* operations).'
+- 'Avoid tight retry loops without backoff.'
+- 'Spread large backfills or migrations over time rather than issuing them at once.'
+- 'The bundled MCP server retries failed API calls automatically with backoff, and caps list page size at 200, specifically to avoid triggering rate limiting.'

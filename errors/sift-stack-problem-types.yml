@@ -1,0 +1,56 @@
+generated: '2026-08-27'
+method: derived
+source: >-
+  openapi/sift-stack-openapi.json (343 operations, every one declaring a `default` response of rpcStatus);
+  semantics cross-checked against https://docs.siftstack.com/documentation/manage/set-up-api-access (200)
+  and https://docs.siftstack.com/documentation/troubleshoot/troubleshooting (200).
+name: Sift error catalog
+format: grpc-status
+rfc9457: false
+media_type: application/json
+envelope:
+  schema: rpcStatus
+  fields:
+  - {name: code, type: integer (int32), note: 'google.rpc.Code numeric value, not the HTTP status.'}
+  - {name: message, type: string, note: Developer-facing description.}
+  - {name: 'details[]', type: 'array of google.protobuf.Any', note: 'Typed error detail messages; content varies by service and is not enumerated in the spec.'}
+note: >-
+  Sift does not publish a numbered error-code registry. The REST surface is a grpc-gateway transcoding, so
+  errors are google.rpc.Status values mapped to HTTP by the gateway's standard table. Every operation in the
+  spec declares exactly two responses — 200 and `default` — which means the spec itself cannot tell a client
+  which 4xx codes a given operation emits; the mapping below is the gateway's documented standard mapping,
+  which is why it is recorded as derived rather than searched. The one status Sift documents explicitly and
+  by name is exhaustion.
+problem_types:
+- {code: 3, grpc: INVALID_ARGUMENT, http: 400, title: Invalid argument, remediation: 'Client supplied a malformed field, CEL filter or expression. Use the matching Validate* operation (ValidateExpression, ValidateJsonRules, ValidatePolicy, ValidateRunFilter, ValidateUserDefinedFunction) to check the input before resubmitting.', retryable: false}
+- {code: 16, grpc: UNAUTHENTICATED, http: 401, title: Unauthenticated, remediation: 'Missing or malformed `authorization: Bearer <api key>` header/metadata. Keys are shown once at creation and cannot be retrieved later; issue a new key if lost.', retryable: false}
+- {code: 7, grpc: PERMISSION_DENIED, http: 403, title: Permission denied, remediation: 'The key inherits the permissions of the user it is attached to. Check the user''s role and any data-access-governance policy rather than the key itself.', retryable: false}
+- {code: 5, grpc: NOT_FOUND, http: 404, title: Not found, remediation: 'Resource id or client_key does not resolve. Archived entities are hidden from list results unless includeArchived=true; a "missing" record is often archived rather than gone.', retryable: false}
+- {code: 6, grpc: ALREADY_EXISTS, http: 409, title: Already exists, remediation: 'A client_key or name collides with an existing non-archived entity. Uniqueness applies only to non-archived entities.', retryable: false}
+- {code: 9, grpc: FAILED_PRECONDITION, http: 400, title: Failed precondition, remediation: 'The resource is not in a state that permits the operation — for example cancelling a report that already finished.', retryable: false}
+- {code: 8, grpc: RESOURCE_EXHAUSTED, http: 429, title: Rate limit exceeded, remediation: 'Documented by Sift by name. The request was NOT processed, so retrying after the indicated delay has no unintended side effects. Back off; do not tight-loop. Limits are per organization and per endpoint, and the values are not published.', retryable: true, source: https://docs.siftstack.com/documentation/manage/set-up-api-access}
+- {code: 10, grpc: ABORTED, http: 409, title: Aborted, remediation: 'Concurrency conflict. Batch[Verb]Rules requests are atomic — if any item fails, none of the batch is applied — so retry the whole batch rather than individual items.', retryable: true}
+- {code: 4, grpc: DEADLINE_EXCEEDED, http: 504, title: Deadline exceeded, remediation: 'Narrow the query with filter/pageSize, or move a large read to ExportService_ExportData and poll the job.', retryable: true}
+- {code: 13, grpc: INTERNAL, http: 500, title: Internal error, remediation: 'Retry with backoff; if it persists, file at the Sift support portal.', retryable: true}
+- {code: 14, grpc: UNAVAILABLE, http: 503, title: Unavailable, remediation: 'Transient. Retry with backoff and check https://status.siftstack.com.', retryable: true}
+ingestion_errors:
+  surface: dead-letter queue
+  operationId: DlqErrorsService_ListDlqErrorsV2
+  path: GET /api/v2/dlq-errors
+  schemas: [v2ErrorSummary, v2ListDlqErrorsResponse, v2UlogParseErrorPolicy]
+  docs: https://docs.siftstack.com/documentation/manage/identify-and-recover-failed-ingestion-data
+  note: >-
+    Rows Sift cannot parse during ingestion do not fail the request — they land in a per-organisation dead-letter
+    queue. This is the most important error surface for an agent doing ingest work, because a successful import
+    job does not by itself mean every row landed.
+validation_surfaces:
+- {operationId: CalculatedChannelsService_ValidateExpression, returns: v1ErrorValidatingExpressionResult}
+- {operationId: UserDefinedFunctionService_ValidateUserDefinedFunction, returns: ValidateUserDefinedFunctionResponseErrorValidatingUserDefinedFunctionResult}
+- {operationId: RuleService_ValidateJsonRules}
+- {operationId: PolicyService_ValidatePolicy}
+- {operationId: RunService_ValidateRunFilter}
+- {operationId: FamilyService_ValidateFamilyName}
+- {operationId: FamilyService_ValidateFamilyClientKey}
+gaps:
+- The spec declares no 4xx responses on any operation, so response-code coverage cannot be scored from the contract.
+- No named/numbered error-code registry is published; `details[]` payload types are not enumerated.

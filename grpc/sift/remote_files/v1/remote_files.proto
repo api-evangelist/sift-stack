@@ -1,0 +1,277 @@
+syntax = "proto3";
+
+package sift.remote_files.v1;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sift/metadata/v1/metadata.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {title: "RemoteFile service"}
+};
+
+service RemoteFileService {
+  // Retrieve a remote file.
+  rpc GetRemoteFile(GetRemoteFileRequest) returns (GetRemoteFileResponse) {
+    option (google.api.http) = {get: "/api/v1/remote-files/{remote_file_id}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "GetRemoteFile"
+      description: "Retrieve a remote file."
+    };
+  }
+
+  // Create a remote file. Note that this does not perform the actual file upload.
+  rpc CreateRemoteFile(CreateRemoteFileRequest) returns (CreateRemoteFileResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/remote-files"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "CreateRemoteFile"
+      description: "Create a remote file."
+    };
+  }
+
+  // List remote files.
+  rpc ListRemoteFiles(ListRemoteFilesRequest) returns (ListRemoteFilesResponse) {
+    option (google.api.http) = {get: "/api/v1/remote-files"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "ListRemoteFiles"
+      description: "List remote files."
+    };
+  }
+
+  // Updates an existing remote file using using the list of fields specified in `update_mask`.
+  rpc UpdateRemoteFile(UpdateRemoteFileRequest) returns (UpdateRemoteFileResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/remote-files"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "UpdateRemoteFile"
+      description: "Updates an existing remote file using using the list of fields specified in `update_mask`."
+    };
+  }
+
+  // Delete a remote file.
+  rpc DeleteRemoteFile(DeleteRemoteFileRequest) returns (DeleteRemoteFileResponse) {
+    option (google.api.http) = {delete: "/api/v1/remote-files/{remote_file_id}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "DeleteRemoteFile"
+      description: "Delete a remote file."
+    };
+  }
+
+  // Batch deletes remote files. Each batch is limited to 1000 records.
+  rpc BatchDeleteRemoteFiles(BatchDeleteRemoteFilesRequest) returns (BatchDeleteRemoteFilesResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/remote-files:batchDelete"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "BatchDeleteRemoteFiles"
+      description: "Batch delete remote files. Each batch is limited to 1000 records."
+    };
+  }
+
+  // Gets a download URL for the remote file.
+  rpc GetRemoteFileDownloadUrl(GetRemoteFileDownloadUrlRequest) returns (GetRemoteFileDownloadUrlResponse) {
+    option (google.api.http) = {get: "/api/v1/remote-files/{remote_file_id}/download-url"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "GetRemoteFileUrl"
+      description: "Gets a download URL for the remote file."
+    };
+  }
+}
+
+message RemoteFile {
+  string remote_file_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string organization_id = 2 [(google.api.field_behavior) = REQUIRED];
+  string entity_id = 3 [(google.api.field_behavior) = REQUIRED];
+  EntityType entity_type = 4 [(google.api.field_behavior) = REQUIRED];
+  string file_name = 5 [(google.api.field_behavior) = REQUIRED];
+  string file_mime_type = 6 [(google.api.field_behavior) = REQUIRED];
+  string file_content_encoding = 7 [(google.api.field_behavior) = REQUIRED];
+  string storage_key = 8 [(google.api.field_behavior) = REQUIRED];
+  uint64 file_size = 9 [(google.api.field_behavior) = REQUIRED];
+  optional string description = 10 [(google.api.field_behavior) = OPTIONAL];
+  oneof metadata {
+    VideoMetadata video_metadata = 11 [(google.api.field_behavior) = OPTIONAL];
+    ImageMetadata image_metadata = 12 [(google.api.field_behavior) = OPTIONAL];
+    AudioMetadata audio_metadata = 17 [(google.api.field_behavior) = OPTIONAL];
+  }
+  string created_by_user_id = 13 [(google.api.field_behavior) = REQUIRED];
+  string modified_by_user_id = 14 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.Timestamp created_date = 15 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.Timestamp modified_date = 16 [(google.api.field_behavior) = REQUIRED];
+  repeated sift.metadata.v1.MetadataValue metadata_values = 18 [(google.api.field_behavior) = OPTIONAL];
+  RemoteFileType remote_file_type = 20 [(google.api.field_behavior) = REQUIRED];
+}
+
+enum RemoteFileType {
+  REMOTE_FILE_TYPE_UNSPECIFIED = 0;
+  REMOTE_FILE_TYPE_TELEMETRY = 1; // Data import / telemetry (internal: created by import job).
+  REMOTE_FILE_TYPE_IMAGE = 2;
+  REMOTE_FILE_TYPE_VIDEO = 3;
+  REMOTE_FILE_TYPE_AUDIO = 4;
+  REMOTE_FILE_TYPE_TEST_REPORT = 5;
+}
+
+message VideoMetadata {
+  uint32 height = 1 [(google.api.field_behavior) = OPTIONAL];
+  uint32 width = 2 [(google.api.field_behavior) = OPTIONAL];
+  float duration_seconds = 3 [(google.api.field_behavior) = OPTIONAL];
+  google.protobuf.Timestamp timestamp = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ImageMetadata {
+  uint32 height = 1 [(google.api.field_behavior) = OPTIONAL];
+  uint32 width = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message AudioMetadata {
+  float duration_seconds = 1 [(google.api.field_behavior) = OPTIONAL];
+  google.protobuf.Timestamp timestamp = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+enum EntityType {
+  ENTITY_TYPE_UNSPECIFIED = 0;
+  ENTITY_TYPE_RUN = 1;
+  ENTITY_TYPE_ANNOTATION = 2;
+  ENTITY_TYPE_ASSET = 3;
+  ENTITY_TYPE_ANNOTATION_LOG = 4;
+  ENTITY_TYPE_TEST_REPORT = 5;
+  ENTITY_TYPE_TEST_STEP = 6;
+  ENTITY_TYPE_CANVAS_VERSION = 7;
+  // UI evidence files attached to a cell execution on a canvas report.
+  ENTITY_TYPE_CANVAS_CELL_EXECUTION_ATTACHMENT = 8;
+  // Reserved for a future cell-output upload path (not used by the report
+  // attachment UI).
+  ENTITY_TYPE_CANVAS_CELL_EXECUTION_OUTPUT = 9;
+}
+
+// The request for a call to `RemoteFileService_GetRemoteFile` to retrieve a remote file;
+message GetRemoteFileRequest {
+  string remote_file_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The response of a call to `RemoteFileService_GetRemoteFile`.
+message GetRemoteFileResponse {
+  RemoteFile remote_file = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request for a call to `RemoteFileService_ListRemoteFiles` to retrieve remote files.
+message ListRemoteFilesRequest {
+  // The maximum number of remote files to return. The service may return fewer than this value.
+  // If unspecified, at most 50 remote files will be returned. The maximum value is 1000; values above
+  // 1000 will be coerced to 1000. Optional.
+  uint32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // A page token, received from a previous `ListRemoteFiles` call.
+  // Provide this to retrieve the subsequent page.
+  // When paginating, all other parameters provided to `ListRemoteFiles` must match
+  // the call that provided the page token. Optional.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+  // Available fields to filter by are `remote_file_id`, `entity_id`, `entity_type`, `metadata`, and `file_name`.
+  // For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).
+  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // This field is only required if your user belongs to multiple organizations.
+  string organization_id = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // How to order the retrieved reports. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+  // Available fields to order_by are `name`, `created_date` and `modified_date`.
+  // If left empty, items are ordered by `created_date` in descending order (newest-first).
+  // For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+  // Example: "created_date desc,modified_date"
+  string order_by = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The response of a call to `RemoteFileService_ListRemoteFilesResponse`.
+message ListRemoteFilesResponse {
+  repeated RemoteFile remote_files = 1;
+  string next_page_token = 2;
+}
+
+// The request for a call to `RemoteFileService_CreateRemoteFile` to create a remote file.
+message CreateRemoteFileRequest {
+  string file_name = 1 [(google.api.field_behavior) = REQUIRED];
+  string entity_id = 2 [(google.api.field_behavior) = REQUIRED];
+  EntityType entity_type = 3 [(google.api.field_behavior) = REQUIRED];
+  string file_mime_type = 4 [(google.api.field_behavior) = REQUIRED];
+  string file_content_encoding = 5 [(google.api.field_behavior) = REQUIRED];
+  uint64 file_size = 6 [(google.api.field_behavior) = REQUIRED];
+  optional string description = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // This field is only required if your user belongs to multiple organizations.
+  string organization_id = 8 [(google.api.field_behavior) = OPTIONAL];
+  oneof metadata {
+    VideoMetadata video_metadata = 9 [(google.api.field_behavior) = OPTIONAL];
+    ImageMetadata image_metadata = 10 [(google.api.field_behavior) = OPTIONAL];
+    AudioMetadata audio_metadata = 12 [(google.api.field_behavior) = OPTIONAL];
+  }
+
+  // A custom UUID used to generate the object key. Recommended to be left unset.
+  optional string custom_uuid = 11 [(google.api.field_behavior) = OPTIONAL];
+
+  // The metadata values associated with this remote file.
+  repeated sift.metadata.v1.MetadataValue metadata_values = 13 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional custom storage key for uploaded object that is not managed by the RemoteFileService.
+  // When provided, caller is responsible for ensuring uniqueness to avoid collisions or API will return an error.
+
+  // Internal only: do not use from public API.
+}
+
+// Internal only: source of the remote file (attachment vs import). Not exposed in responses; use RemoteFile.remote_file_type instead.
+
+// The response for a call to `RemoteFileService_CreateRemoteFile`.
+message CreateRemoteFileResponse {
+  RemoteFile remote_file = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request for a call to `RemoteFileService_DeleteRemoteFile` to delete a remote file.
+message DeleteRemoteFileRequest {
+  string remote_file_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The response of a call to `RemoteFileService_DeleteRemoteFile`.
+message DeleteRemoteFileResponse {}
+
+// The request for a call to `RemoteFileService_BatchDeleteRemoteFiles` to delete remote files.
+message BatchDeleteRemoteFilesRequest {
+  // Up to 1000 remote file IDs can be provided per request.
+  repeated string remote_file_ids = 1;
+}
+
+// The response of a call to `RemoteFileService_BatchDeleteRemoteFiles`.
+message BatchDeleteRemoteFilesResponse {}
+
+// The request for a call to `RemoteFileService_UpdateRemoteFile` to update a remote file.
+message UpdateRemoteFileRequest {
+  // The remote file to update.
+  RemoteFile remote_file = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The list of fields to be updated. The fields available to be updated are `description`, `metadata_values`, and `metadata`.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The response of a call to `RemoteFileService_UpdateRemoteFile`.
+message UpdateRemoteFileResponse {
+  RemoteFile remote_file = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request for a call to `RemoteFileService_GetRemoteFileDownloadUrl`.
+message GetRemoteFileDownloadUrlRequest {
+  string remote_file_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The response of a call to `RemoteFileService_GetRemoteFileDownloadUrl`.
+message GetRemoteFileDownloadUrlResponse {
+  string download_url = 1 [(google.api.field_behavior) = REQUIRED];
+}
