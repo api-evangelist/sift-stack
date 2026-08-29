@@ -12,6 +12,18 @@ description: 'Sift (siftstack.com) is a unified observability platform for missi
   hosts, an anonymous remote MCP documentation server, and a second MCP server that ships inside the CLI
   and talks to a customer''s own Sift environment. Deployment spans SaaS, private cloud, on-premises,
   airgapped and AWS GovCloud, backed by SOC 2 Type II, NIST SP 800-171 and ITAR compliance.'
+deliveryModel:
+  model: unknown
+  open_source: unknown
+  commercial: true
+  callable_host: false
+  label: Delivery model not determined — needs a product licence on record
+  confidence: low
+  source:
+  - pricing
+  - repository-unlicensed
+  generated: '2026-08-28'
+  method: derived
 image: https://www.siftstack.com/favicon.ico
 url: https://raw.githubusercontent.com/api-evangelist/sift-stack/refs/heads/main/apis.yml
 x-type: company
@@ -1260,6 +1272,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/sift-stack-capability-edges.yml
+  name: Sift Stack Business Capability Map
 - type: Overlay
   url: overlays/sift-stack-openapi-overlay.yaml
 - type: Website
