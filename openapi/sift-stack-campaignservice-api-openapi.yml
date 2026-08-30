@@ -1,0 +1,908 @@
+openapi: 3.2.0
+info:
+  title: Sift Campaign Service API
+  version: '1.0'
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: CampaignService
+paths:
+  /api/v1/campaigns:
+    get:
+      summary: ListCampaigns
+      description: List campaigns.
+      operationId: CampaignService_ListCampaigns
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListCampaignsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of campaigns to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 campaigns will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListCampaigns` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListCampaigns` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are:
+
+          `created_by_user_id`, `tag_id`, `tag_name`, `report_id`, `report_name`, `campaign_id`, `client_key`, `description`, `run_id`, `name`, `is_archived`, and `metadata`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).
+
+          For more information about the fields used for filtering, please refer to this definition. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: organizationId
+        description: This field is only required if your user belongs to multiple organizations.
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: includeArchived
+        description: If `true` then archived campaigns will be included in the query. Defaults to `false`.
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: orderBy
+        description: 'How to order the retrieved campaigns. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `name`, `created_date` and `modified_date`.
+
+          If left empty, items are ordered by `created_date` in descending order (newest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date"'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: skipReportSummaries
+        description: 'If `true`, the response will omit the summary fields on each campaign''s reports
+
+          and set reports_include_summaries to false on the Campaign message.
+
+          Reports will still be included with report_id and report_name populated.
+
+          This significantly improves response times for campaigns with many reports. Defaults to `false`.'
+        in: query
+        required: false
+        schema:
+          type: boolean
+      tags:
+      - CampaignService
+    post:
+      summary: CreateCampaign
+      description: Create a campaign.
+      operationId: CampaignService_CreateCampaign
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateCampaignResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateCampaignRequest'
+        description: The request of a call to `CampaignService_CreateCampaign` to create a campaign.
+        required: true
+      tags:
+      - CampaignService
+    patch:
+      summary: UpdateCampaign
+      description: Updates an existing campaign using the list of fields specified in `update_mask`.
+      operationId: CampaignService_UpdateCampaign
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateCampaignResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1UpdateCampaignRequest'
+        description: 'The request for a call to `CampaignService_UpdateCampaign` to update a campaign. When updating
+
+          tags or rules, the update will perform a full replace. Additionally, when updating rules, only the rule ID or the rule client key
+
+          is required, but it is okay to provide both. If some rules contain only client keys and others only rule IDs, they will be consolidated.'
+        required: true
+      tags:
+      - CampaignService
+  /api/v1/campaigns/{campaignId}:
+    get:
+      summary: GetCampaign
+      description: Retrieve a campaign.
+      operationId: CampaignService_GetCampaign
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetCampaignResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: campaignId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientKey
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: organizationId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: skipReportSummaries
+        description: 'If `true`, the response will omit the summary fields on the campaign''s reports
+
+          and set reports_include_summaries to false on the Campaign message.
+
+          Reports will still be included with report_id and report_name populated.
+
+          This significantly improves response times for campaigns with many reports. Defaults to `false`.'
+        in: query
+        required: false
+        schema:
+          type: boolean
+      tags:
+      - CampaignService
+  /api/v1/campaigns/{campaignId}/annotations:
+    get:
+      summary: ListCampaignAnnotations
+      description: List annotations for a campaign.
+      operationId: CampaignService_ListCampaignAnnotations
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListCampaignAnnotationsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: campaignId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        description: 'The maximum number of annotations to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 annotations will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListAnnotations` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListAnnotations` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `annotation_id`, `start_time`, `end_time`,
+
+          `created_date`, `modified_date`, `run_id`, `name`, `description`, `state`, `created_by_user_id`, `created_by_rule_condition_version_id`,
+
+          `annotation_type`, `tag_name`, `report_id`, `asset_id`, `asset_name`, `pending`, `assignee`, and `metadata`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved annotations. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `created_date`, `modified_date`, `start_time`, and `end_time`.
+
+          If left empty, items are ordered by `created_date` in ascending order (oldest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - CampaignService
+  /api/v1/campaigns:report-summaries:
+    post:
+      summary: GetCampaignReportSummaries
+      description: Returns per-campaign report summaries in bulk.
+      operationId: CampaignService_GetCampaignReportSummaries
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetCampaignReportSummariesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1GetCampaignReportSummariesRequest'
+        required: true
+      tags:
+      - CampaignService
+  /v1/organizations/{organizationId}/campaigns/{clientKey}:
+    get:
+      summary: GetCampaign
+      description: Retrieve a campaign.
+      operationId: CampaignService_GetCampaign2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetCampaignResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientKey
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: skipReportSummaries
+        description: 'If `true`, the response will omit the summary fields on the campaign''s reports
+
+          and set reports_include_summaries to false on the Campaign message.
+
+          Reports will still be included with report_id and report_name populated.
+
+          This significantly improves response times for campaigns with many reports. Defaults to `false`.'
+        in: query
+        required: false
+        schema:
+          type: boolean
+      tags:
+      - CampaignService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1UpdateCampaignResponse:
+      type: object
+      properties:
+        campaign:
+          $ref: '#/components/schemas/v1Campaign'
+      description: The response of a call to `CampaignService_UpdateCampaign`.
+      required:
+      - campaign
+    v1CreateCampaignResponse:
+      type: object
+      properties:
+        campaign:
+          $ref: '#/components/schemas/v1Campaign'
+      description: The response of a call to `CampaignService_CreateCampaign` to create a campaign.
+      required:
+      - campaign
+    v1CampaignReports:
+      type: object
+      properties:
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1CampaignReport'
+      description: Wrapper for repeated CampaignReport used in map values (proto3 maps cannot directly contain repeated fields).
+    v1CreateCampaignFrom:
+      type: object
+      properties:
+        reports:
+          $ref: '#/components/schemas/v1ResourceIdentifiers'
+        runs:
+          $ref: '#/components/schemas/v1ResourceIdentifiers'
+        otherCampaign:
+          $ref: '#/components/schemas/v1ResourceIdentifier'
+      description: Campaigns can be created from a few different sources.
+    v1GetCampaignReportSummariesResponse:
+      type: object
+      properties:
+        summariesByCampaignId:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/v1CampaignReports'
+          description: 'Keyed by campaign_id. Each value contains the full list of CampaignReport
+
+            entries for that campaign with summary fields (num_*) populated.'
+    v1GetCampaignResponse:
+      type: object
+      properties:
+        campaign:
+          $ref: '#/components/schemas/v1Campaign'
+      description: The response of a call to `CampaignService_GetCampaign` to retrieve a campaign.
+      required:
+      - campaign
+    v1MetadataValue:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/v1MetadataKey'
+        stringValue:
+          type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+        relationValue:
+          $ref: '#/components/schemas/v1MetadataRelationValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
+      required:
+      - key
+    v1AnnotationLinkedCalculatedChannel:
+      type: object
+      properties:
+        calculatedChannelVersionId:
+          type: string
+      required:
+      - calculatedChannelVersionId
+    annotationsv1Annotation:
+      type: object
+      properties:
+        annotationId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        runId:
+          type: string
+        state:
+          $ref: '#/components/schemas/v1AnnotationState'
+        organizationId:
+          type: string
+        assignedToUserId:
+          type: string
+        annotationType:
+          $ref: '#/components/schemas/v1AnnotationType'
+        tags:
+          type: array
+          items:
+            type: string
+        legendConfig:
+          type: string
+        createdByConditionId:
+          type: string
+        createdByRuleConditionVersionId:
+          type: string
+        reportRuleVersionId:
+          type: string
+        pending:
+          type: boolean
+          description: 'An annotation is pending if it is part of an ongoing violation of a rule condition.
+
+            The `end_time` of a pending annotation might be set, but is not yet finalized.'
+          readOnly: true
+        assignedToUser:
+          $ref: '#/components/schemas/v1User'
+        deletedDate:
+          type: string
+          format: date-time
+        linkedChannels:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1AnnotationLinkedChannel'
+        assetIds:
+          type: array
+          items:
+            type: string
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          title: is_archived is a inferred from when archived_date is not null
+        batchedTriggers:
+          type: integer
+          format: int32
+        isNoisyRule:
+          type: boolean
+      required:
+      - annotationId
+      - name
+      - description
+      - startTime
+      - endTime
+      - createdByUserId
+      - modifiedByUserId
+      - createdDate
+      - modifiedDate
+      - organizationId
+      - annotationType
+      - tags
+      - isArchived
+      - batchedTriggers
+    v1Names:
+      type: object
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+      required:
+      - names
+    v1AnnotationLinkedChannelsBitFieldElement:
+      type: object
+      properties:
+        channelId:
+          type: string
+        bitFieldName:
+          type: string
+      required:
+      - channelId
+      - bitFieldName
+    v1ListCampaignsResponse:
+      type: object
+      properties:
+        campaigns:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1Campaign'
+        nextPageToken:
+          type: string
+      description: The response of a call to `CampaignService_ListCampaignsResponse`.
+    v1GetCampaignReportSummariesRequest:
+      type: object
+      properties:
+        campaignIds:
+          type: array
+          items:
+            type: string
+        organizationId:
+          type: string
+          description: This field is only required if your user belongs to multiple organizations.
+      required:
+      - campaignIds
+    v1AnnotationLinkedChannelsChannel:
+      type: object
+      properties:
+        channelId:
+          type: string
+      required:
+      - channelId
+    v1AnnotationState:
+      type: string
+      enum:
+      - ANNOTATION_STATE_UNSPECIFIED
+      - ANNOTATION_STATE_OPEN
+      - ANNOTATION_STATE_FLAGGED
+      - ANNOTATION_STATE_RESOLVED
+      default: ANNOTATION_STATE_UNSPECIFIED
+    v1AnnotationType:
+      type: string
+      enum:
+      - ANNOTATION_TYPE_UNSPECIFIED
+      - ANNOTATION_TYPE_DATA_REVIEW
+      - ANNOTATION_TYPE_PHASE
+      default: ANNOTATION_TYPE_UNSPECIFIED
+    v1ClientKeys:
+      type: object
+      properties:
+        clientKeys:
+          type: array
+          items:
+            type: string
+      required:
+      - clientKeys
+    v1Campaign:
+      type: object
+      properties:
+        campaignId:
+          type: string
+        organizationId:
+          type: string
+        clientKey:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        createdByUserId:
+          type: string
+          readOnly: true
+        modifiedByUserId:
+          type: string
+          readOnly: true
+        createdDate:
+          type: string
+          format: date-time
+          readOnly: true
+        modifiedDate:
+          type: string
+          format: date-time
+          readOnly: true
+        archivedDate:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1TagRef'
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1CampaignReport'
+          title: A campaign, at its core, is a list of reports
+        createdFromCampaignId:
+          type: string
+          title: If this campaign was created by duplicating another campaign, that other campaign will be referenced here
+          readOnly: true
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          title: User-defined metadata for this campaign
+        isArchived:
+          type: boolean
+          description: Whether the campaign. This is inferred from whether archived_date is set.
+        reportsIncludeSummaries:
+          type: boolean
+          description: 'Indicates whether the summary fields on CampaignReport (num_annotations,
+
+            num_passed_rules, num_accepted_rules, num_failed_rules, num_open_rules) are populated.
+
+            When false, those fields should be ignored -- use GetCampaignReportSummaries to
+
+            fetch the summary data separately.'
+          readOnly: true
+      required:
+      - campaignId
+      - name
+      - isArchived
+    v1CreateCampaignRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          title: The descriptive display name of the created campaign
+        description:
+          type: string
+          title: A custom description for the campaign
+        tags:
+          $ref: '#/components/schemas/v1NamedResources'
+        organizationId:
+          type: string
+          title: '`organization_id` is only required if your user belongs to multiple organizations'
+        clientKey:
+          type: string
+          description: User-specified unique identifier.
+        createFrom:
+          $ref: '#/components/schemas/v1CreateCampaignFrom'
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          title: User-defined metadata for this campaign
+      description: The request of a call to `CampaignService_CreateCampaign` to create a campaign.
+      required:
+      - name
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    v1CampaignReport:
+      type: object
+      properties:
+        reportId:
+          type: string
+          description: Direct reference to the report. Set this on the client to tell the backend which report you're referring to.
+        reportName:
+          type: string
+          readOnly: true
+        numAnnotations:
+          type: integer
+          format: int64
+          description: How many annotations exist under the report's various rules.
+          readOnly: true
+        numPassedRules:
+          type: integer
+          format: int64
+          description: How many rules from this report were never triggered and generated NO annotations.
+          readOnly: true
+        numAcceptedRules:
+          type: integer
+          format: int64
+          description: How many rules have annotations which are ALL marked as accepted.
+          readOnly: true
+        numFailedRules:
+          type: integer
+          format: int64
+          description: How many rules have ANY annotations which are marked as failed.
+          readOnly: true
+        numOpenRules:
+          type: integer
+          format: int64
+          description: How many rules have annotations of which SOME are marked as open and NONE are marked as failed.
+          readOnly: true
+      description: A top-level summary of the report's rules is provided here so clients needn't aggregate this information themselves.
+      required:
+      - reportId
+    v1UpdateCampaignRequest:
+      type: object
+      properties:
+        campaign:
+          $ref: '#/components/schemas/v1Campaign'
+        updateMask:
+          type: string
+          description: The list of fields to be updated. The fields available to be updated are `name`, `archived_date`, `is_archived`, `description`, `tags`, `reports`, and `metadata`.
+      description: 'The request for a call to `CampaignService_UpdateCampaign` to update a campaign. When updating
+
+        tags or rules, the update will perform a full replace. Additionally, when updating rules, only the rule ID or the rule client key
+
+        is required, but it is okay to provide both. If some rules contain only client keys and others only rule IDs, they will be consolidated.'
+      required:
+      - campaign
+      - updateMask
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
+    v1Organization:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        organizationName:
+          type: string
+        isAbacEnabled:
+          type: boolean
+      required:
+      - organizationId
+      - organizationName
+    v1User:
+      type: object
+      properties:
+        userId:
+          type: string
+        userName:
+          type: string
+        organizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1Organization'
+      required:
+      - userId
+      - userName
+    v1TagRef:
+      type: object
+      properties:
+        tagId:
+          type: string
+        name:
+          type: string
+      description: 'Points to a tag by name or tag_id.
+
+        When this message is used for a request, you can use either name or tag_id to refer to a tag.
+
+        When this message is returned in a response, both of the fields will be populated and valid.'
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1NamedResources:
+      type: object
+      properties:
+        ids:
+          $ref: '#/components/schemas/v1Ids'
+        names:
+          $ref: '#/components/schemas/v1Names'
+    v1Ids:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+      required:
+      - ids
+    v1ResourceIdentifier:
+      type: object
+      properties:
+        id:
+          type: string
+        clientKey:
+          type: string
+    v1ListCampaignAnnotationsResponse:
+      type: object
+      properties:
+        annotations:
+          type: array
+          items:
+            $ref: '#/components/schemas/annotationsv1Annotation'
+        nextPageToken:
+          type: string
+    v1ResourceIdentifiers:
+      type: object
+      properties:
+        ids:
+          $ref: '#/components/schemas/v1Ids'
+        clientKeys:
+          $ref: '#/components/schemas/v1ClientKeys'
+    v1AnnotationLinkedChannel:
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/v1AnnotationLinkedChannelsChannel'
+        bitFieldElement:
+          $ref: '#/components/schemas/v1AnnotationLinkedChannelsBitFieldElement'
+        calculatedChannel:
+          $ref: '#/components/schemas/v1AnnotationLinkedCalculatedChannel'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

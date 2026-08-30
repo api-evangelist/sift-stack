@@ -1,0 +1,263 @@
+openapi: 3.2.0
+info:
+  title: Sift Calculated Channels Service API
+  version: '1.0'
+  description: Service to programmatically interact with calculated channels.
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: CalculatedChannelsService
+  description: Service to programmatically interact with calculated channels.
+  externalDocs:
+    description: Read more about calculated channels.
+    url: https://customer.support.siftstack.com/servicedesk/customer/portal/2/article/265421153
+paths:
+  /api/v1/calculated-channels:expression-identifiers:
+    get:
+      summary: ListExpressionIdentifiers
+      description: Retrieves a list of valid identifiers that can be used as part of a calculated channel expression.
+      operationId: CalculatedChannelsService_ListExpressionIdentifiers
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListExpressionIdentifiersResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: Defaults to 1000. Max of 10,000.
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: mode
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - EXPRESSION_MODE_UNSPECIFIED
+          - EXPRESSION_MODE_RULES
+          - EXPRESSION_MODE_CALCULATED_CHANNELS
+          - EXPRESSION_MODE_RULER
+          - EXPRESSION_MODE_STRUCTURED_DATA
+          default: EXPRESSION_MODE_UNSPECIFIED
+      tags:
+      - CalculatedChannelsService
+  /api/v1/calculated-channels:validate-expression:
+    post:
+      summary: ValidateExpression
+      description: Used to validate whether or not an expression used for a calculated channel is valid.
+      operationId: CalculatedChannelsService_ValidateExpression
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ValidateExpressionResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1ValidateExpressionRequest'
+        required: true
+      tags:
+      - CalculatedChannelsService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1ExpressionMode:
+      type: string
+      enum:
+      - EXPRESSION_MODE_UNSPECIFIED
+      - EXPRESSION_MODE_RULES
+      - EXPRESSION_MODE_CALCULATED_CHANNELS
+      - EXPRESSION_MODE_RULER
+      - EXPRESSION_MODE_STRUCTURED_DATA
+      default: EXPRESSION_MODE_UNSPECIFIED
+    v1ExpressionIdentifierLibrary:
+      type: string
+      enum:
+      - EXPRESSION_IDENTIFIER_LIBRARY_UNSPECIFIED
+      - EXPRESSION_IDENTIFIER_LIBRARY_MATH
+      - EXPRESSION_IDENTIFIER_LIBRARY_STRING
+      - EXPRESSION_IDENTIFIER_LIBRARY_LIST
+      - EXPRESSION_IDENTIFIER_LIBRARY_ITER
+      - EXPRESSION_IDENTIFIER_LIBRARY_STATEFUL
+      - EXPRESSION_IDENTIFIER_LIBRARY_SUMMARY
+      - EXPRESSION_IDENTIFIER_LIBRARY_USER_DEFINED_FUNCTIONS
+      default: EXPRESSION_IDENTIFIER_LIBRARY_UNSPECIFIED
+    v1ValidateExpressionResponse:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/v1ErrorValidatingExpressionResult'
+        success:
+          $ref: '#/components/schemas/v1SuccessValidatingExpressionResult'
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1ListExpressionIdentifiersResponse:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ExpressionIdentifier'
+        nextPageToken:
+          type: string
+      required:
+      - identifiers
+    v1ExpressionChannelReference:
+      type: object
+      properties:
+        channelReference:
+          type: string
+        channelId:
+          type: string
+        calculatedChannel:
+          $ref: '#/components/schemas/v1ExpressionRequest'
+      required:
+      - channelReference
+      - channelId
+    v1ValidateExpressionRequest:
+      type: object
+      properties:
+        expression:
+          $ref: '#/components/schemas/v1ExpressionRequest'
+        mode:
+          $ref: '#/components/schemas/v1ExpressionMode'
+      required:
+      - expression
+      - mode
+    v1ExpressionIdentifier:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1ExpressionIdentifierType'
+        displayName:
+          type: string
+        library:
+          $ref: '#/components/schemas/v1ExpressionIdentifierLibrary'
+      required:
+      - name
+      - description
+      - type
+      - displayName
+      - library
+    v1ExpressionIdentifierType:
+      type: string
+      enum:
+      - EXPRESSION_IDENTIFIER_TYPE_UNSPECIFIED
+      - EXPRESSION_IDENTIFIER_TYPE_FUNCTION
+      - EXPRESSION_IDENTIFIER_TYPE_CHANNEL
+      default: EXPRESSION_IDENTIFIER_TYPE_UNSPECIFIED
+    v1ChannelDataType:
+      type: string
+      enum:
+      - CHANNEL_DATA_TYPE_UNSPECIFIED
+      - CHANNEL_DATA_TYPE_DOUBLE
+      - CHANNEL_DATA_TYPE_STRING
+      - CHANNEL_DATA_TYPE_ENUM
+      - CHANNEL_DATA_TYPE_BIT_FIELD
+      - CHANNEL_DATA_TYPE_BOOL
+      - CHANNEL_DATA_TYPE_FLOAT
+      - CHANNEL_DATA_TYPE_INT_32
+      - CHANNEL_DATA_TYPE_UINT_32
+      - CHANNEL_DATA_TYPE_INT_64
+      - CHANNEL_DATA_TYPE_UINT_64
+      - CHANNEL_DATA_TYPE_BYTES
+      default: CHANNEL_DATA_TYPE_UNSPECIFIED
+    v1SuccessValidatingExpressionResult:
+      type: object
+      properties:
+        dataType:
+          $ref: '#/components/schemas/v1ChannelDataType'
+      required:
+      - dataType
+    v1ErrorValidatingExpressionResult:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+      required:
+      - errorMessage
+    v1FunctionDependency:
+      type: object
+      properties:
+        userDefinedFunctionVersionId:
+          type: string
+      required:
+      - userDefinedFunctionVersionId
+    v1ExpressionRequest:
+      type: object
+      properties:
+        channelReferences:
+          type: object
+          additionalProperties:
+            type: string
+          description: 'A map from the channel reference in the expression string (e.g. $1) to the channel id (uuid).
+
+            This is deprecated and should be passed in expression_channel_references instead.'
+        expression:
+          type: string
+        expressionChannelReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ExpressionChannelReference'
+        functionDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionDependency'
+      required:
+      - expression
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

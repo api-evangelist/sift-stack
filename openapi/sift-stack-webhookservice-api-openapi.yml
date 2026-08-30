@@ -1,0 +1,778 @@
+openapi: 3.2.0
+info:
+  title: Sift Webhook Service API
+  version: '1.0'
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: WebhookService
+paths:
+  /api/v1/webhooks:
+    get:
+      summary: ListWebhooks
+      description: Retrieve and optionally filter a list of webhooks.
+      operationId: WebhookService_ListWebhooks
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListWebhooksResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of webhooks to return.
+
+          The service may return fewer than this value.
+
+          If unspecified, at most 50 runs will be returned.
+
+          The maximum value is 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListWebhooks` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListWebhooks` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `webhook_id`, `name`, `event_type`, `is_archived`, and `archived_date`.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved webhooks. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available field to order_by is `created_date`.
+
+          If left empty, items are ordered by `created_date` in ascending order (oldest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - WebhookService
+    post:
+      summary: CreateWebhook
+      description: Create a webhook.
+      operationId: WebhookService_CreateWebhook
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateWebhookResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateWebhookRequest'
+        description: The request for a call to `WebhookService_CreateWebhook` to create a webhook.
+        required: true
+      tags:
+      - WebhookService
+    patch:
+      summary: UpdateWebhook
+      description: Update select fields of an existing webhook.
+      operationId: WebhookService_UpdateWebhook
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateWebhookResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1UpdateWebhookRequest'
+        description: The request for a call to `WebhookService_UpdateWebhook` to update a webhook.
+        required: true
+      tags:
+      - WebhookService
+  /api/v1/webhooks/logs:
+    get:
+      summary: ListWebhookLogs
+      description: Retrieve and optionally filter a list of webhook logs.
+      operationId: WebhookService_ListWebhookLogs
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListWebhookLogsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of webhook logs to return.
+
+          The service may return fewer than this value.
+
+          If unspecified, at most 50 runs will be returned.
+
+          The maximum value is 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListWebhookLogs` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListWebhookLogs` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          The available fields to filter by are `webhook_id`, `status`.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved webhook logs. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available field to order_by is `created_date`.
+
+          If left empty, items are ordered by `created_date` in ascending order (oldest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - WebhookService
+  /api/v1/webhooks/logs:batch-create:
+    post:
+      summary: BatchCreateWebhookLogs
+      description: Create a batch of webhook logs. Users should not have to call this directly.
+      operationId: WebhookService_BatchCreateWebhookLogs
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchCreateWebhookLogsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchCreateWebhookLogsRequest'
+        description: The request for a call to `WebhookService_BatchCreateWebhookLogs` to create a batch of webhook logs.
+        required: true
+      tags:
+      - WebhookService
+  /api/v1/webhooks/signature-key:
+    get:
+      summary: GetWebhookSignatureKey
+      description: Retrieve the current webhook signature key. Will return a not found error if one doesn't yet exist.
+      operationId: WebhookService_GetWebhookSignatureKey
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetWebhookSignatureKeyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: organizationId
+        description: Optional organization ID.
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - WebhookService
+    post:
+      summary: CreateOrUpdateWebhookSignatureKey
+      description: Create a webhook signature key and set its activation state. If a webhook signature key is active, the bodies of all webhooks will be signed using the signature key with HMAC-SHA-256.The signature generated will then included in the `X-Sift-Signature` HTTP header. Only one key can be held per organization. If an existing key exists, then this will simply return it.See `WebhookService_RotateWebhookSignatureKey` to rotate the key.
+      operationId: WebhookService_CreateWebhookSignatureKey
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateWebhookSignatureKeyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateWebhookSignatureKeyRequest'
+        description: The request for a call to `WebhookService_CreateWebhookSignatureKey` to create a webhook signature key.
+        required: true
+      tags:
+      - WebhookService
+    put:
+      summary: ToggleWebhookSignatureKeyActivation
+      description: Generate a new webhook signature key and replace the previous one. The activation state of the new key will match the activation state of the previous.
+      operationId: WebhookService_RotateWebhookSignatureKey
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1RotateWebhookSignatureKeyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1RotateWebhookSignatureKeyRequest'
+        description: 'The request for a call to `WebhookService_RotateWebhookSignatureKey` replace the current webhook signature key
+
+          with a new one. The activation state of the new signature key will be inherited from the previous key. If no key
+
+          exists then this will return an error - see `WebhookService_CreateWebhookSignatureKey`.'
+        required: true
+      tags:
+      - WebhookService
+    patch:
+      summary: ToggleWebhookSignatureKeyActivation
+      description: Set the activation state of the organization's current webhook signature key. Will return a not found error if one doesn't yet exist.
+      operationId: WebhookService_ToggleWebhookSignatureKeyActivation
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ToggleWebhookSignatureKeyActivationResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1ToggleWebhookSignatureKeyActivationRequest'
+        description: 'The request for a call to `WebhookService_ToggleWebhookSignatureKeyActivation` to enable or disable the current
+
+          webhook signature key. Set `enable` to `true` to activate the signature key, and `false` to deactivate.'
+        required: true
+      tags:
+      - WebhookService
+  /api/v1/webhooks/{webhookId}:
+    get:
+      summary: GetWebhook
+      description: Retrieve a webhook by ID.
+      operationId: WebhookService_GetWebhook
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetWebhookResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: webhookId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - WebhookService
+  /api/v1/webhooks:test:
+    post:
+      summary: TestWebhook
+      description: Test an existing webhook or a webhook create request. This RPC will attempt to send an actual webhook with the provided parameters and forward back the response from the target.
+      operationId: WebhookService_TestWebhook
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1TestWebhookResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1TestWebhookRequest'
+        description: 'The request for a call to `WebhookService_TestWebhook` to test an existing webhook
+
+          or a webhook create request.'
+        required: true
+      tags:
+      - WebhookService
+components:
+  schemas:
+    v1CreateWebhookSignatureKeyResponse:
+      type: object
+      properties:
+        signatureKey:
+          $ref: '#/components/schemas/v1WebhookSignatureKey'
+      description: 'The response for a call to `WebhookService_CreateWebhookSignatureKey`. The `active` field indicates whether
+
+        or not whether the key is currently active.'
+      required:
+      - signatureKey
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1CreateWebhookLogRequest:
+      type: object
+      properties:
+        webhookId:
+          type: string
+        eventId:
+          type: string
+        retryAttemptNumber:
+          type: integer
+          format: int64
+        status:
+          $ref: '#/components/schemas/v1WebhookLogStatus'
+        payload:
+          type: string
+        errorReason:
+          type: string
+        sentDate:
+          type: string
+          format: date-time
+      description: Request to create a single webhook log entry.
+      required:
+      - webhookId
+      - eventId
+      - retryAttemptNumber
+      - status
+      - payload
+      - errorReason
+      - sentDate
+    v1WebhookSignatureKey:
+      type: object
+      properties:
+        signatureKey:
+          type: string
+        active:
+          type: boolean
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+      required:
+      - signatureKey
+      - active
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+    v1CreateWebhookResponse:
+      type: object
+      properties:
+        webhook:
+          $ref: '#/components/schemas/v1Webhook'
+      description: The response of a call to `WebhookService_CreateWebhook`.
+      required:
+      - webhook
+    v1UpdateWebhookRequest:
+      type: object
+      properties:
+        webhook:
+          $ref: '#/components/schemas/v1Webhook'
+        updateMask:
+          type: string
+          description: 'The list of fields to be updated. The fields available to be updated are
+
+            ''target_url'', ''name'', ''event_type'', ''payload'', ''http_headers'', ''archived_date'', ''is_archived''.'
+      description: The request for a call to `WebhookService_UpdateWebhook` to update a webhook.
+      required:
+      - webhook
+      - updateMask
+    v1ToggleWebhookSignatureKeyActivationResponse:
+      type: object
+      properties:
+        signatureKey:
+          $ref: '#/components/schemas/v1WebhookSignatureKey'
+      description: The response for a call to `WebhookService_ToggleWebhookSignatureKeyActivation`.
+      required:
+      - signatureKey
+    v1CreateWebhookRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        targetUrl:
+          type: string
+        eventType:
+          $ref: '#/components/schemas/v1WebhookEventType'
+        payload:
+          type: string
+        httpHeaders:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1WebhookHttpHeader'
+      description: The request for a call to `WebhookService_CreateWebhook` to create a webhook.
+      required:
+      - name
+      - targetUrl
+      - eventType
+      - httpHeaders
+    v1ListWebhooksResponse:
+      type: object
+      properties:
+        webhooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1Webhook'
+        nextPageToken:
+          type: string
+      description: The response of a call to `WebhookService_ListWebhooks`.
+      required:
+      - webhooks
+      - nextPageToken
+    v1WebhookHttpHeader:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+      required:
+      - name
+      - value
+    v1BatchCreateWebhookLogsRequest:
+      type: object
+      properties:
+        requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1CreateWebhookLogRequest'
+      description: The request for a call to `WebhookService_BatchCreateWebhookLogs` to create a batch of webhook logs.
+      required:
+      - requests
+    v1Webhook:
+      type: object
+      properties:
+        webhookId:
+          type: string
+        organizationId:
+          type: string
+        targetUrl:
+          type: string
+        name:
+          type: string
+        eventType:
+          $ref: '#/components/schemas/v1WebhookEventType'
+        payload:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        archivedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        httpHeaders:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1WebhookHttpHeader'
+        isArchived:
+          type: boolean
+      required:
+      - webhookId
+      - organizationId
+      - targetUrl
+      - name
+      - eventType
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - httpHeaders
+      - isArchived
+    v1TestWebhookRequest:
+      type: object
+      properties:
+        webhookId:
+          type: string
+        webhook:
+          $ref: '#/components/schemas/v1Webhook'
+        createRequest:
+          $ref: '#/components/schemas/v1CreateWebhookRequest'
+      description: 'The request for a call to `WebhookService_TestWebhook` to test an existing webhook
+
+        or a webhook create request.'
+    v1GetWebhookSignatureKeyResponse:
+      type: object
+      properties:
+        signatureKey:
+          $ref: '#/components/schemas/v1WebhookSignatureKey'
+      description: 'The response for a call to `WebhookService_GetWebhookSignatureKey`. The `active` field indicates whether
+
+        or not whether the key is currently active.'
+      required:
+      - signatureKey
+    v1UpdateWebhookResponse:
+      type: object
+      properties:
+        webhook:
+          $ref: '#/components/schemas/v1Webhook'
+      description: 'The response of a call to `WebhookService_UpdateWebhook`. To archive a webhook, specify `archived_date`
+
+        in the `update mask` as well as a non-null value for `archived_date` in the `webhook` object.
+
+        To unarchive a webhook, specify `archived_date` in the `update mask` and a `null` value for
+
+        `archived_date` in the `webhook` object.'
+      required:
+      - webhook
+    v1TestWebhookResponse:
+      type: object
+      properties:
+        httpResponseCode:
+          type: integer
+          format: int64
+        httpResponseBody:
+          type: string
+          format: byte
+      description: 'The response of a call to `WebhookService_TestWebhook`. The response code and body will come from the HTTP response
+
+        from the target URL.'
+      required:
+      - httpResponseCode
+      - httpResponseBody
+    v1WebhookLog:
+      type: object
+      properties:
+        webhookLogId:
+          type: string
+        webhookId:
+          type: string
+        eventId:
+          type: string
+        organizationId:
+          type: string
+        status:
+          $ref: '#/components/schemas/v1WebhookLogStatus'
+        payload:
+          type: string
+        retryAttemptNumber:
+          type: integer
+          format: int64
+        errorReason:
+          type: string
+        sentDate:
+          type: string
+          format: date-time
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+      required:
+      - webhookLogId
+      - webhookId
+      - eventId
+      - organizationId
+      - status
+      - retryAttemptNumber
+      - sentDate
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+    v1CreateWebhookSignatureKeyRequest:
+      type: object
+      description: The request for a call to `WebhookService_CreateWebhookSignatureKey` to create a webhook signature key.
+    v1WebhookLogStatus:
+      type: string
+      enum:
+      - WEBHOOK_LOG_STATUS_UNSPECIFIED
+      - WEBHOOK_LOG_STATUS_SENT
+      - WEBHOOK_LOG_STATUS_FAILED
+      - WEBHOOK_LOG_STATUS_RETRYING
+      default: WEBHOOK_LOG_STATUS_UNSPECIFIED
+    v1ListWebhookLogsResponse:
+      type: object
+      properties:
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1WebhookLog'
+        nextPageToken:
+          type: string
+      description: The response of a call to `WebhookService_ListWebhookLogsResponse`.
+      required:
+      - logs
+      - nextPageToken
+    v1RotateWebhookSignatureKeyResponse:
+      type: object
+      properties:
+        signatureKey:
+          $ref: '#/components/schemas/v1WebhookSignatureKey'
+      description: 'The response for a call to `WebhookService_RotateWebhookSignatureKey`. The `active` field indicates whether
+
+        or not whether the key is currently active.'
+      required:
+      - signatureKey
+    v1GetWebhookResponse:
+      type: object
+      properties:
+        webhook:
+          $ref: '#/components/schemas/v1Webhook'
+      description: The response of a call to `WebhookService_GetWebhook`.
+      required:
+      - webhook
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1BatchCreateWebhookLogsResponse:
+      type: object
+      description: The response of a call to `WebhookService_BatchCreateWebhookResponse`.
+    v1WebhookEventType:
+      type: string
+      enum:
+      - WEBHOOK_EVENT_TYPE_UNSPECIFIED
+      - WEBHOOK_EVENT_TYPE_RULE_VIOLATION
+      default: WEBHOOK_EVENT_TYPE_UNSPECIFIED
+    v1RotateWebhookSignatureKeyRequest:
+      type: object
+      description: 'The request for a call to `WebhookService_RotateWebhookSignatureKey` replace the current webhook signature key
+
+        with a new one. The activation state of the new signature key will be inherited from the previous key. If no key
+
+        exists then this will return an error - see `WebhookService_CreateWebhookSignatureKey`.'
+    v1ToggleWebhookSignatureKeyActivationRequest:
+      type: object
+      properties:
+        enable:
+          type: boolean
+      description: 'The request for a call to `WebhookService_ToggleWebhookSignatureKeyActivation` to enable or disable the current
+
+        webhook signature key. Set `enable` to `true` to activate the signature key, and `false` to deactivate.'
+      required:
+      - enable
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

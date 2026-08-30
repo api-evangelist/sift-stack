@@ -1,0 +1,449 @@
+openapi: 3.2.0
+info:
+  title: Sift Policy Service API
+  version: '1.0'
+  description: Service to manage ABAC policies.
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: PolicyService
+  description: Service to manage ABAC policies.
+paths:
+  /api/v1/policies:
+    get:
+      summary: ListPolicies
+      description: Retrieve policies using an optional filter.
+      operationId: PolicyService_ListPolicies
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListPoliciesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of policies to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 policies will be returned. The maximum value is 100; values above
+
+          100 will be coerced to 100. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListPolicies` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListPolicies` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `policy_id`, `organization_id`, `name`, `description`,
+
+          `created_by_user_id`, `modified_by_user_id`, `created_date`, and `modified_date`.
+
+          Archive state is controlled via the `include_archived` field below, not via filter.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved policies. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `created_date`, `modified_date`, and `name`.
+
+          If left empty, items are ordered by `created_date` in descending order (newest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date"'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: includeArchived
+        description: Whether to include archived policies in the response. If false or unset, archived policies are excluded.
+        in: query
+        required: false
+        schema:
+          type: boolean
+      tags:
+      - PolicyService
+    post:
+      summary: CreatePolicy
+      description: Create a new policy.
+      operationId: PolicyService_CreatePolicy
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreatePolicyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreatePolicyRequest'
+        description: The request for a call to `PolicyService_CreatePolicy` to create a new policy.
+        required: true
+      tags:
+      - PolicyService
+    patch:
+      summary: UpdatePolicy
+      description: Update a policy.
+      operationId: PolicyService_UpdatePolicy
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdatePolicyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1UpdatePolicyRequest'
+        description: The request for a call to `PolicyService_UpdatePolicy` to update a policy.
+        required: true
+      tags:
+      - PolicyService
+  /api/v1/policies/{policyId}:
+    get:
+      summary: GetPolicy
+      description: Retrieve a policy.
+      operationId: PolicyService_GetPolicy
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetPolicyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - PolicyService
+  /api/v1/policies/{policyId}/archive:
+    post:
+      summary: ArchivePolicy
+      description: Archive a policy.
+      operationId: PolicyService_ArchivePolicy
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ArchivePolicyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - PolicyService
+  /api/v1/policies/{policyId}/unarchive:
+    post:
+      summary: UnarchivePolicy
+      description: Unarchive a previously-archived policy.
+      operationId: PolicyService_UnarchivePolicy
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UnarchivePolicyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - PolicyService
+  /api/v1/policies:validate:
+    post:
+      summary: ValidatePolicy
+      description: Validate a Cedar policy configuration.
+      operationId: PolicyService_ValidatePolicy
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ValidatePolicyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1ValidatePolicyRequest'
+        description: The request for a call to `PolicyService_ValidatePolicy`.
+        required: true
+      tags:
+      - PolicyService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1UpdatePolicyResponse:
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/v1Policy'
+      description: The response of a call to `PolicyService_UpdatePolicy`.
+      required:
+      - policy
+    v1CreatePolicyResponse:
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/v1Policy'
+      description: The response of a call to `PolicyService_CreatePolicy`.
+      required:
+      - policy
+    v1CreatePolicyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        configuration:
+          $ref: '#/components/schemas/v1PolicyConfiguration'
+        versionNotes:
+          type: string
+          title: Optional notes for this version
+      description: The request for a call to `PolicyService_CreatePolicy` to create a new policy.
+      required:
+      - name
+      - configuration
+    v1ValidatePolicyResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+        failureMessage:
+          type: string
+      description: The response of a call to `PolicyService_ValidatePolicy`.
+      required:
+      - valid
+    v1ValidatePolicyRequest:
+      type: object
+      properties:
+        cedarPolicy:
+          type: string
+      description: The request for a call to `PolicyService_ValidatePolicy`.
+      required:
+      - cedarPolicy
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1UpdatePolicyRequest:
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/v1Policy'
+        updateMask:
+          type: string
+          description: The list of fields to be updated. The fields available to be updated are `name`, `description`, `configuration`, and `is_archived`.
+        versionNotes:
+          type: string
+          title: Optional notes for the new policy version when configuration changes
+      description: The request for a call to `PolicyService_UpdatePolicy` to update a policy.
+      required:
+      - policy
+      - updateMask
+    v1Policy:
+      type: object
+      properties:
+        policyId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        organizationId:
+          type: string
+          readOnly: true
+        createdByUserId:
+          type: string
+          readOnly: true
+        modifiedByUserId:
+          type: string
+          readOnly: true
+        createdDate:
+          type: string
+          format: date-time
+          readOnly: true
+        modifiedDate:
+          type: string
+          format: date-time
+          readOnly: true
+        configuration:
+          $ref: '#/components/schemas/v1PolicyConfiguration'
+        policyVersionId:
+          type: string
+          title: Reference to the current policy version ID
+          readOnly: true
+        archivedDate:
+          type: string
+          format: date-time
+          description: The date the policy was archived.
+          readOnly: true
+        isArchived:
+          type: boolean
+        version:
+          type: integer
+          format: int32
+          title: Optional version number for this policy
+          readOnly: true
+        versionNotes:
+          type: string
+          title: Optional notes for this version
+        generatedChangeMessage:
+          type: string
+          title: Auto-generated change message for this version
+          readOnly: true
+      required:
+      - policyId
+      - name
+      - organizationId
+      - createdByUserId
+      - modifiedByUserId
+      - createdDate
+      - modifiedDate
+      - configuration
+      - policyVersionId
+      - isArchived
+    v1PolicyConfiguration:
+      type: object
+      properties:
+        cedarPolicy:
+          type: string
+      title: 'PolicyConfiguration represents the configuration and rules for a policy.
+
+        Expects a string containing a policy in the Cedar format
+
+        https://docs.cedarpolicy.com/policies/syntax-policy.html'
+    v1UnarchivePolicyResponse:
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/v1Policy'
+      description: The response of a call to `PolicyService_UnarchivePolicy`.
+      required:
+      - policy
+    v1ArchivePolicyResponse:
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/v1Policy'
+      description: The response of a call to `PolicyService_ArchivePolicy`.
+      required:
+      - policy
+    v1ListPoliciesResponse:
+      type: object
+      properties:
+        policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1Policy'
+        nextPageToken:
+          type: string
+      description: The result of a call to `PolicyService_ListPolicies`.
+    v1GetPolicyResponse:
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/v1Policy'
+      description: The response of a call to `PolicyService_GetPolicy`.
+      required:
+      - policy
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,1393 @@
+openapi: 3.2.0
+info:
+  title: Sift Resource Attribute Service API
+  version: '1.0'
+  description: Service to manage ABAC resource attributes (entity attributes).
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: ResourceAttributeService
+  description: Service to manage ABAC resource attributes (entity attributes).
+paths:
+  /api/v1/entities/batch-resource-attributes:
+    post:
+      summary: Batch lists all resource-attributes for multiple entities. Excludes archived by default.
+      operationId: ResourceAttributeService_BatchListResourceAttributesByEntity
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchListResourceAttributesByEntityResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchListResourceAttributesByEntityRequest'
+        required: true
+      tags:
+      - ResourceAttributeService
+  /api/v1/entities/{entity.entityId}/resource-attributes:
+    get:
+      summary: Lists all resource-attributes for a specific entity. Excludes archived by default.
+      operationId: ResourceAttributeService_ListResourceAttributesByEntity
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListResourceAttributesByEntityResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: entity.entityId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: entity.entityType
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - RESOURCE_ATTRIBUTE_ENTITY_TYPE_UNSPECIFIED
+          - RESOURCE_ATTRIBUTE_ENTITY_TYPE_ASSET
+          - RESOURCE_ATTRIBUTE_ENTITY_TYPE_CHANNEL
+          - RESOURCE_ATTRIBUTE_ENTITY_TYPE_RUN
+          default: RESOURCE_ATTRIBUTE_ENTITY_TYPE_UNSPECIFIED
+      - name: includeArchived
+        description: Whether to include archived resource-attributes. Defaults to false.
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: pageSize
+        description: 'The maximum number of resource-attributes to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 resource-attributes will be returned. The maximum value is 100; values above
+
+          100 will be coerced to 100.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListResourceAttributesByEntity` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListResourceAttributesByEntity` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-enum-values:
+    post:
+      operationId: ResourceAttributeService_CreateResourceAttributeEnumValue
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateResourceAttributeEnumValueResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateResourceAttributeEnumValueRequest'
+        required: true
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-enum-values/batch-archive:
+    post:
+      summary: Archives multiple enum values and migrates all resource-attributes with those values to their respective replacement values.
+      operationId: ResourceAttributeService_BatchArchiveResourceAttributeEnumValues
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchArchiveResourceAttributeEnumValuesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchArchiveResourceAttributeEnumValuesRequest'
+        required: true
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-enum-values/batch-unarchive:
+    post:
+      summary: Unarchives multiple enum values BUT DOES NOT migrate resource-attributes with a replacement value back to the original value.
+      operationId: ResourceAttributeService_BatchUnarchiveResourceAttributeEnumValues
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchUnarchiveResourceAttributeEnumValuesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchUnarchiveResourceAttributeEnumValuesRequest'
+        required: true
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-enum-values/{archivedEnumValueId}/archive:
+    post:
+      summary: Archives an enum value and migrates all resource-attributes with that value to a replacement value.
+      operationId: ResourceAttributeService_ArchiveResourceAttributeEnumValue
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ArchiveResourceAttributeEnumValueResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: archivedEnumValueId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                replacementEnumValueId:
+                  type: string
+                  description: 'When the archived_enum_value_id is archived all resource-attributes that reference it will be migrated to the replacement_enum_value_id
+
+                    if provided. Otherwise, resource-attributes that reference it will be archived as well.'
+        required: true
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-enum-values/{resourceAttributeEnumValueId}:
+    get:
+      operationId: ResourceAttributeService_GetResourceAttributeEnumValue
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetResourceAttributeEnumValueResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: resourceAttributeEnumValueId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ResourceAttributeService
+    patch:
+      operationId: ResourceAttributeService_UpdateResourceAttributeEnumValue
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateResourceAttributeEnumValueResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: resourceAttributeEnumValueId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/PrincipalAttributeService_UpdatePrincipalAttributeEnumValueBody'
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-enum-values/{resourceAttributeEnumValueId}/unarchive:
+    post:
+      summary: Unarchives an enum value BUT DOES NOT migrate resource-attributes with a replacement value back to the original value.
+      operationId: ResourceAttributeService_UnarchiveResourceAttributeEnumValue
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UnarchiveResourceAttributeEnumValueResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: resourceAttributeEnumValueId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-keys:
+    get:
+      operationId: ResourceAttributeService_ListResourceAttributeKeys
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListResourceAttributeKeysResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of resource_attribute keys to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 resource_attribute keys will be returned. The maximum value is 100; values above
+
+          100 will be coerced to 100.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListResourceAttributeKeys` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListResourceAttributeKeys` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `resource_attribute_key_id`, `name`, `description`, `key_type`, and `created_date`.
+
+          Archive state is controlled via the `include_archived` field below, not via filter.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved resource_attribute keys. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `created_date`, `modified_date`, and `name`.
+
+          If left empty, items are ordered by `created_date` in descending order (newest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,name"'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: includeArchived
+        description: Whether to include archived resource_attribute keys. Defaults to false.
+        in: query
+        required: false
+        schema:
+          type: boolean
+      tags:
+      - ResourceAttributeService
+    post:
+      operationId: ResourceAttributeService_CreateResourceAttributeKey
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateResourceAttributeKeyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateResourceAttributeKeyRequest'
+        required: true
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-keys/batch-archive:
+    post:
+      summary: Archives multiple resource_attribute keys AND all their associated enum values AND all their associated resource-attributes.
+      operationId: ResourceAttributeService_BatchArchiveResourceAttributeKeys
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchArchiveResourceAttributeKeysResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchArchiveResourceAttributeKeysRequest'
+        required: true
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-keys/batch-unarchive:
+    post:
+      summary: Unarchives multiple resource_attribute keys BUT NOT their associated enum values OR resource-attributes.
+      operationId: ResourceAttributeService_BatchUnarchiveResourceAttributeKeys
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchUnarchiveResourceAttributeKeysResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchUnarchiveResourceAttributeKeysRequest'
+        required: true
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-keys/{resourceAttributeKeyId}:
+    get:
+      operationId: ResourceAttributeService_GetResourceAttributeKey
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetResourceAttributeKeyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: resourceAttributeKeyId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ResourceAttributeService
+    patch:
+      operationId: ResourceAttributeService_UpdateResourceAttributeKey
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateResourceAttributeKeyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: resourceAttributeKeyId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/PrincipalAttributeService_UpdatePrincipalAttributeEnumValueBody'
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-keys/{resourceAttributeKeyId}/archive:
+    post:
+      summary: Archives a resource_attribute key AND all its associated enum values AND all its associated resource-attributes.
+      operationId: ResourceAttributeService_ArchiveResourceAttributeKey
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ArchiveResourceAttributeKeyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: resourceAttributeKeyId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-keys/{resourceAttributeKeyId}/archive-impact:
+    get:
+      operationId: ResourceAttributeService_CheckResourceAttributeKeyArchiveImpact
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CheckResourceAttributeKeyArchiveImpactResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: resourceAttributeKeyId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-keys/{resourceAttributeKeyId}/enum-values:
+    get:
+      operationId: ResourceAttributeService_ListResourceAttributeEnumValues
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListResourceAttributeEnumValuesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: resourceAttributeKeyId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        description: 'The maximum number of enum values to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 enum values will be returned. The maximum value is 100; values above
+
+          100 will be coerced to 100.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListResourceAttributeEnumValues` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListResourceAttributeEnumValues` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `resource_attribute_enum_value_id`, `name`, `description`,
+
+          `created_by_user_id`, `modified_by_user_id`, `created_date`, and `modified_date`.
+
+          Archive state is controlled via the `include_archived` field below, not via filter.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved enum values. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `created_date`, `modified_date`, and `name`.
+
+          If left empty, items are ordered by `created_date` in descending order (newest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "name,created_date desc"'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: includeArchived
+        description: Whether to include archived enum values. Defaults to false.
+        in: query
+        required: false
+        schema:
+          type: boolean
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attribute-keys/{resourceAttributeKeyId}/unarchive:
+    post:
+      summary: Unarchives a resource_attribute key BUT NOT its associated enum values OR resource-attributes.
+      operationId: ResourceAttributeService_UnarchiveResourceAttributeKey
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UnarchiveResourceAttributeKeyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: resourceAttributeKeyId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attributes:
+    get:
+      operationId: ResourceAttributeService_ListResourceAttributes
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListResourceAttributesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of resource-attributes to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 resource-attributes will be returned. The maximum value is 100; values above
+
+          100 will be coerced to 100.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListResourceAttributes` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListResourceAttributes` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `resource_attribute_id`, `entity_id`, `entity_type`, `resource_attribute_key_id`,
+
+          `resource_attribute_enum_value_id`, `boolean_value`, `number_value`, `created_by_user_id`, and `created_date`.
+
+          Archive state is controlled via the `include_archived` field below, not via filter.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved resource-attributes. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `created_date` and `entity.entity_id`.
+
+          If left empty, items are ordered by `created_date` in descending order (newest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "entity.entity_id,created_date desc"'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: includeArchived
+        description: Whether to include archived resource-attributes. Defaults to false.
+        in: query
+        required: false
+        schema:
+          type: boolean
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attributes/batch:
+    post:
+      summary: Creates resource-attributes for multiple entities with the same key-value pair.
+      operationId: ResourceAttributeService_BatchCreateResourceAttributes
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchCreateResourceAttributesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchCreateResourceAttributesRequest'
+        required: true
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attributes/batch-archive:
+    post:
+      summary: Archives multiple resource-attributes.
+      operationId: ResourceAttributeService_BatchArchiveResourceAttributes
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchArchiveResourceAttributesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchArchiveResourceAttributesRequest'
+        required: true
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attributes/batch-unarchive:
+    post:
+      summary: Unarchives multiple resource-attributes.
+      operationId: ResourceAttributeService_BatchUnarchiveResourceAttributes
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchUnarchiveResourceAttributesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchUnarchiveResourceAttributesRequest'
+        required: true
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attributes/{resourceAttributeId}:
+    get:
+      operationId: ResourceAttributeService_GetResourceAttribute
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetResourceAttributeResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: resourceAttributeId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attributes/{resourceAttributeId}/archive:
+    post:
+      operationId: ResourceAttributeService_ArchiveResourceAttribute
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ArchiveResourceAttributeResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: resourceAttributeId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ResourceAttributeService
+  /api/v1/resource-attributes/{resourceAttributeId}/unarchive:
+    post:
+      operationId: ResourceAttributeService_UnarchiveResourceAttribute
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UnarchiveResourceAttributeResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: resourceAttributeId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ResourceAttributeService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1UpdateResourceAttributeKeyResponse:
+      type: object
+      properties:
+        resourceAttributeKey:
+          $ref: '#/components/schemas/v1ResourceAttributeKey'
+      required:
+      - resourceAttributeKey
+    v1BatchUnarchiveResourceAttributeKeysRequest:
+      type: object
+      properties:
+        resourceAttributeKeyIds:
+          type: array
+          items:
+            type: string
+      required:
+      - resourceAttributeKeyIds
+    v1BatchArchiveResourceAttributeEnumValuesRequestEnumValueArchival:
+      type: object
+      properties:
+        archivedEnumValueId:
+          type: string
+          description: The enum value ID to archive.
+        replacementEnumValueId:
+          type: string
+          description: 'When the archived_enum_value_id is archived all resource-attributes that reference it will be migrated to the replacement_enum_value_id
+
+            if provided. Otherwise, resource-attributes that reference it will be archived as well.'
+      required:
+      - archivedEnumValueId
+    v1CreateResourceAttributeKeyRequest:
+      type: object
+      properties:
+        displayName:
+          type: string
+        description:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1ResourceAttributeKeyType'
+        initialEnumValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1CreateResourceAttributeKeyRequestInitialEnumValue'
+          description: Optional initial enum values to create alongside the key. Only applicable for ENUM type keys.
+      title: ResourceAttribute Key RPC messages
+      required:
+      - displayName
+      - type
+    v1BatchUnarchiveResourceAttributesResponse:
+      type: object
+    v1ResourceAttributeEnumValue:
+      type: object
+      properties:
+        resourceAttributeEnumValueId:
+          type: string
+          readOnly: true
+        resourceAttributeKeyId:
+          type: string
+          readOnly: true
+        displayName:
+          type: string
+        description:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+          readOnly: true
+        createdByUserId:
+          type: string
+          readOnly: true
+        modifiedDate:
+          type: string
+          format: date-time
+          readOnly: true
+        modifiedByUserId:
+          type: string
+          readOnly: true
+        archivedDate:
+          type: string
+          format: date-time
+          readOnly: true
+        isArchived:
+          type: boolean
+          description: Whether or not the enum value is archived. This is inferred from whether archived_date is set.
+          readOnly: true
+      description: 'Represents a possible enumerable value for ENUM type resource_attribute keys.
+
+        Users can add new enum values as needed.'
+      required:
+      - resourceAttributeEnumValueId
+      - resourceAttributeKeyId
+      - displayName
+      - createdDate
+      - createdByUserId
+      - modifiedDate
+      - modifiedByUserId
+    v1BatchUnarchiveResourceAttributesRequest:
+      type: object
+      properties:
+        resourceAttributeIds:
+          type: array
+          items:
+            type: string
+      required:
+      - resourceAttributeIds
+    v1CreateResourceAttributeKeyRequestInitialEnumValue:
+      type: object
+      properties:
+        displayName:
+          type: string
+        description:
+          type: string
+      description: Nested message for initial enum values in create requests.
+      required:
+      - displayName
+    v1ListResourceAttributeKeysResponse:
+      type: object
+      properties:
+        resourceAttributeKeys:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ResourceAttributeKey'
+        nextPageToken:
+          type: string
+    v1BatchArchiveResourceAttributeKeysRequest:
+      type: object
+      properties:
+        resourceAttributeKeyIds:
+          type: array
+          items:
+            type: string
+      required:
+      - resourceAttributeKeyIds
+    v1BatchListResourceAttributesByEntityResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchListResourceAttributesByEntityResponseEntityResourceAttributes'
+    v1BatchArchiveResourceAttributeEnumValuesResponse:
+      type: object
+      properties:
+        totalResourceAttributesMigrated:
+          type: integer
+          format: int32
+          description: 'Total number of resource-attributes migrated or archived across all enum value operations.
+
+            This includes both attributes migrated to replacement values and attributes archived without replacement.'
+    v1ArchiveResourceAttributeEnumValueResponse:
+      type: object
+      properties:
+        resourceAttributesMigrated:
+          type: integer
+          format: int32
+          description: 'Total number of resource-attributes migrated or archived by this operation.
+
+            When a replacement enum value is provided, this represents attributes migrated to the new value.
+
+            When no replacement is provided, this represents attributes that were archived.'
+    v1ListResourceAttributesResponse:
+      type: object
+      properties:
+        resourceAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ResourceAttribute'
+        nextPageToken:
+          type: string
+    v1ResourceAttributeKeyType:
+      type: string
+      enum:
+      - RESOURCE_ATTRIBUTE_KEY_TYPE_UNSPECIFIED
+      - RESOURCE_ATTRIBUTE_KEY_TYPE_ENUM
+      - RESOURCE_ATTRIBUTE_KEY_TYPE_BOOLEAN
+      - RESOURCE_ATTRIBUTE_KEY_TYPE_NUMBER
+      - RESOURCE_ATTRIBUTE_KEY_TYPE_SET_OF_ENUM
+      default: RESOURCE_ATTRIBUTE_KEY_TYPE_UNSPECIFIED
+      description: Values become selectable enumerable options.
+    v1ResourceAttribute:
+      type: object
+      properties:
+        resourceAttributeId:
+          type: string
+          readOnly: true
+        organizationId:
+          type: string
+          readOnly: true
+        entity:
+          $ref: '#/components/schemas/v1ResourceAttributeEntityIdentifier'
+        resourceAttributeKeyId:
+          type: string
+          readOnly: true
+        key:
+          $ref: '#/components/schemas/v1ResourceAttributeKey'
+        resourceAttributeEnumValueId:
+          type: string
+        booleanValue:
+          type: boolean
+        numberValue:
+          type: string
+          format: int64
+        enumValueDetails:
+          $ref: '#/components/schemas/v1ResourceAttributeEnumValue'
+        createdDate:
+          type: string
+          format: date-time
+          description: The timestamp when the relation between the Entity and ResourceAttribute Key and Value was created.
+          readOnly: true
+        createdByUserId:
+          type: string
+          readOnly: true
+        archivedDate:
+          type: string
+          format: date-time
+          readOnly: true
+        isArchived:
+          type: boolean
+          description: Whether or not the resource attribute is archived. This is inferred from whether archived_date is set.
+          readOnly: true
+      description: Represents the assignment of a resource_attribute key-value pair to an entity (asset or channel).
+      required:
+      - resourceAttributeId
+      - organizationId
+      - entity
+      - resourceAttributeKeyId
+      - createdDate
+      - createdByUserId
+    v1CreateResourceAttributeKeyResponse:
+      type: object
+      properties:
+        resourceAttributeKey:
+          $ref: '#/components/schemas/v1ResourceAttributeKey'
+        enumValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ResourceAttributeEnumValue'
+          description: The enum values created alongside the key, if any were provided in the request.
+      required:
+      - resourceAttributeKey
+    v1CreateResourceAttributeEnumValueRequest:
+      type: object
+      properties:
+        resourceAttributeKeyId:
+          type: string
+        displayName:
+          type: string
+        description:
+          type: string
+      title: ResourceAttribute Enum Value RPC messages
+      required:
+      - resourceAttributeKeyId
+      - displayName
+    v1ResourceAttributeEntityIdentifier:
+      type: object
+      properties:
+        entityId:
+          type: string
+        entityType:
+          $ref: '#/components/schemas/v1ResourceAttributeEntityType'
+      description: Represents an entity to which a resource_attribute will be assigned.
+      required:
+      - entityId
+      - entityType
+    v1UnarchiveResourceAttributeResponse:
+      type: object
+    v1BatchListResourceAttributesByEntityRequest:
+      type: object
+      properties:
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ResourceAttributeEntityIdentifier'
+        includeArchived:
+          type: boolean
+          description: Whether to include archived resource-attributes. Defaults to false.
+      required:
+      - entities
+    v1BatchUnarchiveResourceAttributeKeysResponse:
+      type: object
+    v1BatchCreateResourceAttributesResponse:
+      type: object
+      properties:
+        resourceAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ResourceAttribute'
+    v1UpdateResourceAttributeEnumValueResponse:
+      type: object
+      properties:
+        resourceAttributeEnumValue:
+          $ref: '#/components/schemas/v1ResourceAttributeEnumValue'
+      required:
+      - resourceAttributeEnumValue
+    v1BatchCreateResourceAttributesRequest:
+      type: object
+      properties:
+        resourceAttributeKeyId:
+          type: string
+        resourceAttributeEnumValueId:
+          type: string
+          description: 'For ENUM type: exactly one enum value ID.'
+        resourceAttributeEnumValueIds:
+          $ref: '#/components/schemas/v1ResourceAttributeEnumValueIdList'
+        booleanValue:
+          type: boolean
+        numberValue:
+          type: string
+          format: int64
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ResourceAttributeEntityIdentifier'
+      title: ResourceAttribute RPC messages
+      required:
+      - resourceAttributeKeyId
+      - entities
+    v1GetResourceAttributeResponse:
+      type: object
+      properties:
+        resourceAttribute:
+          $ref: '#/components/schemas/v1ResourceAttribute'
+      required:
+      - resourceAttribute
+    v1BatchArchiveResourceAttributesRequest:
+      type: object
+      properties:
+        resourceAttributeIds:
+          type: array
+          items:
+            type: string
+      required:
+      - resourceAttributeIds
+    v1BatchUnarchiveResourceAttributeEnumValuesResponse:
+      type: object
+    v1ArchiveResourceAttributeKeyResponse:
+      type: object
+    v1ResourceAttributeKey:
+      type: object
+      properties:
+        resourceAttributeKeyId:
+          type: string
+          readOnly: true
+        organizationId:
+          type: string
+          readOnly: true
+        displayName:
+          type: string
+        description:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1ResourceAttributeKeyType'
+        createdDate:
+          type: string
+          format: date-time
+          readOnly: true
+        createdByUserId:
+          type: string
+          readOnly: true
+        modifiedDate:
+          type: string
+          format: date-time
+          readOnly: true
+        modifiedByUserId:
+          type: string
+          readOnly: true
+        archivedDate:
+          type: string
+          format: date-time
+          readOnly: true
+        isArchived:
+          type: boolean
+          description: Whether or not the key is archived. This is inferred from whether archived_date is set.
+          readOnly: true
+      description: A ResourceAttribute Key defines an attribute that can be assigned to Entities for the purpose of attribute based access control (ABAC).
+      required:
+      - resourceAttributeKeyId
+      - organizationId
+      - displayName
+      - type
+      - createdDate
+      - createdByUserId
+      - modifiedDate
+      - modifiedByUserId
+    v1ResourceAttributeEnumValueIdList:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+    v1CheckResourceAttributeKeyArchiveImpactResponse:
+      type: object
+      properties:
+        activeResourceAttributeAssignmentCount:
+          type: string
+          format: int64
+          description: The number of active resource attribute assignments that will be affected by archiving this key.
+    v1BatchUnarchiveResourceAttributeEnumValuesRequest:
+      type: object
+      properties:
+        resourceAttributeEnumValueIds:
+          type: array
+          items:
+            type: string
+      required:
+      - resourceAttributeEnumValueIds
+    v1GetResourceAttributeEnumValueResponse:
+      type: object
+      properties:
+        resourceAttributeEnumValue:
+          $ref: '#/components/schemas/v1ResourceAttributeEnumValue'
+      required:
+      - resourceAttributeEnumValue
+    v1UnarchiveResourceAttributeKeyResponse:
+      type: object
+    v1ListResourceAttributeEnumValuesResponse:
+      type: object
+      properties:
+        resourceAttributeEnumValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ResourceAttributeEnumValue'
+        nextPageToken:
+          type: string
+    v1ResourceAttributeEntityType:
+      type: string
+      enum:
+      - RESOURCE_ATTRIBUTE_ENTITY_TYPE_UNSPECIFIED
+      - RESOURCE_ATTRIBUTE_ENTITY_TYPE_ASSET
+      - RESOURCE_ATTRIBUTE_ENTITY_TYPE_CHANNEL
+      - RESOURCE_ATTRIBUTE_ENTITY_TYPE_RUN
+      default: RESOURCE_ATTRIBUTE_ENTITY_TYPE_UNSPECIFIED
+    v1GetResourceAttributeKeyResponse:
+      type: object
+      properties:
+        resourceAttributeKey:
+          $ref: '#/components/schemas/v1ResourceAttributeKey'
+      required:
+      - resourceAttributeKey
+    v1ArchiveResourceAttributeResponse:
+      type: object
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    BatchListResourceAttributesByEntityResponseEntityResourceAttributes:
+      type: object
+      properties:
+        entity:
+          $ref: '#/components/schemas/v1ResourceAttributeEntityIdentifier'
+        resourceAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ResourceAttribute'
+          title: All resource-attributes for this entity
+      required:
+      - entity
+    v1BatchArchiveResourceAttributeEnumValuesRequest:
+      type: object
+      properties:
+        archivalRequests:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1BatchArchiveResourceAttributeEnumValuesRequestEnumValueArchival'
+      required:
+      - archivalRequests
+    v1ListResourceAttributesByEntityResponse:
+      type: object
+      properties:
+        resourceAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ResourceAttribute'
+        nextPageToken:
+          type: string
+    v1UnarchiveResourceAttributeEnumValueResponse:
+      type: object
+    v1BatchArchiveResourceAttributeKeysResponse:
+      type: object
+    v1BatchArchiveResourceAttributesResponse:
+      type: object
+    v1CreateResourceAttributeEnumValueResponse:
+      type: object
+      properties:
+        resourceAttributeEnumValue:
+          $ref: '#/components/schemas/v1ResourceAttributeEnumValue'
+      required:
+      - resourceAttributeEnumValue
+  requestBodies:
+    PrincipalAttributeService_UpdatePrincipalAttributeEnumValueBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              displayName:
+                type: string
+              description:
+                type: string
+              updateMask:
+                type: string
+                description: The list of fields to be updated. The fields available to be updated are `description` and `archived_date`.
+            required:
+            - updateMask
+      required: true
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

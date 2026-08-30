@@ -1,0 +1,590 @@
+openapi: 3.2.0
+info:
+  title: Sift Automation Service API
+  version: '1.0'
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: AutomationService
+paths:
+  /api/v1/automation-triggered-events:
+    get:
+      summary: ListAutomationTriggeredEvents
+      description: Retrieve and optionally filter a list of automation triggered events.
+      operationId: AutomationService_ListAutomationTriggeredEvents
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListAutomationTriggeredEventsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'CEL filter. Available fields: `automation_triggered_event_id`,
+
+          `automation_trigger_id`, `run_id`, `state`.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'Order-by. Available fields: `created_date`, `dispatch_after`.
+
+          Default: `created_date desc`.'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - AutomationService
+  /api/v1/automation-triggers:
+    get:
+      summary: ListAutomationTriggers
+      description: Retrieve and optionally filter a list of automation triggers.
+      operationId: AutomationService_ListAutomationTriggers
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListAutomationTriggersResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'CEL filter. Available fields: `automation_trigger_id`, `canvas_id`,
+
+          `name`, `action_kind`, `is_enabled`, `is_archived`, `archived_date`.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'Order-by. Available fields: `created_date`, `modified_date`, `name`.
+
+          Default: `created_date desc`.'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - AutomationService
+    post:
+      summary: CreateAutomationTrigger
+      description: Create an automation trigger.
+      operationId: AutomationService_CreateAutomationTrigger
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateAutomationTriggerResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateAutomationTriggerRequest'
+        description: The request for a call to `AutomationService_CreateAutomationTrigger`.
+        required: true
+      tags:
+      - AutomationService
+    patch:
+      summary: UpdateAutomationTrigger
+      description: Update select fields of an existing automation trigger.
+      operationId: AutomationService_UpdateAutomationTrigger
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateAutomationTriggerResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1UpdateAutomationTriggerRequest'
+        description: 'The request for a call to `AutomationService_UpdateAutomationTrigger`.
+
+          The trigger''s `automation_trigger_id` is used to identify the row; every
+
+          other field is applied only when named in `update_mask`.'
+        required: true
+      tags:
+      - AutomationService
+  /api/v1/automation-triggers/{automationTriggerId}:
+    get:
+      summary: GetAutomationTrigger
+      description: Retrieve an automation trigger by ID.
+      operationId: AutomationService_GetAutomationTrigger
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetAutomationTriggerResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: automationTriggerId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - AutomationService
+    delete:
+      summary: DeleteAutomationTrigger
+      description: Soft-delete an automation trigger by setting its archived_date.
+      operationId: AutomationService_DeleteAutomationTrigger
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1DeleteAutomationTriggerResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: automationTriggerId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - AutomationService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1AutomationTriggerActionKind:
+      type: string
+      enum:
+      - AUTOMATION_TRIGGER_ACTION_KIND_UNSPECIFIED
+      - AUTOMATION_TRIGGER_ACTION_KIND_CANVAS_EVALUATION
+      default: AUTOMATION_TRIGGER_ACTION_KIND_UNSPECIFIED
+      description: 'AutomationTriggerActionKind is what an automation trigger does when it fires.
+
+        v1 supports `AUTOMATION_TRIGGER_ACTION_KIND_CANVAS_EVALUATION` only; the
+
+        enum is kept so future dispatch types (webhook, email, ...) can be added
+
+        without a breaking change.'
+    v1AutomationTriggerRunNameMatch:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/v1AutomationTriggerRunNameMatchKind'
+        value:
+          type: string
+      description: AutomationTriggerRunNameMatch expresses a filter against runs.name.
+      required:
+      - kind
+      - value
+    v1AutomationTrigger:
+      type: object
+      properties:
+        automationTriggerId:
+          type: string
+        organizationId:
+          type: string
+        canvasId:
+          type: string
+        name:
+          type: string
+        matchFilter:
+          $ref: '#/components/schemas/v1AutomationTriggerMatchFilter'
+        userId:
+          type: string
+          description: 'Impersonation user materialized at create time. Recheck happens at
+
+            dispatch when the automation worker impersonates this user for the
+
+            EvaluateCanvas call.'
+        actionKind:
+          $ref: '#/components/schemas/v1AutomationTriggerActionKind'
+        actionParams:
+          $ref: '#/components/schemas/v1AutomationTriggerActionParams'
+        isEnabled:
+          type: boolean
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+      required:
+      - automationTriggerId
+      - organizationId
+      - canvasId
+      - name
+      - matchFilter
+      - userId
+      - actionKind
+      - isEnabled
+      - isArchived
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+    v1GetAutomationTriggerResponse:
+      type: object
+      properties:
+        automationTrigger:
+          $ref: '#/components/schemas/v1AutomationTrigger'
+      description: The response of a call to `AutomationService_GetAutomationTrigger`.
+      required:
+      - automationTrigger
+    v1UpdateAutomationTriggerResponse:
+      type: object
+      properties:
+        automationTrigger:
+          $ref: '#/components/schemas/v1AutomationTrigger'
+      description: 'The response of a call to `AutomationService_UpdateAutomationTrigger`.
+
+        To archive a trigger, include `archived_date` in the mask and set the
+
+        field. To unarchive, include `archived_date` in the mask and clear it.'
+      required:
+      - automationTrigger
+    v1AutomationTriggeredEvent:
+      type: object
+      properties:
+        automationTriggeredEventId:
+          type: string
+        organizationId:
+          type: string
+        automationTriggerId:
+          type: string
+        runId:
+          type: string
+        state:
+          $ref: '#/components/schemas/v1AutomationTriggeredEventState'
+        dispatchAfter:
+          type: string
+          format: date-time
+        canvasExecutionId:
+          type: string
+        attemptCount:
+          type: integer
+          format: int32
+        lastError:
+          type: string
+        terminalDate:
+          type: string
+          format: date-time
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+      description: 'AutomationTriggeredEvent is one (automation_trigger, run) match. When
+
+        dispatch succeeds, `canvas_execution_id` points at the resulting
+
+        canvas_executions row (and published report, when publish=true).'
+      required:
+      - automationTriggeredEventId
+      - organizationId
+      - automationTriggerId
+      - runId
+      - state
+      - dispatchAfter
+      - attemptCount
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+    v1AutomationTriggeredEventState:
+      type: string
+      enum:
+      - AUTOMATION_TRIGGERED_EVENT_STATE_UNSPECIFIED
+      - AUTOMATION_TRIGGERED_EVENT_STATE_WAITING
+      - AUTOMATION_TRIGGERED_EVENT_STATE_DISPATCHING
+      - AUTOMATION_TRIGGERED_EVENT_STATE_DONE
+      - AUTOMATION_TRIGGERED_EVENT_STATE_FAILED
+      - AUTOMATION_TRIGGERED_EVENT_STATE_CANCELLED
+      default: AUTOMATION_TRIGGERED_EVENT_STATE_UNSPECIFIED
+      description: 'AutomationTriggeredEventState is the lifecycle of a single
+
+        (automation_trigger, run) match / dispatch attempt.'
+    v1UpdateAutomationTriggerRequest:
+      type: object
+      properties:
+        automationTrigger:
+          $ref: '#/components/schemas/v1AutomationTrigger'
+        updateMask:
+          type: string
+      description: 'The request for a call to `AutomationService_UpdateAutomationTrigger`.
+
+        The trigger''s `automation_trigger_id` is used to identify the row; every
+
+        other field is applied only when named in `update_mask`.'
+      required:
+      - automationTrigger
+      - updateMask
+    v1ListAutomationTriggeredEventsResponse:
+      type: object
+      properties:
+        automationTriggeredEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1AutomationTriggeredEvent'
+        nextPageToken:
+          type: string
+      description: The response of a call to `AutomationService_ListAutomationTriggeredEvents`.
+      required:
+      - automationTriggeredEvents
+      - nextPageToken
+    v1AutomationTriggerMetadataMatch:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+      description: 'AutomationTriggerMetadataMatch is an equality filter against a run''s
+
+        entity-metadata key/value. Key names are case-sensitive. Values are
+
+        compared as strings (numbers/booleans are stringified with Go''s default
+
+        formatting). All listed matches are AND''d together.'
+      required:
+      - key
+      - value
+    v1AutomationTriggerActionParams:
+      type: object
+      properties:
+        canvasEvaluation:
+          $ref: '#/components/schemas/v1CanvasEvaluationActionParams'
+      description: 'AutomationTriggerActionParams is the public action_params shape. oneof by
+
+        action kind so future dispatch types (webhook, email, ...) don''t fall back
+
+        to google.protobuf.Struct.'
+    v1CreateAutomationTriggerRequest:
+      type: object
+      properties:
+        canvasId:
+          type: string
+        name:
+          type: string
+        matchFilter:
+          $ref: '#/components/schemas/v1AutomationTriggerMatchFilter'
+        actionKind:
+          $ref: '#/components/schemas/v1AutomationTriggerActionKind'
+        actionParams:
+          $ref: '#/components/schemas/v1AutomationTriggerActionParams'
+        isEnabled:
+          type: boolean
+      description: The request for a call to `AutomationService_CreateAutomationTrigger`.
+      required:
+      - canvasId
+      - name
+      - matchFilter
+      - actionKind
+    v1ListAutomationTriggersResponse:
+      type: object
+      properties:
+        automationTriggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1AutomationTrigger'
+        nextPageToken:
+          type: string
+      description: The response of a call to `AutomationService_ListAutomationTriggers`.
+      required:
+      - automationTriggers
+      - nextPageToken
+    v1CanvasEvaluationActionParams:
+      type: object
+      properties:
+        canvasVersionId:
+          type: string
+        paramJson:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/v1AutomationTriggerParamValue'
+      description: 'CanvasEvaluationActionParams is the typed template for
+
+        AUTOMATION_TRIGGER_ACTION_KIND_CANVAS_EVALUATION. Wildcards in param_json
+
+        are resolved into automation_triggered_events.action_params_snapshot;
+
+        the automation worker pass-throughs that snapshot to EvaluateCanvas.'
+      required:
+      - canvasVersionId
+    v1AutomationTriggerRunNameMatchKind:
+      type: string
+      enum:
+      - AUTOMATION_TRIGGER_RUN_NAME_MATCH_KIND_UNSPECIFIED
+      - AUTOMATION_TRIGGER_RUN_NAME_MATCH_KIND_STARTS_WITH
+      - AUTOMATION_TRIGGER_RUN_NAME_MATCH_KIND_ENDS_WITH
+      - AUTOMATION_TRIGGER_RUN_NAME_MATCH_KIND_CONTAINS
+      - AUTOMATION_TRIGGER_RUN_NAME_MATCH_KIND_REGEX
+      default: AUTOMATION_TRIGGER_RUN_NAME_MATCH_KIND_UNSPECIFIED
+      description: 'AutomationTriggerRunNameMatchKind is the operator on runs.name in an
+
+        automation trigger match filter.'
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1AutomationTriggerMatchFilter:
+      type: object
+      properties:
+        assetIds:
+          type: array
+          items:
+            type: string
+        nameMatch:
+          $ref: '#/components/schemas/v1AutomationTriggerRunNameMatch'
+        metadataMatches:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1AutomationTriggerMetadataMatch'
+      description: 'AutomationTriggerMatchFilter is the selector evaluated asynchronously
+
+        after StopRun. StopRun inserts an automation_source_event (RUN_STOP); the
+
+        automation_worker then pages through the org''s enabled, non-archived
+
+        automation_triggers and enqueues a row for each trigger whose
+
+        match_filter accepts the run (the trigger''s canvas_id identifies which
+
+        canvas to evaluate later — runs themselves have no canvas association).
+
+        Empty asset_ids matches any asset; absent name_match matches any name;
+
+        empty metadata_matches matches any metadata. Dimensions are AND''d.
+
+        Name matching for STARTS_WITH / ENDS_WITH / CONTAINS is case-insensitive;
+
+        REGEX uses Go regexp semantics (add (?i) for case-insensitive patterns).'
+    v1DeleteAutomationTriggerResponse:
+      type: object
+      description: The response of a call to `AutomationService_DeleteAutomationTrigger`.
+    v1AutomationTriggerParamSource:
+      type: string
+      enum:
+      - AUTOMATION_TRIGGER_PARAM_SOURCE_UNSPECIFIED
+      - AUTOMATION_TRIGGER_PARAM_SOURCE_TRIGGERING_RUN
+      - AUTOMATION_TRIGGER_PARAM_SOURCE_TRIGGERING_RUN_ASSETS
+      default: AUTOMATION_TRIGGER_PARAM_SOURCE_UNSPECIFIED
+      description: "AutomationTriggerParamSource is a wildcard resolved against the triggering\nrun when the match job builds action_params_snapshot.\n\n - AUTOMATION_TRIGGER_PARAM_SOURCE_TRIGGERING_RUN: Resolves to the triggering run's run_id (string).\n - AUTOMATION_TRIGGER_PARAM_SOURCE_TRIGGERING_RUN_ASSETS: Resolves to the triggering run's asset_ids (string array)."
+    v1AutomationTriggerParamValue:
+      type: object
+      properties:
+        literal: {}
+        source:
+          $ref: '#/components/schemas/v1AutomationTriggerParamSource'
+      description: 'AutomationTriggerParamValue is one canvas param: a JSON literal or a
+
+        run-scoped wildcard source. Prefer this over ad-hoc `{"source":"..."}`
+
+        objects in a free-form Struct.'
+    v1CreateAutomationTriggerResponse:
+      type: object
+      properties:
+        automationTrigger:
+          $ref: '#/components/schemas/v1AutomationTrigger'
+      description: The response of a call to `AutomationService_CreateAutomationTrigger`.
+      required:
+      - automationTrigger
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

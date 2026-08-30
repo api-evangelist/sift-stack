@@ -1,0 +1,1578 @@
+openapi: 3.2.0
+info:
+  title: Sift Calculated Channel Service API
+  version: '1.0'
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: CalculatedChannelService
+paths:
+  /api/v2/calculated-channels:
+    get:
+      summary: ListCalculatedChannels
+      description: Retrieve the latest versions of calculated channels based on an optional filter.
+      operationId: CalculatedChannelService_ListCalculatedChannels
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2ListCalculatedChannelsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of calculated channels to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 calculated channels will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListCalculatedChannels` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListCalculatedChannels` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `calculated_channel_id`, `organization_id`, `client_key`, `name`, `description`,
+
+          `asset_id`, `asset_name`, `tag_id`, `tag_name`, `units`, `calculated_channel_version_id`,
+
+          `created_date`, `modified_date`, `created_by_user_id`, `modified_by_user_id`, `is_archived`, and `archived_date`.
+
+          Folder membership is filterable via the `folders` and `activeFolders` fields. Both contain the ids of the folders
+
+          the calculated channel belongs to; `activeFolders` excludes archived folders. Use `"<folder_id>" in folders` to
+
+          return calculated channels in the given folder, and `size(activeFolders) == 0` to return uncategorized calculated
+
+          channels (calculated channels whose only memberships are in archived folders count as uncategorized).
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: organizationId
+        description: This field is only required if your user belongs to multiple organizations.
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved calculated channels. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `created_date`, `modified_date`, `name`, `description`, `units`, and `archived_date`.
+
+          If left empty, items are ordered by `created_date` in descending order (newest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - CalculatedChannelService
+    post:
+      summary: CreateCalculatedChannel
+      description: Create a calculated channel.
+      operationId: CalculatedChannelService_CreateCalculatedChannel
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2CreateCalculatedChannelResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v2CreateCalculatedChannelRequest'
+        required: true
+      tags:
+      - CalculatedChannelService
+    patch:
+      summary: UpdateCalculatedChannel
+      description: Update and create a new version of a calculated channel.
+      operationId: CalculatedChannelService_UpdateCalculatedChannel
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2UpdateCalculatedChannelResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v2UpdateCalculatedChannelRequest'
+        description: 'The request for a call to `CalculatedChannelService_UpdateCalculatedChannel` to update a calculated channel. Updating a calculated
+
+          channel creates a new version of the calculated channel, leaving the previous untouched. If no update is deemed necessary, then the
+
+          the current version is returned. To archive calculated channel, specify `archived_date` in the `update mask` as well as a non-null
+
+          value for `archived_date` in the `calculated_channel` object. To unarchive a calculated channel, specify `archived_date` in the
+
+          `update mask` and a `null` value for `archived_date` in the `calculated_channel` object.'
+        required: true
+      tags:
+      - CalculatedChannelService
+  /api/v2/calculated-channels/dependents:
+    get:
+      summary: GetCalculatedChannelDependents
+      description: Retrieve calculated channels that depend on a given calculated channel.
+      operationId: CalculatedChannelService_GetCalculatedChannelDependents
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2GetCalculatedChannelDependentsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: calculatedChannelId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: calculatedChannelVersionId
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - CalculatedChannelService
+  /api/v2/calculated-channels/resolve:
+    post:
+      summary: ResolveCalculatedChannel
+      description: Resolve a calculated channel into an expression with references
+      operationId: CalculatedChannelService_ResolveCalculatedChannel
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2ResolveCalculatedChannelResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v2ResolveCalculatedChannelRequest'
+        description: "The request for a call to `CalculatedChannelService_ResolveCalculatedChannel` to get the all possible calculated channels.\n1) If the calculated channel has a selection of assets and tags then those assets will be used as a base and then filtered down by the given assets and assets from the run.\n2) If the calculated channel is enabled for all assets then:\n  a) If the request has run and assets from the run will be used as a base and then filtered down by the given assets.\n  b) If the request has run and no assets then those assets will be used.\n  c) If the request has only assets then those assets will be used.\nThe `organization_id` argument is only required if using `client_key` and the user belongs to multiple organizations."
+        required: true
+      tags:
+      - CalculatedChannelService
+  /api/v2/calculated-channels/resolve:batch:
+    post:
+      summary: BatchResolveCalculatedChannel
+      description: Resolve a batch of calculated channels into expressions with references
+      operationId: CalculatedChannelService_BatchResolveCalculatedChannels
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2BatchResolveCalculatedChannelsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v2BatchResolveCalculatedChannelsRequest'
+        description: The request of a call to `CalculatedChannelService_BatchResolveCalculatedChannels`.
+        required: true
+      tags:
+      - CalculatedChannelService
+  /api/v2/calculated-channels/resolved:
+    get:
+      summary: ListResolvedCalculatedChannels
+      description: Retrieve the latest versions of calculated channels based on an optional filter.
+      operationId: CalculatedChannelService_ListResolvedCalculatedChannels
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2ListResolvedCalculatedChannelsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: assetId
+        description: Assets or runs to get the resolved calculated channels for. At least one asset or run must be provided.
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: runId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: pageSize
+        description: 'The maximum number of calculated channels to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 calculated channels will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListCalculatedChannels` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListCalculatedChannels` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `calculated_channel_id`, `organization_id`, `client_key`, `name`, `description`,
+
+          `asset_id`, `asset_name`, `tag_id`, `tag_name`, `version`, `units`, `calculated_channel_version_id`,
+
+          `created_date`, `modified_date`, `created_by_user_id`, `modified_by_user_id`, `is_archived`, and `archived_date`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved calculated channels. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `created_date` and `modified_date`.
+
+          If left empty, items are ordered by `created_date` in descending order (newest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - CalculatedChannelService
+  /api/v2/calculated-channels/versions:
+    get:
+      summary: GetCalculatedChannelVersions
+      description: Retrieve calculated channel versions by their version IDs.
+      operationId: CalculatedChannelService_GetCalculatedChannelVersions
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2GetCalculatedChannelVersionsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: calculatedChannelVersionIds
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      tags:
+      - CalculatedChannelService
+  /api/v2/calculated-channels/{calculatedChannelId}:
+    get:
+      summary: GetCalculatedChannel
+      description: Retrieve the latest version of a calculated channel.
+      operationId: CalculatedChannelService_GetCalculatedChannel
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2GetCalculatedChannelResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: calculatedChannelId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientKey
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: organizationId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: calculatedChannelVersionId
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - CalculatedChannelService
+  /api/v2/calculated-channels/{calculatedChannelId}/versions:
+    get:
+      summary: ListCalculatedChannelVersions
+      description: List versions of a particular calculated channel with an optional filter.
+      operationId: CalculatedChannelService_ListCalculatedChannelVersions
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2ListCalculatedChannelVersionsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: calculatedChannelId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientKey
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: pageSize
+        description: 'The maximum number of calculated channel versions to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 calculated channels will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListCalculatedChannelVersions` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListCalculatedChannelVersions` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `calculated_channel_id`, `organization_id`, `client_key`, `name`, `description`,
+
+          `asset_id`, `asset_name`, `tag_id`, `tag_name`, `version`, `units`, `calculated_channel_version_id`,
+
+          `created_date`, `modified_date`, `created_by_user_id`, `modified_by_user_id`, `is_archived`, and `archived_date`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: organizationId
+        description: This field is only required if your user belongs to multiple organizations.
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved calculated channel versions. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are ''version'', `created_date`, `modified_date`, `name`, `description`, `units`, and `archived_date`.
+
+          If left empty, items are ordered by `created_date` in ascending order (oldest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date".'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - CalculatedChannelService
+  /v2/organizations/{organizationId}/calculated-channels/{clientKey}:
+    get:
+      summary: GetCalculatedChannel
+      description: Retrieve the latest version of a calculated channel.
+      operationId: CalculatedChannelService_GetCalculatedChannel2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2GetCalculatedChannelResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientKey
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: calculatedChannelId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: calculatedChannelVersionId
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - CalculatedChannelService
+  /v2/organizations/{organizationId}/calculated-channels/{clientKey}/versions:
+    get:
+      summary: ListCalculatedChannelVersions
+      description: List versions of a particular calculated channel with an optional filter.
+      operationId: CalculatedChannelService_ListCalculatedChannelVersions2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2ListCalculatedChannelVersionsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: organizationId
+        description: This field is only required if your user belongs to multiple organizations.
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientKey
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: calculatedChannelId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: pageSize
+        description: 'The maximum number of calculated channel versions to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 calculated channels will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListCalculatedChannelVersions` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListCalculatedChannelVersions` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `calculated_channel_id`, `organization_id`, `client_key`, `name`, `description`,
+
+          `asset_id`, `asset_name`, `tag_id`, `tag_name`, `version`, `units`, `calculated_channel_version_id`,
+
+          `created_date`, `modified_date`, `created_by_user_id`, `modified_by_user_id`, `is_archived`, and `archived_date`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved calculated channel versions. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are ''version'', `created_date`, `modified_date`, `name`, `description`, `units`, and `archived_date`.
+
+          If left empty, items are ordered by `created_date` in ascending order (oldest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date".'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - CalculatedChannelService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    CalculatedChannelQueryConfigurationSel:
+      type: object
+      properties:
+        expression:
+          type: string
+        expressionChannelReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannelAbstractChannelReference'
+      description: Sift Expression Language.
+      required:
+      - expression
+      - expressionChannelReferences
+    v2ResolvedCalculatedChannel:
+      type: object
+      properties:
+        assetName:
+          type: string
+          description: The name of the specific asset that was resolved.
+        expressionRequest:
+          $ref: '#/components/schemas/v1ExpressionRequest'
+        outputDataType:
+          $ref: '#/components/schemas/v1ChannelDataType'
+        assetId:
+          type: string
+      description: A specific calculated channel including the asset and exact channels to query.
+      required:
+      - assetName
+      - expressionRequest
+      - outputDataType
+      - assetId
+    v1SingleChannelComparisonExpression:
+      type: object
+      properties:
+        channelComponent:
+          type: string
+          title: Deprecated - use channel_name instead. If provided, channel_component will be joined with the name as `channel_component.channel_name`
+        channelName:
+          type: string
+        comparator:
+          $ref: '#/components/schemas/v1ConditionComparator'
+        double:
+          type: number
+          format: double
+        string:
+          type: string
+        lastValue:
+          $ref: '#/components/schemas/v1LastValueThreshold'
+      description: Deprecated - use CalculatedChannelConfig.
+      required:
+      - channelComponent
+      - channelName
+      - comparator
+    v2ListResolvedCalculatedChannelsResponse:
+      type: object
+      properties:
+        calculatedChannelResolutions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannelResolution'
+        nextPageToken:
+          type: string
+      required:
+      - calculatedChannelResolutions
+    v2GetCalculatedChannelResponse:
+      type: object
+      properties:
+        calculatedChannel:
+          $ref: '#/components/schemas/v2CalculatedChannel'
+      required:
+      - calculatedChannel
+    v1NotificationActionConfiguration:
+      type: object
+      properties:
+        recipientUserIds:
+          type: array
+          items:
+            type: string
+      required:
+      - recipientUserIds
+    v2UpdateCalculatedChannelResponse:
+      type: object
+      properties:
+        calculatedChannel:
+          $ref: '#/components/schemas/v2CalculatedChannel'
+        inapplicableAssets:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannelValidationResult'
+      description: The response of a call to `CalculatedChannelService_UpdateCalculatedChannel`.
+      required:
+      - calculatedChannel
+      - inapplicableAssets
+    v1ChannelDataType:
+      type: string
+      enum:
+      - CHANNEL_DATA_TYPE_UNSPECIFIED
+      - CHANNEL_DATA_TYPE_DOUBLE
+      - CHANNEL_DATA_TYPE_STRING
+      - CHANNEL_DATA_TYPE_ENUM
+      - CHANNEL_DATA_TYPE_BIT_FIELD
+      - CHANNEL_DATA_TYPE_BOOL
+      - CHANNEL_DATA_TYPE_FLOAT
+      - CHANNEL_DATA_TYPE_INT_32
+      - CHANNEL_DATA_TYPE_UINT_32
+      - CHANNEL_DATA_TYPE_INT_64
+      - CHANNEL_DATA_TYPE_UINT_64
+      - CHANNEL_DATA_TYPE_BYTES
+      default: CHANNEL_DATA_TYPE_UNSPECIFIED
+    v1Rule:
+      type: object
+      properties:
+        ruleId:
+          type: string
+        assetId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        isEnabled:
+          type: boolean
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        organizationId:
+          type: string
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1RuleCondition'
+        ruleVersion:
+          $ref: '#/components/schemas/v1RuleVersion'
+        clientKey:
+          type: string
+          description: client_key is a client provided identifier for the rule. It is immutable after rule creation.
+        assetConfiguration:
+          $ref: '#/components/schemas/v1RuleAssetConfiguration'
+        contextualChannels:
+          $ref: '#/components/schemas/v1ContextualChannels'
+        deletedDate:
+          type: string
+          format: date-time
+        isExternal:
+          type: boolean
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        archivedDate:
+          type: string
+          format: date-time
+          title: archived_date indicates when the rule was archived
+        isArchived:
+          type: boolean
+          title: is_archived is inferred from when archived_date is not null
+        isLiveEvaluationEnabled:
+          type: boolean
+          description: 'If `true`, this rule will be evaluated on live data; if `false`, live rule evaluation is
+
+            disabled (the rule remains usable for report generation).
+
+
+            Note: this value is the server''s effective state, not necessarily what was requested. A rule
+
+            saved via `BatchUpdateRulesRequest.override_expression_validation = true` whose UDF inlining
+
+            fails (e.g. type resolution exhausted; see error returned by `BatchUpdateRules`) is forced
+
+            to `is_live_evaluation_enabled = false` even when the caller requested `true`. To recover
+
+            after the underlying issue is fixed (channels populated, expression simplified, etc.),
+
+            reissue an `UpdateRule` / `BatchUpdateRules` request that explicitly sets
+
+            `is_live_evaluation_enabled = true`.'
+        currentVersionId:
+          type: string
+          description: The current version of the rule. This is may be different from the rule_version.version if the rule has been updated since the rule_version was created.
+        folderIds:
+          type: array
+          items:
+            type: string
+          description: Ids of the folders this rule belongs to.
+      required:
+      - ruleId
+      - assetId
+      - name
+      - description
+      - isEnabled
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - organizationId
+      - conditions
+      - ruleVersion
+      - assetConfiguration
+      - contextualChannels
+      - isExternal
+      - metadata
+      - isArchived
+      - currentVersionId
+    v1RuleAction:
+      type: object
+      properties:
+        ruleActionId:
+          type: string
+        ruleConditionId:
+          type: string
+        actionType:
+          $ref: '#/components/schemas/v1ActionKind'
+        configuration:
+          $ref: '#/components/schemas/v1RuleActionConfiguration'
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        ruleActionVersionId:
+          type: string
+      required:
+      - ruleActionId
+      - ruleConditionId
+      - actionType
+      - configuration
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - ruleActionVersionId
+    siftrulesv1CalculatedChannelConfig:
+      type: object
+      properties:
+        channelReferences:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/rulesv1ChannelReference'
+        expression:
+          type: string
+        functionDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionDependency'
+          description: This will be ignored in requests and will be generated automatically.
+        calculatedChannelDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/typev1CalculatedChannelDependency'
+          description: 'This will be ignored in requests and will be generated automatically.
+
+            Tracks which calculated channel versions this rule depends on.'
+          readOnly: true
+      required:
+      - channelReferences
+      - expression
+    calculated_channelsv2CalculatedChannelDependency:
+      type: object
+      properties:
+        calculatedChannelVersionId:
+          type: string
+      description: A dependency on another calculated channel.
+      required:
+      - calculatedChannelVersionId
+    typev1CalculatedChannelDependency:
+      type: object
+      properties:
+        calculatedChannelVersionId:
+          type: string
+      description: A dependency on another calculated channel.
+      required:
+      - calculatedChannelVersionId
+    v2CalculatedChannelResolution:
+      type: object
+      properties:
+        calculatedChannel:
+          $ref: '#/components/schemas/v2CalculatedChannel'
+        resolved:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2ResolvedCalculatedChannel'
+          description: All resolved calculated channels.
+        unresolved:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2UnresolvedCalculatedChannel'
+          description: All assets with any issues in resolution.
+      required:
+      - resolved
+      - unresolved
+    v2ListCalculatedChannelsResponse:
+      type: object
+      properties:
+        calculatedChannels:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannel'
+        nextPageToken:
+          type: string
+      description: The response of a call to `CalculatedChannelService_ListCalculatedChannels`.
+      required:
+      - calculatedChannels
+    v1ActionKind:
+      type: string
+      enum:
+      - ACTION_KIND_UNSPECIFIED
+      - NOTIFICATION
+      - ANNOTATION
+      - WEBHOOK
+      default: ACTION_KIND_UNSPECIFIED
+    v2CreateCalculatedChannelRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        userNotes:
+          type: string
+        units:
+          type: string
+        clientKey:
+          type: string
+        calculatedChannelConfiguration:
+          $ref: '#/components/schemas/v2CalculatedChannelConfiguration'
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+      required:
+      - name
+      - calculatedChannelConfiguration
+      - metadata
+    v2GetCalculatedChannelDependentsResponse:
+      type: object
+      properties:
+        calculatedChannels:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannel'
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1Rule'
+      description: The response of a call to `CalculatedChannelService_GetCalculatedChannelDependents`.
+      required:
+      - calculatedChannels
+      - rules
+    v2CalculatedChannelAbstractChannelReference:
+      type: object
+      properties:
+        channelReference:
+          type: string
+        channelIdentifier:
+          type: string
+          title: must use either a channel_identifier or a calculated_channel_reference, not both
+        calculatedChannelVersionId:
+          type: string
+        calculatedChannel:
+          $ref: '#/components/schemas/v1ExpressionRequest'
+      required:
+      - channelReference
+    CalculatedChannelAssetConfigurationAssetSelection:
+      type: object
+      properties:
+        assetIds:
+          type: array
+          items:
+            type: string
+        tagIds:
+          type: array
+          items:
+            type: string
+      required:
+      - assetIds
+      - tagIds
+    v1ConditionComparator:
+      type: string
+      enum:
+      - CONDITION_COMPARATOR_UNSPECIFIED
+      - LESS_THAN
+      - LESS_THAN_OR_EQUAL
+      - GREATER_THAN
+      - GREATER_THAN_OR_EQUAL
+      - EQUAL
+      - NOT_EQUAL
+      default: CONDITION_COMPARATOR_UNSPECIFIED
+    v1RuleAssetConfiguration:
+      type: object
+      properties:
+        assetIds:
+          type: array
+          items:
+            type: string
+        tagIds:
+          type: array
+          items:
+            type: string
+    v2ResolveCalculatedChannelResponse:
+      type: object
+      properties:
+        calculatedChannelId:
+          type: string
+          description: If provided in the request, the calculated channel resolved.
+        resolved:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2ResolvedCalculatedChannel'
+          description: All resolved calculated channels.
+        unresolved:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2UnresolvedCalculatedChannel'
+          description: All assets with any issues in resolution.
+      description: The response of a call to `CalculatedChannelService_ResolveCalculatedChannel`.
+      required:
+      - resolved
+      - unresolved
+    v1MetadataValue:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/v1MetadataKey'
+        stringValue:
+          type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+        relationValue:
+          $ref: '#/components/schemas/v1MetadataRelationValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
+      required:
+      - key
+    v2BatchResolveCalculatedChannelsResponse:
+      type: object
+      properties:
+        responses:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2ResolveCalculatedChannelResponse'
+          description: All calculated channels that attempted resolution.
+      description: The response of a call to `CalculatedChannelService_BatchResolveCalculatedChannels`.
+      required:
+      - responses
+    rulesv1ChannelReference:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Required for native channel references. Must not be set when calculated_channel_version_id is provided.
+        component:
+          type: string
+          description: 'Deprecated - use name instead. If provided, name will be joined with the component as `component.name`.
+
+            Must not be set when calculated_channel_version_id is provided.'
+        calculatedChannelVersionId:
+          type: string
+          description: 'Reference to a calculated channel version. When set, the rule will use the calculated channel
+
+            instead of looking up a native channel by name. Must not be set when name is provided.'
+    v1RuleActionConfiguration:
+      type: object
+      properties:
+        notification:
+          $ref: '#/components/schemas/v1NotificationActionConfiguration'
+        annotation:
+          $ref: '#/components/schemas/v1AnnotationActionConfiguration'
+        webhook:
+          $ref: '#/components/schemas/v1WebhookActionConfiguration'
+    v2CalculatedChannelQueryConfiguration:
+      type: object
+      properties:
+        sel:
+          $ref: '#/components/schemas/CalculatedChannelQueryConfigurationSel'
+    v1Names:
+      type: object
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+      required:
+      - names
+    v1AnnotationActionConfiguration:
+      type: object
+      properties:
+        tagIds:
+          type: array
+          items:
+            type: string
+        annotationType:
+          $ref: '#/components/schemas/v1AnnotationType'
+        assignedToUserId:
+          type: string
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+      required:
+      - tagIds
+    v2UnresolvedCalculatedChannel:
+      type: object
+      properties:
+        assetName:
+          type: string
+          description: The name of the specific asset that was not resolved.
+        errorMessage:
+          type: string
+      description: Any failure in resolution.
+      required:
+      - assetName
+      - errorMessage
+    v1LastValueThreshold:
+      type: object
+    v2ResolveCalculatedChannelRequest:
+      type: object
+      properties:
+        identifier:
+          $ref: '#/components/schemas/v1ResourceIdentifier'
+        calculatedChannelConfiguration:
+          $ref: '#/components/schemas/v2CalculatedChannelConfiguration'
+        organizationId:
+          type: string
+          description: This field is only required if your user belongs to multiple organizations.
+        assets:
+          $ref: '#/components/schemas/v1NamedResources'
+        run:
+          $ref: '#/components/schemas/v1ResourceIdentifier'
+      description: "The request for a call to `CalculatedChannelService_ResolveCalculatedChannel` to get the all possible calculated channels.\n1) If the calculated channel has a selection of assets and tags then those assets will be used as a base and then filtered down by the given assets and assets from the run.\n2) If the calculated channel is enabled for all assets then:\n  a) If the request has run and assets from the run will be used as a base and then filtered down by the given assets.\n  b) If the request has run and no assets then those assets will be used.\n  c) If the request has only assets then those assets will be used.\nThe `organization_id` argument is only required if using `client_key` and the user belongs to multiple organizations."
+    v2GetCalculatedChannelVersionsResponse:
+      type: object
+      properties:
+        calculatedChannels:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannel'
+      description: The response of a call to `CalculatedChannelService_GetCalculatedChannelVersions`.
+      required:
+      - calculatedChannels
+    v2CalculatedChannelAssetConfiguration:
+      type: object
+      properties:
+        allAssets:
+          type: boolean
+        selection:
+          $ref: '#/components/schemas/CalculatedChannelAssetConfigurationAssetSelection'
+    v1RuleVersion:
+      type: object
+      properties:
+        ruleId:
+          type: string
+        ruleVersionId:
+          type: string
+        version:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        versionNotes:
+          type: string
+        generatedChangeMessage:
+          type: string
+        deletedDate:
+          type: string
+          format: date-time
+        archivedDate:
+          type: string
+          format: date-time
+          title: archived_date indicates when the rule version was archived
+        isArchived:
+          type: boolean
+          title: is_archived is inferred from when archived_date is not null
+      required:
+      - ruleId
+      - ruleVersionId
+      - version
+      - createdDate
+      - createdByUserId
+      - versionNotes
+      - generatedChangeMessage
+      - isArchived
+    v1RuleCondition:
+      type: object
+      properties:
+        ruleConditionId:
+          type: string
+        ruleId:
+          type: string
+        expression:
+          $ref: '#/components/schemas/v1RuleConditionExpression'
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1RuleAction'
+        ruleConditionVersionId:
+          type: string
+      required:
+      - ruleConditionId
+      - ruleId
+      - expression
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - actions
+      - ruleConditionVersionId
+    v2CalculatedChannelValidationResult:
+      type: object
+      properties:
+        assetId:
+          type: string
+        assetName:
+          type: string
+          title: Only included if asset was named in the request
+        tagNames:
+          type: array
+          items:
+            type: string
+          title: Includes all tags that have this asset
+        missingChannels:
+          type: array
+          items:
+            type: string
+          title: Names of the channels that asset does not have
+      required:
+      - assetId
+      - tagNames
+      - missingChannels
+    v1RuleConditionExpression:
+      type: object
+      properties:
+        singleChannelComparison:
+          $ref: '#/components/schemas/v1SingleChannelComparisonExpression'
+        calculatedChannel:
+          $ref: '#/components/schemas/siftrulesv1CalculatedChannelConfig'
+    v1ContextualChannels:
+      type: object
+      properties:
+        channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/rulesv1ChannelReference'
+      required:
+      - channels
+    v1AnnotationType:
+      type: string
+      enum:
+      - ANNOTATION_TYPE_UNSPECIFIED
+      - ANNOTATION_TYPE_DATA_REVIEW
+      - ANNOTATION_TYPE_PHASE
+      default: ANNOTATION_TYPE_UNSPECIFIED
+    v2CreateCalculatedChannelResponse:
+      type: object
+      properties:
+        calculatedChannel:
+          $ref: '#/components/schemas/v2CalculatedChannel'
+        inapplicableAssets:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannelValidationResult'
+      required:
+      - calculatedChannel
+      - inapplicableAssets
+    v1FunctionDependency:
+      type: object
+      properties:
+        userDefinedFunctionVersionId:
+          type: string
+      required:
+      - userDefinedFunctionVersionId
+    v1WebhookActionConfiguration:
+      type: object
+      properties:
+        webhookId:
+          type: string
+      required:
+      - webhookId
+    v2BatchResolveCalculatedChannelsRequest:
+      type: object
+      properties:
+        requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2ResolveCalculatedChannelRequest'
+          description: All calculated channels to resolve.
+      description: The request of a call to `CalculatedChannelService_BatchResolveCalculatedChannels`.
+      required:
+      - requests
+    v1ExpressionRequest:
+      type: object
+      properties:
+        channelReferences:
+          type: object
+          additionalProperties:
+            type: string
+          description: 'A map from the channel reference in the expression string (e.g. $1) to the channel id (uuid).
+
+            This is deprecated and should be passed in expression_channel_references instead.'
+        expression:
+          type: string
+        expressionChannelReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ExpressionChannelReference'
+        functionDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionDependency'
+      required:
+      - expression
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    v2UpdateCalculatedChannelRequest:
+      type: object
+      properties:
+        calculatedChannel:
+          $ref: '#/components/schemas/v2CalculatedChannel'
+        updateMask:
+          type: string
+          description: 'The list of fields to be updated. The fields available to be updated are `name`, `description`, `units`, `metadata`,
+
+            `query_configuration`, `archived_date`, `is_archived`, and `asset_configuration`.'
+        userNotes:
+          type: string
+          description: Optional user notes to describe changes.
+      description: 'The request for a call to `CalculatedChannelService_UpdateCalculatedChannel` to update a calculated channel. Updating a calculated
+
+        channel creates a new version of the calculated channel, leaving the previous untouched. If no update is deemed necessary, then the
+
+        the current version is returned. To archive calculated channel, specify `archived_date` in the `update mask` as well as a non-null
+
+        value for `archived_date` in the `calculated_channel` object. To unarchive a calculated channel, specify `archived_date` in the
+
+        `update mask` and a `null` value for `archived_date` in the `calculated_channel` object.'
+      required:
+      - calculatedChannel
+      - updateMask
+    v1NamedResources:
+      type: object
+      properties:
+        ids:
+          $ref: '#/components/schemas/v1Ids'
+        names:
+          $ref: '#/components/schemas/v1Names'
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
+    v2ListCalculatedChannelVersionsResponse:
+      type: object
+      properties:
+        calculatedChannelVersions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannel'
+        nextPageToken:
+          type: string
+      description: The response of a call to `CalculatedChannelService_ListCalculatedChannelVersions`.
+      required:
+      - calculatedChannelVersions
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v2CalculatedChannelConfiguration:
+      type: object
+      properties:
+        assetConfiguration:
+          $ref: '#/components/schemas/v2CalculatedChannelAssetConfiguration'
+        queryConfiguration:
+          $ref: '#/components/schemas/v2CalculatedChannelQueryConfiguration'
+      required:
+      - assetConfiguration
+      - queryConfiguration
+    v2CalculatedChannel:
+      type: object
+      properties:
+        calculatedChannelId:
+          type: string
+        organizationId:
+          type: string
+        clientKey:
+          type: string
+        archivedDate:
+          type: string
+          format: date-time
+        versionId:
+          type: string
+        version:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        changeMessage:
+          type: string
+        userNotes:
+          type: string
+        units:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        calculatedChannelConfiguration:
+          $ref: '#/components/schemas/v2CalculatedChannelConfiguration'
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        functionDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionDependency'
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        isArchived:
+          type: boolean
+          description: Whether the calculated channel is archived. This is inferred from whether archived_date is set.
+        calculatedChannelDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/calculated_channelsv2CalculatedChannelDependency'
+          description: Calculated channels that this channel depends on.
+        folderIds:
+          type: array
+          items:
+            type: string
+          description: Ids of the folders this calculated channel belongs to.
+      required:
+      - calculatedChannelId
+      - organizationId
+      - versionId
+      - version
+      - name
+      - description
+      - changeMessage
+      - userNotes
+      - createdDate
+      - modifiedDate
+      - calculatedChannelConfiguration
+      - createdByUserId
+      - modifiedByUserId
+      - functionDependencies
+      - metadata
+      - isArchived
+      - calculatedChannelDependencies
+    v1ExpressionChannelReference:
+      type: object
+      properties:
+        channelReference:
+          type: string
+        channelId:
+          type: string
+        calculatedChannel:
+          $ref: '#/components/schemas/v1ExpressionRequest'
+      required:
+      - channelReference
+      - channelId
+    v1ResourceIdentifier:
+      type: object
+      properties:
+        id:
+          type: string
+        clientKey:
+          type: string
+    v1Ids:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+      required:
+      - ids
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

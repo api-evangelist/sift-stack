@@ -1,0 +1,674 @@
+openapi: 3.2.0
+info:
+  title: Sift Rule Evaluation Service API
+  version: '1.0'
+  description: Service to evaluate rules.
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: RuleEvaluationService
+  description: Service to evaluate rules.
+  externalDocs:
+    description: Read more about what rules are.
+    url: https://customer.support.siftstack.com/servicedesk/customer/portal/2/article/265421102
+paths:
+  /api/v1/rules/evaluate-rules:
+    post:
+      summary: EvaluateRules
+      description: Evaluate rules from a designated source against a run or asset and return the total amount of annotations created and the ID of the generated report.
+      operationId: RuleEvaluationService_EvaluateRules
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/siftrule_evaluationv1EvaluateRulesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/siftrule_evaluationv1EvaluateRulesRequest'
+        required: true
+      tags:
+      - RuleEvaluationService
+  /api/v1/rules/evaluate-rules:preview:
+    post:
+      summary: EvaluateRulesPreview
+      description: Perform a dry run evaluation for existing rules or rule configurations against a run and return the annotations that would be generated.
+      operationId: RuleEvaluationService_EvaluateRulesPreview
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1EvaluateRulesPreviewResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1EvaluateRulesPreviewRequest'
+        required: true
+      tags:
+      - RuleEvaluationService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1SingleChannelComparisonExpression:
+      type: object
+      properties:
+        channelComponent:
+          type: string
+          title: Deprecated - use channel_name instead. If provided, channel_component will be joined with the name as `channel_component.channel_name`
+        channelName:
+          type: string
+        comparator:
+          $ref: '#/components/schemas/v1ConditionComparator'
+        double:
+          type: number
+          format: double
+        string:
+          type: string
+        lastValue:
+          $ref: '#/components/schemas/v1LastValueThreshold'
+      description: Deprecated - use CalculatedChannelConfig.
+      required:
+      - channelComponent
+      - channelName
+      - comparator
+    siftrule_evaluationv1EvaluateRulesResponse:
+      type: object
+      properties:
+        createdAnnotationCount:
+          type: integer
+          format: int32
+        reportId:
+          type: string
+          description: A report will be generated if rules were evaluated against a run.
+        jobId:
+          type: string
+          description: This will be set if the job has an extended run time and is being processed asynchronously.
+      required:
+      - createdAnnotationCount
+    v1EvaluateRulesPreviewRequest:
+      type: object
+      properties:
+        run:
+          $ref: '#/components/schemas/v1ResourceIdentifier'
+        runTimeRange:
+          $ref: '#/components/schemas/v1RunTimeRange'
+        rules:
+          $ref: '#/components/schemas/v1EvaluateRulesFromCurrentRuleVersions'
+        ruleVersions:
+          $ref: '#/components/schemas/v1EvaluateRulesFromRuleVersions'
+        reportTemplate:
+          $ref: '#/components/schemas/v1EvaluateRulesFromReportTemplate'
+        ruleConfigs:
+          $ref: '#/components/schemas/v1EvaluateRulesFromRuleConfigs'
+        organizationId:
+          type: string
+          title: Only required if your user belongs to multiple organizations
+        runFamilyAlignmentConfigs:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1RunFamilyAlignmentConfig'
+          title: If evaluating a run against a family stat, this field will be used to provide alignment configuration for the run under test
+    v1NotificationActionConfiguration:
+      type: object
+      properties:
+        recipientUserIds:
+          type: array
+          items:
+            type: string
+      required:
+      - recipientUserIds
+    v1UpdateConditionRequest:
+      type: object
+      properties:
+        ruleConditionId:
+          type: string
+        expression:
+          $ref: '#/components/schemas/v1RuleConditionExpression'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1UpdateActionRequest'
+      required:
+      - expression
+      - actions
+    siftrulesv1CalculatedChannelConfig:
+      type: object
+      properties:
+        channelReferences:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/rulesv1ChannelReference'
+        expression:
+          type: string
+        functionDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionDependency'
+          description: This will be ignored in requests and will be generated automatically.
+        calculatedChannelDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/typev1CalculatedChannelDependency'
+          description: 'This will be ignored in requests and will be generated automatically.
+
+            Tracks which calculated channel versions this rule depends on.'
+          readOnly: true
+      required:
+      - channelReferences
+      - expression
+    typev1CalculatedChannelDependency:
+      type: object
+      properties:
+        calculatedChannelVersionId:
+          type: string
+      description: A dependency on another calculated channel.
+      required:
+      - calculatedChannelVersionId
+    v1AssetsTimeRange:
+      type: object
+      properties:
+        assets:
+          $ref: '#/components/schemas/v1NamedResources'
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+      required:
+      - assets
+      - startTime
+      - endTime
+    v1UpdateActionRequest:
+      type: object
+      properties:
+        ruleActionId:
+          type: string
+        actionType:
+          $ref: '#/components/schemas/v1ActionKind'
+        configuration:
+          $ref: '#/components/schemas/v1RuleActionConfiguration'
+      required:
+      - actionType
+      - configuration
+    v1RunAlignment:
+      type: object
+      properties:
+        bound:
+          $ref: '#/components/schemas/v1TimeRangeBound'
+      required:
+      - bound
+    v1ActionKind:
+      type: string
+      enum:
+      - ACTION_KIND_UNSPECIFIED
+      - NOTIFICATION
+      - ANNOTATION
+      - WEBHOOK
+      default: ACTION_KIND_UNSPECIFIED
+    v1DryRunAnnotation:
+      type: object
+      properties:
+        conditionId:
+          type: string
+        name:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        conditionVersionId:
+          type: string
+      required:
+      - startTime
+      - endTime
+    v1EvaluateRulesAnnotationOptions:
+      type: object
+      properties:
+        tags:
+          $ref: '#/components/schemas/v1NamedResources'
+      required:
+      - tags
+    v1AnnotationAlignment:
+      type: object
+      properties:
+        annotationId:
+          type: string
+        bound:
+          $ref: '#/components/schemas/v1TimeRangeBound'
+      required:
+      - annotationId
+      - bound
+    v1EvaluateRulesFromReportTemplate:
+      type: object
+      properties:
+        reportTemplate:
+          $ref: '#/components/schemas/v1ResourceIdentifier'
+      required:
+      - reportTemplate
+    v1ConditionComparator:
+      type: string
+      enum:
+      - CONDITION_COMPARATOR_UNSPECIFIED
+      - LESS_THAN
+      - LESS_THAN_OR_EQUAL
+      - GREATER_THAN
+      - GREATER_THAN_OR_EQUAL
+      - EQUAL
+      - NOT_EQUAL
+      default: CONDITION_COMPARATOR_UNSPECIFIED
+    v1RuleAssetConfiguration:
+      type: object
+      properties:
+        assetIds:
+          type: array
+          items:
+            type: string
+        tagIds:
+          type: array
+          items:
+            type: string
+    v1MetadataValue:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/v1MetadataKey'
+        stringValue:
+          type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+        relationValue:
+          $ref: '#/components/schemas/v1MetadataRelationValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
+      required:
+      - key
+    v1TimeRangeBound:
+      type: string
+      enum:
+      - TIME_RANGE_BOUND_UNSPECIFIED
+      - TIME_RANGE_BOUND_START
+      - TIME_RANGE_BOUND_END
+      default: TIME_RANGE_BOUND_UNSPECIFIED
+    v1EvaluateRulesFromCurrentRuleVersions:
+      type: object
+      properties:
+        rules:
+          $ref: '#/components/schemas/v1ResourceIdentifiers'
+      required:
+      - rules
+    rulesv1ChannelReference:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Required for native channel references. Must not be set when calculated_channel_version_id is provided.
+        component:
+          type: string
+          description: 'Deprecated - use name instead. If provided, name will be joined with the component as `component.name`.
+
+            Must not be set when calculated_channel_version_id is provided.'
+        calculatedChannelVersionId:
+          type: string
+          description: 'Reference to a calculated channel version. When set, the rule will use the calculated channel
+
+            instead of looking up a native channel by name. Must not be set when name is provided.'
+    v1RuleActionConfiguration:
+      type: object
+      properties:
+        notification:
+          $ref: '#/components/schemas/v1NotificationActionConfiguration'
+        annotation:
+          $ref: '#/components/schemas/v1AnnotationActionConfiguration'
+        webhook:
+          $ref: '#/components/schemas/v1WebhookActionConfiguration'
+    v1Names:
+      type: object
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+      required:
+      - names
+    v1UpdateRuleRequest:
+      type: object
+      properties:
+        ruleId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        assetId:
+          type: string
+          description: Deprecated - use asset_configuration instead.
+        isEnabled:
+          type: boolean
+          description: Deprecated - use DeleteRule instead.
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1UpdateConditionRequest'
+        organizationId:
+          type: string
+        versionNotes:
+          type: string
+        clientKey:
+          type: string
+          title: client_key is a client provided identifier for the rule. It is immutable after being set
+        assetConfiguration:
+          $ref: '#/components/schemas/v1RuleAssetConfiguration'
+        contextualChannels:
+          $ref: '#/components/schemas/v1ContextualChannels'
+        isExternal:
+          type: boolean
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        isArchived:
+          type: boolean
+        isLiveEvaluationEnabled:
+          type: boolean
+          description: 'If set to `true` then this rule will be evaluated on live data, otherwise live rule evaluation
+
+            will be disabled. This rule can still be used, however, in report generation. If this value
+
+            is null then the original value is preserved.
+
+
+            This is a request, not a guarantee. When combined with
+
+            `BatchUpdateRulesRequest.override_expression_validation = true`, a `true` value here can be
+
+            silently overridden to `false` if UDF inlining fails (the rule is still persisted, just with
+
+            live evaluation disabled). Re-send this request with the underlying issue resolved -- e.g.
+
+            the referenced channels populated, or the expression simplified -- to flip it back on.'
+      description: UpdateRuleRequest is used to create or update a rule. If the rule_id or client_key is provided, the rule will be updated. If not, a new rule will be created.
+      required:
+      - name
+      - description
+      - conditions
+      - metadata
+    v1AnnotationActionConfiguration:
+      type: object
+      properties:
+        tagIds:
+          type: array
+          items:
+            type: string
+        annotationType:
+          $ref: '#/components/schemas/v1AnnotationType'
+        assignedToUserId:
+          type: string
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+      required:
+      - tagIds
+    v1RunTimeRange:
+      type: object
+      properties:
+        run:
+          $ref: '#/components/schemas/v1ResourceIdentifier'
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+    v1LastValueThreshold:
+      type: object
+    v1RunFamilyAlignmentConfig:
+      type: object
+      properties:
+        familyAlignmentName:
+          type: string
+        run:
+          $ref: '#/components/schemas/v1RunAlignment'
+        annotation:
+          $ref: '#/components/schemas/v1AnnotationAlignment'
+        timestamp:
+          $ref: '#/components/schemas/v1TimestampAlignment'
+      required:
+      - familyAlignmentName
+    siftrule_evaluationv1EvaluateRulesRequest:
+      type: object
+      properties:
+        run:
+          $ref: '#/components/schemas/v1ResourceIdentifier'
+        assets:
+          $ref: '#/components/schemas/v1AssetsTimeRange'
+        runTimeRange:
+          $ref: '#/components/schemas/v1RunTimeRange'
+        rules:
+          $ref: '#/components/schemas/v1EvaluateRulesFromCurrentRuleVersions'
+        ruleVersions:
+          $ref: '#/components/schemas/v1EvaluateRulesFromRuleVersions'
+        reportTemplate:
+          $ref: '#/components/schemas/v1EvaluateRulesFromReportTemplate'
+        allApplicableRules:
+          type: boolean
+        annotationOptions:
+          $ref: '#/components/schemas/v1EvaluateRulesAnnotationOptions'
+        organizationId:
+          type: string
+          title: Only required if your user belongs to multiple organizations
+        reportName:
+          type: string
+          description: If this request creates a report, this field will be used as the report name.
+        runFamilyAlignmentConfigs:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1RunFamilyAlignmentConfig'
+          title: If evaluating a run against a family stat, this field will be used to provide alignment configuration for the run under test
+    v1ClientKeys:
+      type: object
+      properties:
+        clientKeys:
+          type: array
+          items:
+            type: string
+      required:
+      - clientKeys
+    v1RuleConditionExpression:
+      type: object
+      properties:
+        singleChannelComparison:
+          $ref: '#/components/schemas/v1SingleChannelComparisonExpression'
+        calculatedChannel:
+          $ref: '#/components/schemas/siftrulesv1CalculatedChannelConfig'
+    v1ContextualChannels:
+      type: object
+      properties:
+        channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/rulesv1ChannelReference'
+      required:
+      - channels
+    v1AnnotationType:
+      type: string
+      enum:
+      - ANNOTATION_TYPE_UNSPECIFIED
+      - ANNOTATION_TYPE_DATA_REVIEW
+      - ANNOTATION_TYPE_PHASE
+      default: ANNOTATION_TYPE_UNSPECIFIED
+    v1FunctionDependency:
+      type: object
+      properties:
+        userDefinedFunctionVersionId:
+          type: string
+      required:
+      - userDefinedFunctionVersionId
+    v1WebhookActionConfiguration:
+      type: object
+      properties:
+        webhookId:
+          type: string
+      required:
+      - webhookId
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    v1EvaluateRulesFromRuleVersions:
+      type: object
+      properties:
+        ruleVersionIds:
+          type: array
+          items:
+            type: string
+      required:
+      - ruleVersionIds
+    v1EvaluateRulesPreviewResponse:
+      type: object
+      properties:
+        createdAnnotationCount:
+          type: integer
+          format: int32
+        dryRunAnnotations:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1DryRunAnnotation'
+      required:
+      - createdAnnotationCount
+    v1NamedResources:
+      type: object
+      properties:
+        ids:
+          $ref: '#/components/schemas/v1Ids'
+        names:
+          $ref: '#/components/schemas/v1Names'
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1EvaluateRulesFromRuleConfigs:
+      type: object
+      properties:
+        configs:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1UpdateRuleRequest'
+      required:
+      - configs
+    v1Ids:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+      required:
+      - ids
+    v1ResourceIdentifier:
+      type: object
+      properties:
+        id:
+          type: string
+        clientKey:
+          type: string
+    v1ResourceIdentifiers:
+      type: object
+      properties:
+        ids:
+          $ref: '#/components/schemas/v1Ids'
+        clientKeys:
+          $ref: '#/components/schemas/v1ClientKeys'
+    v1TimestampAlignment:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+      required:
+      - timestamp
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

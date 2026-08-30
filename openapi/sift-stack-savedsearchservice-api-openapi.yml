@@ -1,0 +1,425 @@
+openapi: 3.2.0
+info:
+  title: Sift Saved Search Service API
+  version: '1.0'
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: SavedSearchService
+paths:
+  /api/v1/saved_searches:
+    get:
+      summary: ListSavedSearches
+      description: List saved searches.
+      operationId: SavedSearchService_ListSavedSearches
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListSavedSearchesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of saved searches to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 saved searches will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListSavedSearches` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListSavedSearches` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are ''name'', ''saved_search_id'', and ''overview_mode''.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: organizationId
+        description: This field is only required if your user belongs to multiple organizations.
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved saved searches. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `name`, `created_date`, and `modified_date`.
+
+          If left empty, items are ordered by `created_date` in ascending order (oldest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - SavedSearchService
+    post:
+      summary: CreateSavedSearch
+      description: Create a saved search.
+      operationId: SavedSearchService_CreateSavedSearch
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateSavedSearchResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateSavedSearchRequest'
+        description: The request for a call to `SavedSearchService_CreateSavedSearch` to create a saved search.
+        required: true
+      tags:
+      - SavedSearchService
+    patch:
+      summary: UpdateSavedSearch
+      description: Updates an existing saved search using using the list of fields specified in `update_mask`.
+      operationId: SavedSearchService_UpdateSavedSearch
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateSavedSearchResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1UpdateSavedSearchRequest'
+        description: The request for a call to `SavedSearchService_UpdateSavedSearch` to update a saved search.
+        required: true
+      tags:
+      - SavedSearchService
+  /api/v1/saved_searches/{savedSearchId}:
+    get:
+      summary: GetSavedSearch
+      description: Retrieve a saved search.
+      operationId: SavedSearchService_GetSavedSearch
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetSavedSearchResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: savedSearchId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - SavedSearchService
+    delete:
+      summary: DeleteSavedSearch
+      description: Delete a saved search.
+      operationId: SavedSearchService_DeleteSavedSearch
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1DeleteSavedSearchResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: savedSearchId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - SavedSearchService
+  /api/v1/saved_searches:batchDelete:
+    post:
+      summary: BatchDeleteSavedSearches
+      description: Batch delete saved searches.
+      operationId: SavedSearchService_BatchDeleteSavedSearches
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchDeleteSavedSearchesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchDeleteSavedSearchesRequest'
+        description: The request for a call to `SavedSearchService_BatchDeleteSavedSearches` to delete saved searches.
+        required: true
+      tags:
+      - SavedSearchService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1ListSavedSearchesResponse:
+      type: object
+      properties:
+        savedSearches:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1SavedSearch'
+        nextPageToken:
+          type: string
+      description: The response of a call to `SavedSearchService_ListSavedSearchesResponse`.
+    v1BatchDeleteSavedSearchesResponse:
+      type: object
+      description: The response of a call to `SavedSearchService_BatchDeleteSavedSearches`.
+    v1GetSavedSearchResponse:
+      type: object
+      properties:
+        savedSearch:
+          $ref: '#/components/schemas/v1SavedSearch'
+      description: The response of a call to `SavedSearchService_GetSavedSearch`.
+      required:
+      - savedSearch
+    v1DeleteSavedSearchResponse:
+      type: object
+      description: The response of a call to `SavedSearchService_DeleteSavedSearch`.
+    v1CreateSavedSearchResponse:
+      type: object
+      properties:
+        savedSearch:
+          $ref: '#/components/schemas/v1SavedSearch'
+      description: The response for a call to `SavedSearchService_CreateSavedResponse`.
+      required:
+      - savedSearch
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1UpdateSavedSearchRequest:
+      type: object
+      properties:
+        savedSearch:
+          $ref: '#/components/schemas/v1SavedSearch'
+        updateMask:
+          type: string
+          description: The list of fields to be updated. The fields available to be updated are `name` and `properties`.
+      description: The request for a call to `SavedSearchService_UpdateSavedSearch` to update a saved search.
+      required:
+      - savedSearch
+      - updateMask
+    v1BatchDeleteSavedSearchesRequest:
+      type: object
+      properties:
+        savedSearchIds:
+          type: array
+          items:
+            type: string
+          title: Limit of 1000 searches per batch
+      description: The request for a call to `SavedSearchService_BatchDeleteSavedSearches` to delete saved searches.
+    v1SavedSearchMetadataItem:
+      type: object
+      properties:
+        key:
+          type: string
+        stringValue:
+          type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+      required:
+      - key
+    v1UpdateSavedSearchResponse:
+      type: object
+      properties:
+        savedSearch:
+          $ref: '#/components/schemas/v1SavedSearch'
+      description: The response of a call to `SavedSearchService_UpdateSavedSearch`.
+      required:
+      - savedSearch
+    v1SavedSearchFilterItem:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required:
+      - id
+      - name
+    v1CreateSavedSearchRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        properties:
+          $ref: '#/components/schemas/v1SavedSearchProperties'
+        organizationId:
+          type: string
+          description: This field is only required if your user belongs to multiple organizations.
+      description: The request for a call to `SavedSearchService_CreateSavedSearch` to create a saved search.
+      required:
+      - name
+      - properties
+    v1SavedSearch:
+      type: object
+      properties:
+        savedSearchId:
+          type: string
+        organizationId:
+          type: string
+        name:
+          type: string
+        properties:
+          $ref: '#/components/schemas/v1SavedSearchProperties'
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+      required:
+      - savedSearchId
+      - organizationId
+      - name
+      - properties
+      - createdByUserId
+      - modifiedByUserId
+      - createdDate
+      - modifiedDate
+    v1SavedSearchProperties:
+      type: object
+      properties:
+        overviewMode:
+          type: string
+        searchTerm:
+          type: string
+        fromDateTime:
+          type: string
+          format: date-time
+        toDateTime:
+          type: string
+          format: date-time
+        assetItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1SavedSearchFilterItem'
+        userItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1SavedSearchFilterItem'
+        tagItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1SavedSearchFilterItem'
+        annotationItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1SavedSearchFilterItem'
+        runItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1SavedSearchFilterItem'
+        reportTemplateItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1SavedSearchFilterItem'
+        showAdvancedFilters:
+          type: boolean
+        includeArchived:
+          type: boolean
+        orderBy:
+          type: string
+        metadataItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1SavedSearchMetadataItem'
+        duration:
+          type: string
+      required:
+      - overviewMode
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

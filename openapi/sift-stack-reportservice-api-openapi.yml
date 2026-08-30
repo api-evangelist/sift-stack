@@ -1,0 +1,1203 @@
+openapi: 3.2.0
+info:
+  title: Sift Report Service API
+  version: '1.0'
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: ReportService
+paths:
+  /api/v1/reports:
+    get:
+      summary: ListReports
+      description: List reports.
+      operationId: ReportService_ListReports
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListReportsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of reports to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 reports will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListReports` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListReports` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `report_id`, `report_template_id`, `tag_name`, `name`, `run_id`, `report_type`, `canvas_id`, `is_archived`, `archived_date`, `created_date`,
+
+          `created_by_user_id`, `metadata`, `modified_date`, and `modified_by_user_id`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: organizationId
+        description: This field is only required if your user belongs to multiple organizations.
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved reports. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `name`, `created_date` and `modified_date`.
+
+          If left empty, items are ordered by `created_date` in descending order (newest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - ReportService
+    post:
+      summary: CreateReport
+      description: Create a report.
+      operationId: ReportService_CreateReport
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateReportResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateReportRequest'
+        description: Deprecated - use RuleEvaluationService instead.
+        required: true
+      tags:
+      - ReportService
+    put:
+      summary: UpdateReport
+      description: Update a report.
+      operationId: ReportService_UpdateReport
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateReportResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1UpdateReportRequest'
+        required: true
+      tags:
+      - ReportService
+  /api/v1/reports/{reportId}:
+    get:
+      summary: GetReport
+      description: Retrieve a report.
+      operationId: ReportService_GetReport
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetReportResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: reportId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ReportService
+  /api/v1/reports/{reportId}/metadata-values:
+    get:
+      summary: ListReportMetadataValues
+      description: List paginated metadata values for a specific report.
+      operationId: ReportService_ListReportMetadataValues
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListReportMetadataValuesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: reportId
+        description: The report whose metadata values to list.
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        description: 'The maximum number of metadata values to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 metadata values will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListReportMetadataValues` call.
+
+          Provide this to retrieve the subsequent page. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `key_name`, `value_string`, `value_number`, `value_boolean`,
+
+          `key_is_archived`, and `value_is_archived`. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - ReportService
+  /api/v1/reports/{reportId}/rule-summaries:
+    get:
+      summary: ListReportRuleSummaries
+      description: List paginated rule summaries for a specific report.
+      operationId: ReportService_ListReportRuleSummaries
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListReportRuleSummariesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: reportId
+        description: The report whose rule summaries to list.
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        description: 'The maximum number of rule summaries to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 rule summaries will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListReportRuleSummaries` call.
+
+          Provide this to retrieve the subsequent page. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `rule_id`, `rule_version_id`, `asset_id`, `status`,
+
+          `created_date`, and `modified_date`. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved rule summaries. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order by are `display_order`, `created_date`, and `modified_date`.
+
+          If left empty, items are ordered by `display_order` ascending.'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - ReportService
+  /api/v1/reports/{reportId}:cancel:
+    post:
+      summary: CancelReport
+      description: Canceling a report will stop the evaluation of the report and mark it as canceled. Any results that have been calculated up to the point of cancellation will be saved.
+      operationId: ReportService_CancelReport
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CancelReportResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: reportId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ReportService
+  /api/v1/reports/{reportId}:rerun:
+    post:
+      summary: RerunReport
+      description: Rerunning a report will create a new report with the same rule versions and run as the original report and run the evaluation again using the most up-to-date set of data.
+      operationId: ReportService_RerunReport
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1RerunReportResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: reportId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ReportService
+  /api/v1/reports:with-cumulative-summary:
+    get:
+      summary: ListReportsWithCumulativeSummary
+      description: List reports with cumulative summary.
+      operationId: ReportService_ListReportsWithCumulativeSummary
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListReportsWithCumulativeSummaryResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of reports to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 reports will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListReportsWithCumulativeSummary` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListReportsWithCumulativeSummary` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `report_id`, `report_template_id`, `tag_name`, `name`, `run_id`, `report_type`, `canvas_id`, `is_archived`, `archived_date`, `created_date`,
+
+          `created_by_user_id`, `metadata`, `modified_date`, and `modified_by_user_id`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: organizationId
+        description: This field is only required if your user belongs to multiple organizations.
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved reports. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `name`, `created_date` and `modified_date`.
+
+          If left empty, items are ordered by `created_date` in descending order (newest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - ReportService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1CreateReportFromRulesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        tagNames:
+          type: array
+          items:
+            type: string
+        ruleIds:
+          $ref: '#/components/schemas/v1CreateReportRequestRuleIds'
+        ruleClientKeys:
+          $ref: '#/components/schemas/v1CreateReportRequestClientKeys'
+        ruleVersionIds:
+          $ref: '#/components/schemas/v1CreateReportRequestRuleVersionIds'
+      description: 'Deprecated - use RuleEvaluationService instead.
+
+        How rules are ordered on the created report depends on `rule_identifiers`: list order for `rule_ids`, or server resolution order for `rule_client_keys`.'
+      required:
+      - name
+      - description
+      - tagNames
+    v1ReportTag:
+      type: object
+      properties:
+        tagName:
+          type: string
+      required:
+      - tagName
+    v1ReportCumulativeRuleSummary:
+      type: object
+      properties:
+        numAnnotationsOpen:
+          type: integer
+          format: int64
+          description: Total number of open (unresolved) annotations across all rules.
+        numAnnotationsFailed:
+          type: integer
+          format: int64
+          description: Total number of failed (flagged) annotations across all rules.
+        numAnnotationsPassed:
+          type: integer
+          format: int64
+          description: Total number of passed (resolved) annotations across all rules.
+        numAnnotationsTotal:
+          type: integer
+          format: int64
+          description: Total number of annotations across all rules (open + failed + passed).
+        numRulesCreated:
+          type: integer
+          format: int64
+          description: Number of rule versions in CREATED status.
+        numRulesLive:
+          type: integer
+          format: int64
+          description: Number of rule versions currently running (LIVE status).
+        numRulesFinished:
+          type: integer
+          format: int64
+          description: Number of rule versions that finished successfully.
+        numRulesFailed:
+          type: integer
+          format: int64
+          description: Number of rule versions that failed during execution.
+        numRulesCanceled:
+          type: integer
+          format: int64
+          description: Number of rule versions that were canceled.
+        numRulesError:
+          type: integer
+          format: int64
+          description: Number of rule versions that encountered an error.
+        numRulesTotal:
+          type: integer
+          format: int64
+          description: Total number of rule versions across all statuses.
+        numOfRulesWithoutAnnotations:
+          type: integer
+          format: int64
+          description: Number of finished rule versions that produced no annotations.
+      description: 'Aggregated annotation and rule-status counts across all rules in a report.
+
+        Annotation counts (num_annotations_*) reflect the total number
+
+        of annotations in each state summed over every rule version in the report.
+
+        Rule counts (num_rules_*) reflect how many rule versions are in each
+
+        execution status.'
+      required:
+      - numAnnotationsOpen
+      - numAnnotationsFailed
+      - numAnnotationsPassed
+      - numAnnotationsTotal
+      - numRulesCreated
+      - numRulesLive
+      - numRulesFinished
+      - numRulesFailed
+      - numRulesCanceled
+      - numRulesError
+      - numRulesTotal
+      - numOfRulesWithoutAnnotations
+    v1TimestampAlignment:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+      required:
+      - timestamp
+    v1CreateReportResponse:
+      type: object
+      properties:
+        report:
+          $ref: '#/components/schemas/v1Report'
+      description: Deprecated - use RuleEvaluationService instead.
+      required:
+      - report
+    v1UpdateReportRequest:
+      type: object
+      properties:
+        report:
+          $ref: '#/components/schemas/v1Report'
+        updateMask:
+          type: string
+          description: 'The list of fields to be updated. The fields available to be updated are `name`, `description`, `archived_date`,
+
+            `is_archived`, and `metadata`. An empty `name` is ignored and the existing name is preserved. Including
+
+            `description` in the mask with the field unset clears the description.'
+      required:
+      - report
+      - updateMask
+    v1ResolvedAlignmentEntry:
+      type: object
+      properties:
+        channelReferences:
+          type: array
+          items:
+            type: string
+        t0:
+          $ref: '#/components/schemas/v1ResolvedAlignmentPoint'
+        startTime:
+          $ref: '#/components/schemas/v1ResolvedAlignmentPoint'
+        endTime:
+          $ref: '#/components/schemas/v1ResolvedAlignmentPoint'
+    v1RunAlignment:
+      type: object
+      properties:
+        bound:
+          $ref: '#/components/schemas/v1TimeRangeBound'
+      required:
+      - bound
+    v1ResolvedFamilyStat:
+      type: object
+      properties:
+        reference:
+          type: string
+        familyId:
+          type: string
+        familyVersionId:
+          type: string
+        familyStatExpressionId:
+          type: string
+        familyStatRangeId:
+          type: string
+      required:
+      - reference
+      - familyId
+      - familyVersionId
+      - familyStatExpressionId
+      - familyStatRangeId
+    v1CreateReportRequest:
+      type: object
+      properties:
+        reportFromReportTemplateRequest:
+          $ref: '#/components/schemas/v1CreateReportFromReportTemplateRequest'
+        reportFromRulesRequest:
+          $ref: '#/components/schemas/v1CreateReportFromRulesRequest'
+        organizationId:
+          type: string
+        runId:
+          type: string
+        name:
+          type: string
+          description: Override the name of the report. If not provided, the name will be generated based on the report template or run.
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+      description: Deprecated - use RuleEvaluationService instead.
+      required:
+      - organizationId
+      - runId
+      - name
+    v1ReportType:
+      type: string
+      enum:
+      - REPORT_TYPE_UNSPECIFIED
+      - REPORT_TYPE_RULE_EVALUATION
+      - REPORT_TYPE_CANVAS
+      default: REPORT_TYPE_UNSPECIFIED
+      description: 'ReportType discriminates the two kinds of report rows that share the unified
+
+        `reports` surface. Rule-evaluation reports are tied to a run; canvas
+
+        reports are tied to a published canvas_execution.'
+    v1ReportRuleStatusDetailsCreated:
+      type: object
+    v1RerunReportResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        reportId:
+          type: string
+      required:
+      - jobId
+      - reportId
+    v1ReportRuleStatusDetailsFinished:
+      type: object
+      properties:
+        stdout:
+          type: string
+        stderr:
+          type: string
+    v1AnnotationAlignment:
+      type: object
+      properties:
+        annotationId:
+          type: string
+        bound:
+          $ref: '#/components/schemas/v1TimeRangeBound'
+      required:
+      - annotationId
+      - bound
+    v1ReportRuleStatusDetailsError:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+        exitCode:
+          type: integer
+          format: int32
+        stdout:
+          type: string
+        stderr:
+          type: string
+      required:
+      - errorMessage
+    v1ListReportRuleSummariesResponse:
+      type: object
+      properties:
+        reportRuleSummaries:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ReportRuleSummary'
+        nextPageToken:
+          type: string
+      description: The response of a call to `ReportService_ListReportRuleSummaries`.
+    v1ReportRuleStatus:
+      type: string
+      enum:
+      - REPORT_RULE_STATUS_UNSPECIFIED
+      - REPORT_RULE_STATUS_CREATED
+      - REPORT_RULE_STATUS_LIVE
+      - REPORT_RULE_STATUS_FINISHED
+      - REPORT_RULE_STATUS_FAILED
+      - REPORT_RULE_STATUS_CANCELED
+      - REPORT_RULE_STATUS_ERROR
+      default: REPORT_RULE_STATUS_UNSPECIFIED
+    v1MetadataValue:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/v1MetadataKey'
+        stringValue:
+          type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+        relationValue:
+          $ref: '#/components/schemas/v1MetadataRelationValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
+      required:
+      - key
+    v1TimeRangeBound:
+      type: string
+      enum:
+      - TIME_RANGE_BOUND_UNSPECIFIED
+      - TIME_RANGE_BOUND_START
+      - TIME_RANGE_BOUND_END
+      default: TIME_RANGE_BOUND_UNSPECIFIED
+    v1CreateReportRequestClientKeys:
+      type: object
+      properties:
+        ruleClientKeys:
+          type: array
+          items:
+            type: string
+      description: 'Deprecated - use RuleEvaluationService instead.
+
+        Rule order on the created report follows the order in which the server resolves these keys to rules (not client-defined).'
+      required:
+      - ruleClientKeys
+    v1ReportRuleStatusDetailsCanceled:
+      type: object
+    v1ResolvedAlignmentPoint:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        run:
+          $ref: '#/components/schemas/v1RunAlignment'
+        annotation:
+          $ref: '#/components/schemas/v1AnnotationAlignment'
+        timestampConfig:
+          $ref: '#/components/schemas/v1TimestampAlignment'
+    v1ReportRuleStatusDetailsLive:
+      type: object
+    v1GetReportResponse:
+      type: object
+      properties:
+        report:
+          $ref: '#/components/schemas/v1Report'
+      description: The request of a call to `ReportService_GetReport` to retrieve a report template.
+      required:
+      - report
+    v1CreateReportRequestRuleVersionIds:
+      type: object
+      properties:
+        ruleVersionIds:
+          type: array
+          items:
+            type: string
+      description: Deprecated - use RuleEvaluationService instead.
+      required:
+      - ruleVersionIds
+    v1CancelReportResponse:
+      type: object
+      title: no response fields
+    v1Report:
+      type: object
+      properties:
+        reportId:
+          type: string
+        reportTemplateId:
+          type: string
+        runId:
+          type: string
+          description: 'Populated for RULE_EVALUATION reports (which are tied to a run).
+
+            Empty string for CANVAS reports. Kept REQUIRED (rather than a wrapped
+
+            optional) to mirror ReportWithCumulativeSummary and avoid rippling
+
+            optionality through existing rule-report clients.'
+        organizationId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        summaries:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ReportRuleSummary'
+          description: 'One entry per rule line on this report. Sort by `display_order` ascending for the canonical evaluation / display sequence
+
+            (clients may still group by status for UI). `display_order` is set when the report is created from a template or from rules.'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ReportTag'
+        rerunFromReportId:
+          type: string
+        jobId:
+          type: string
+        archivedDate:
+          type: string
+          format: date-time
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        isArchived:
+          type: boolean
+        reportType:
+          $ref: '#/components/schemas/v1ReportType'
+        canvasExecutionId:
+          type: string
+          description: 'For CANVAS reports, the id of the published canvas_execution this report row
+
+            is linked to (read-through from canvas_executions.canvas_execution_id). Empty
+
+            for RULE_EVALUATION reports. Used by clients to route to the canvas detail page.'
+        canvasStatus:
+          $ref: '#/components/schemas/v1CanvasCellExecutionStatus'
+        canvasVersionId:
+          type: string
+          description: 'For CANVAS reports, the id of the canvas_version the linked execution was run
+
+            from (read-through from canvas_executions.canvas_version_id). Empty for
+
+            RULE_EVALUATION reports. Used by clients to route to the canvas source and to
+
+            re-run the report from the same version.'
+        canvasId:
+          type: string
+          description: 'For CANVAS reports, the id of the canvas the linked execution was published
+
+            from (resolved through canvas_versions.canvas_id). Empty for RULE_EVALUATION
+
+            reports, whose equivalent grouping is `report_template_id`. Also the value
+
+            matched by the `canvas_id` list filter. Resolve the canvas''s display name by
+
+            listing canvases filtered on the ids collected from a page of reports.'
+      required:
+      - reportId
+      - runId
+      - organizationId
+      - name
+      - createdByUserId
+      - modifiedByUserId
+      - createdDate
+      - modifiedDate
+      - summaries
+      - tags
+      - metadata
+      - reportType
+    v1ReportRuleStatusDetails:
+      type: object
+      properties:
+        created:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetailsCreated'
+        live:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetailsLive'
+        finished:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetailsFinished'
+        failed:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetailsFailed'
+        canceled:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetailsCanceled'
+        error:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetailsError'
+    v1CreateReportRequestRuleIds:
+      type: object
+      properties:
+        ruleIds:
+          type: array
+          items:
+            type: string
+      description: 'Deprecated - use RuleEvaluationService instead.
+
+        The order of `rule_ids` is the report rule order: first ID is `display_order` 0, second is 1, etc., on the created report.'
+      required:
+      - ruleIds
+    v1UpdateReportResponse:
+      type: object
+      title: no response fields
+    v1ListReportsResponse:
+      type: object
+      properties:
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1Report'
+        nextPageToken:
+          type: string
+      description: The response of a call to `ReportService_ListReportsResponse`.
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    v1ReportRuleSummary:
+      type: object
+      properties:
+        ruleId:
+          type: string
+        ruleClientKey:
+          type: string
+        ruleVersionId:
+          type: string
+        ruleVersionNumber:
+          type: integer
+          format: int64
+        reportRuleVersionId:
+          type: string
+        numOpen:
+          type: integer
+          format: int64
+        numFailed:
+          type: integer
+          format: int64
+        numPassed:
+          type: integer
+          format: int64
+        status:
+          $ref: '#/components/schemas/v1ReportRuleStatus'
+        statusDetails:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetails'
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        assetId:
+          type: string
+        deletedDate:
+          type: string
+          format: date-time
+        resolvedFamilyStats:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ResolvedFamilyStat'
+        resolvedAlignmentConfigs:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ResolvedAlignmentEntry'
+        displayOrder:
+          type: integer
+          format: int64
+          description: 'Zero-based position of this rule line on the report. Copied from the report template rule''s `display_order`, or from the
+
+            position of `rule_id` in `CreateReportRequestRuleIds.rule_ids` when creating from explicit rule IDs. Lower values run first.'
+      required:
+      - ruleId
+      - ruleVersionId
+      - ruleVersionNumber
+      - reportRuleVersionId
+      - numOpen
+      - numFailed
+      - numPassed
+      - status
+      - statusDetails
+      - createdDate
+      - modifiedDate
+      - assetId
+      - displayOrder
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
+    v1ReportRuleStatusDetailsFailed:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+        exitCode:
+          type: integer
+          format: int32
+        stdout:
+          type: string
+        stderr:
+          type: string
+      required:
+      - errorMessage
+    v1ListReportMetadataValuesResponse:
+      type: object
+      properties:
+        metadataValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        nextPageToken:
+          type: string
+      description: The response of a call to `ReportService_ListReportMetadataValues`.
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1CanvasCellExecutionStatus:
+      type: string
+      enum:
+      - CANVAS_CELL_EXECUTION_STATUS_UNSPECIFIED
+      - CANVAS_CELL_EXECUTION_STATUS_IN_PROGRESS
+      - CANVAS_CELL_EXECUTION_STATUS_AUTO_PASSED
+      - CANVAS_CELL_EXECUTION_STATUS_AUTO_FAILED
+      - CANVAS_CELL_EXECUTION_STATUS_MANUAL_PASSED
+      - CANVAS_CELL_EXECUTION_STATUS_MANUAL_FAILED
+      - CANVAS_CELL_EXECUTION_STATUS_ERROR
+      - CANVAS_CELL_EXECUTION_STATUS_SKIPPED
+      - CANVAS_CELL_EXECUTION_STATUS_OPEN
+      - CANVAS_CELL_EXECUTION_STATUS_MANUALLY_CANCELLED
+      default: CANVAS_CELL_EXECUTION_STATUS_UNSPECIFIED
+      description: 'Status of a single canvas cell execution. Also used as the status of the
+
+        parent CanvasExecution: the parent rolls up its cells'' statuses into a
+
+        single value (e.g. any AUTO_FAILED cell yields an AUTO_FAILED execution).'
+    v1ReportWithCumulativeSummary:
+      type: object
+      properties:
+        reportId:
+          type: string
+          description: The unique identifier of the report.
+        reportTemplateId:
+          type: string
+          description: The identifier of the report template this report was created from, if any.
+        runId:
+          type: string
+          description: The identifier of the run associated with this report.
+        organizationId:
+          type: string
+          description: The organization this report belongs to.
+        name:
+          type: string
+          description: The display name of the report.
+        description:
+          type: string
+          description: An optional description of the report.
+        createdByUserId:
+          type: string
+          description: The identifier of the user who created the report.
+        modifiedByUserId:
+          type: string
+          description: The identifier of the user who last modified the report.
+        createdDate:
+          type: string
+          format: date-time
+          description: When the report was created.
+        modifiedDate:
+          type: string
+          format: date-time
+          description: When the report was last modified.
+        cumulativeSummary:
+          $ref: '#/components/schemas/v1ReportCumulativeRuleSummary'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ReportTag'
+          description: Tags associated with this report.
+        rerunFromReportId:
+          type: string
+          description: The identifier of the report this report was rerun from, if any.
+        jobId:
+          type: string
+          description: The identifier of the job that produced this report, if any.
+        archivedDate:
+          type: string
+          format: date-time
+          description: When the report was archived, if it has been archived.
+        isArchived:
+          type: boolean
+          description: Whether the report has been archived.
+        reportType:
+          $ref: '#/components/schemas/v1ReportType'
+        canvasExecutionId:
+          type: string
+          description: 'For CANVAS reports, the id of the published canvas_execution this report row
+
+            is linked to (read-through from canvas_executions.canvas_execution_id). Empty
+
+            for RULE_EVALUATION reports. Used by clients to route to the canvas detail page.'
+        canvasStatus:
+          $ref: '#/components/schemas/v1CanvasCellExecutionStatus'
+        canvasVersionId:
+          type: string
+          description: 'For CANVAS reports, the id of the canvas_version the linked execution was run
+
+            from (read-through from canvas_executions.canvas_version_id). Empty for
+
+            RULE_EVALUATION reports. Used by clients to route to the canvas source and to
+
+            re-run the report from the same version.'
+        canvasId:
+          type: string
+          description: 'For CANVAS reports, the id of the canvas the linked execution was published
+
+            from (resolved through canvas_versions.canvas_id). Empty for RULE_EVALUATION
+
+            reports, whose equivalent grouping is `report_template_id`. Also the value
+
+            matched by the `canvas_id` list filter. Resolve the canvas''s display name by
+
+            listing canvases filtered on the ids collected from a page of reports.'
+      description: 'ReportWithCumulativeSummary is a projection of `Report` that replaces the per-rule `summaries`
+
+        list with a single `cumulative_summary` aggregated across all rules. It is returned by
+
+        `ListReportsWithCumulativeSummary` to keep response sizes manageable when listing many reports.'
+      required:
+      - reportId
+      - runId
+      - organizationId
+      - name
+      - createdByUserId
+      - modifiedByUserId
+      - createdDate
+      - modifiedDate
+      - cumulativeSummary
+      - tags
+      - reportType
+    v1CreateReportFromReportTemplateRequest:
+      type: object
+      properties:
+        reportTemplateId:
+          type: string
+      description: 'Deprecated - use RuleEvaluationService instead.
+
+        Report rule lines use each template rule''s `display_order` from `ReportTemplateRule` at creation time.'
+      required:
+      - reportTemplateId
+    v1ListReportsWithCumulativeSummaryResponse:
+      type: object
+      properties:
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ReportWithCumulativeSummary'
+        nextPageToken:
+          type: string
+      description: The response of a call to `ReportService_ListReportsWithCumulativeSummaryResponse`.
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,1211 @@
+openapi: 3.2.0
+info:
+  title: Sift Test Report Service API
+  version: '1.0'
+  description: Service to manage test reports
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: TestReportService
+  description: Service to manage test reports
+paths:
+  /api/v1/test-measurements:
+    get:
+      summary: ListTestMeasurements
+      description: Lists test measurements with optional filtering
+      operationId: TestReportService_ListTestMeasurements
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListTestMeasurementsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of test measurements to return.
+
+          The service may return fewer than this value.
+
+          If unspecified, at most 50 test measurements will be returned.
+
+          The maximum value is 1000; values above 1000 will be coerced to 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListTestMeasurements` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListTestMeasurements` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `measurement_id`, `measurement_type`, `name`, `test_step_id`,
+
+          `test_report_id`, `numeric_value`, `string_value`, `boolean_value`, `passed`, `timestamp`,
+
+          `created_date`, `modified_date`, and `metadata`.
+
+          Metadata can be used in filters by using `metadata.{metadata_key_name}` as the field name.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved test measurements. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `measurement_id`, `name`, `measurement_type`, `test_step_id`, `test_report_id`,
+
+          `passed`, `timestamp`, `created_date`, and `modified_date`.
+
+          If left empty, items are ordered by `timestamp` in ascending order.
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "timestamp asc,name"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - TestReportService
+    post:
+      summary: CreateTestMeasurement
+      description: Creates a test measurement
+      operationId: TestReportService_CreateTestMeasurement
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateTestMeasurementResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateTestMeasurementRequest'
+        required: true
+      tags:
+      - TestReportService
+    patch:
+      summary: UpdateTestMeasurement
+      description: Updates a test measurement
+      operationId: TestReportService_UpdateTestMeasurement
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateTestMeasurementResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1UpdateTestMeasurementRequest'
+        required: true
+      tags:
+      - TestReportService
+  /api/v1/test-measurements/count:
+    get:
+      summary: CountTestMeasurements
+      description: Counts test measurements with optional filtering
+      operationId: TestReportService_CountTestMeasurements
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CountTestMeasurementsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `measurement_id`, `measurement_type`, `name`, `test_step_id`,
+
+          `test_report_id`, `numeric_value`, `string_value`, `boolean_value`, `passed`, `timestamp`,
+
+          `created_date`, `modified_date`, and `metadata`.
+
+          Metadata can be used in filters by using `metadata.{metadata_key_name}` as the field name.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - TestReportService
+  /api/v1/test-measurements/{measurementId}:
+    delete:
+      summary: DeleteTestMeasurement
+      description: Deletes a test measurement
+      operationId: TestReportService_DeleteTestMeasurement
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1DeleteTestMeasurementResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: measurementId
+        description: The ID of the test measurement to delete
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - TestReportService
+  /api/v1/test-measurements:batch:
+    post:
+      summary: CreateTestMeasurements
+      description: Creates multiple test measurements in a single request
+      operationId: TestReportService_CreateTestMeasurements
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateTestMeasurementsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateTestMeasurementsRequest'
+        required: true
+      tags:
+      - TestReportService
+  /api/v1/test-reports:
+    get:
+      summary: ListTestReports
+      description: Lists test reports with optional filtering
+      operationId: TestReportService_ListTestReports
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListTestReportsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of test reports to return.
+
+          The service may return fewer than this value.
+
+          If unspecified, at most 50 test reports will be returned.
+
+          The maximum value is 1000; values above 1000 will be coerced to 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListTestReports` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListTestReports` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `test_report_id`, `status`, `name`, `test_system_name`,
+
+          `test_case`, `start_time`, `end_time`, `serial_number`, `created_by_user_id`, `modified_by_user_id`,
+
+          `part_number`, `system_operator`, `run_id`, `archived_date`, and `metadata`.
+
+          Metadata can be used in filters by using `metadata.{metadata_key_name}` as the field name.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved test reports. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `test_report_id`, `name`, `test_system_name`, `test_case`, `start_time`, `end_time`,
+
+          `created_date`, and `modified_date`.
+
+          If left empty, items are ordered by `start_time` in descending order (newest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "start_time desc,name"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - TestReportService
+    post:
+      summary: CreateTestReport
+      description: Creates a test report
+      operationId: TestReportService_CreateTestReport
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateTestReportResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateTestReportRequest'
+        required: true
+      tags:
+      - TestReportService
+    patch:
+      summary: UpdateTestReport
+      description: Updates a test report
+      operationId: TestReportService_UpdateTestReport
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateTestReportResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1UpdateTestReportRequest'
+        required: true
+      tags:
+      - TestReportService
+  /api/v1/test-reports/{testReportId}:
+    get:
+      summary: GetTestReport
+      description: Gets a single test report
+      operationId: TestReportService_GetTestReport
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetTestReportResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: testReportId
+        description: The ID of the test report to get
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - TestReportService
+    delete:
+      summary: DeleteTestReport
+      description: Deletes a test report
+      operationId: TestReportService_DeleteTestReport
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1DeleteTestReportResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: testReportId
+        description: The ID of the test report to delete
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - TestReportService
+  /api/v1/test-reports:import:
+    post:
+      summary: ImportTestReport
+      description: Imports a test report from an already-uploaded file.
+      operationId: TestReportService_ImportTestReport
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ImportTestReportResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1ImportTestReportRequest'
+        required: true
+      tags:
+      - TestReportService
+  /api/v1/test-steps:
+    get:
+      summary: ListTestSteps
+      description: Lists test steps with optional filtering
+      operationId: TestReportService_ListTestSteps
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListTestStepsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of test steps to return.
+
+          The service may return fewer than this value.
+
+          If unspecified, at most 50 test steps will be returned.
+
+          The maximum value is 1000; values above 1000 will be coerced to 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListTestSteps` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListTestSteps` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `test_step_id`, `test_report_id`, `parent_step_id`, `name`,
+
+          `description`, `step_type`, `step_path`, `status`, `start_time`, `end_time`,
+
+          `error_code`, `error_message`, `created_date`, `modified_date`, and `metadata`.
+
+          Metadata can be used in filters by using `metadata.{metadata_key_name}` as the field name.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved test steps. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `test_step_id`, `name`, `step_type`, `step_path`, `status`,
+
+          `start_time`, `end_time`, `created_date`, and `modified_date`.
+
+          If left empty, items are ordered by `step_path` in ascending order.
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "step_path asc,start_time desc"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - TestReportService
+    post:
+      summary: CreateTestStep
+      description: Creates a test step
+      operationId: TestReportService_CreateTestStep
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateTestStepResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateTestStepRequest'
+        required: true
+      tags:
+      - TestReportService
+    patch:
+      summary: UpdateTestStep
+      description: Updates a test step
+      operationId: TestReportService_UpdateTestStep
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateTestStepResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1UpdateTestStepRequest'
+        required: true
+      tags:
+      - TestReportService
+  /api/v1/test-steps/count:
+    get:
+      summary: CountTestSteps
+      description: Counts test steps with optional filtering
+      operationId: TestReportService_CountTestSteps
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CountTestStepsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `test_step_id`, `test_report_id`, `parent_step_id`, `name`,
+
+          `description`, `step_type`, `step_path`, `status`, `start_time`, `end_time`,
+
+          `error_code`, `error_message`, `created_date`, `modified_date`, and `metadata`.
+
+          Metadata can be used in filters by using `metadata.{metadata_key_name}` as the field name.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - TestReportService
+  /api/v1/test-steps/{testStepId}:
+    delete:
+      summary: DeleteTestStep
+      description: Deletes a test step
+      operationId: TestReportService_DeleteTestStep
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1DeleteTestStepResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: testStepId
+        description: The ID of the test step to delete
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - TestReportService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1CreateTestReportResponse:
+      type: object
+      properties:
+        testReport:
+          $ref: '#/components/schemas/v1TestReport'
+      title: Response message for CreateTestReport
+    v1ListTestReportsResponse:
+      type: object
+      properties:
+        testReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1TestReport'
+          title: The list of test reports
+        nextPageToken:
+          type: string
+          title: The next page token for pagination
+      title: Response message for ListTestReports
+    v1CreateTestStepResponse:
+      type: object
+      properties:
+        testStep:
+          $ref: '#/components/schemas/v1TestStep'
+      title: Response message for CreateTestStep
+    v1GetTestReportResponse:
+      type: object
+      properties:
+        testReport:
+          $ref: '#/components/schemas/v1TestReport'
+      title: Response message for GetTestReport
+    v1DeleteTestStepResponse:
+      type: object
+      description: Empty response indicating successful deletion
+      title: Response message for DeleteTestStep
+    v1CountTestStepsResponse:
+      type: object
+      properties:
+        count:
+          type: string
+          format: int64
+          title: The total count of test steps matching the filter
+      title: Response message for CountTestSteps
+    v1ListTestStepsResponse:
+      type: object
+      properties:
+        testSteps:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1TestStep'
+          title: The list of test steps
+        nextPageToken:
+          type: string
+          title: The next page token for pagination
+      title: Response message for ListTestSteps
+    v1CreateTestMeasurementsResponse:
+      type: object
+      properties:
+        measurementsCreatedCount:
+          type: integer
+          format: int32
+          title: The number of test measurements successfully created
+        measurementIds:
+          type: array
+          items:
+            type: string
+          title: The IDs of the created test measurements
+      title: Response message for CreateTestMeasurements
+      required:
+      - measurementsCreatedCount
+      - measurementIds
+    v1CreateTestMeasurementResponse:
+      type: object
+      properties:
+        testMeasurement:
+          $ref: '#/components/schemas/v1TestMeasurement'
+      title: Response message for CreateTestMeasurement
+    v1DeleteTestReportResponse:
+      type: object
+      description: Empty response indicating successful deletion
+      title: Response message for DeleteTestReport
+    v1NumericBounds:
+      type: object
+      properties:
+        min:
+          type: number
+          format: double
+        max:
+          type: number
+          format: double
+    v1ImportTestReportResponse:
+      type: object
+      properties:
+        testReport:
+          $ref: '#/components/schemas/v1TestReport'
+      title: Response message for ImportTestReport
+    v1MetadataValue:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/v1MetadataKey'
+        stringValue:
+          type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+        relationValue:
+          $ref: '#/components/schemas/v1MetadataRelationValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
+      required:
+      - key
+    v1CreateTestStepRequest:
+      type: object
+      properties:
+        testStep:
+          $ref: '#/components/schemas/v1TestStep'
+      title: Request message for CreateTestStep
+      required:
+      - testStep
+    v1UpdateTestMeasurementResponse:
+      type: object
+      properties:
+        testMeasurement:
+          $ref: '#/components/schemas/v1TestMeasurement'
+      title: Response message for UpdateTestMeasurement
+    v1ImportTestReportRequest:
+      type: object
+      properties:
+        remoteFileId:
+          type: string
+          title: The remote file ID containing the XML test data
+      title: Request message for ImportTestReport
+      required:
+      - remoteFileId
+    v1ErrorInfo:
+      type: object
+      properties:
+        errorCode:
+          type: integer
+          format: int32
+        errorMessage:
+          type: string
+      required:
+      - errorCode
+      - errorMessage
+    v1StringBounds:
+      type: object
+      properties:
+        expectedValue:
+          type: string
+      required:
+      - expectedValue
+    v1TestStep:
+      type: object
+      properties:
+        testStepId:
+          type: string
+          title: unique identifier for the step
+        testReportId:
+          type: string
+          title: pointer to overall test run
+        parentStepId:
+          type: string
+          title: pointer to parent step, if any
+        name:
+          type: string
+          title: Name of the test step for display
+        description:
+          type: string
+          title: Description of the test step from test controller
+        stepType:
+          $ref: '#/components/schemas/v1TestStepType'
+        stepPath:
+          type: string
+          title: Hierarchical path (e.g., "1", "1.1", "1.2.3")
+        status:
+          $ref: '#/components/schemas/v1TestStatus'
+        startTime:
+          type: string
+          format: date-time
+          title: Start time of the test step
+        endTime:
+          type: string
+          format: date-time
+          title: End time of the test step
+        errorInfo:
+          $ref: '#/components/schemas/v1ErrorInfo'
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          title: The metadata values associated with this test step
+      required:
+      - testStepId
+      - testReportId
+      - name
+      - stepType
+      - stepPath
+      - status
+      - startTime
+      - endTime
+    v1UpdateTestStepRequest:
+      type: object
+      properties:
+        testStep:
+          $ref: '#/components/schemas/v1TestStep'
+        updateMask:
+          type: string
+          description: 'The field mask specifying which fields to update. The fields available to be updated are
+
+            `name`, `description`, `step_type`, `step_path`, `test_case`, `status`,
+
+            `start_time`, `end_time`, `error_info`, and `metadata`. When `metadata` is in the
+
+            mask, the supplied list replaces all existing metadata for the test step; sending an
+
+            empty or omitted list clears all metadata.'
+      title: Request message for UpdateTestStep
+      required:
+      - testStep
+    v1UpdateTestReportResponse:
+      type: object
+      properties:
+        testReport:
+          $ref: '#/components/schemas/v1TestReport'
+      title: Response message for UpdateTestReport
+    v1TestStepType:
+      type: string
+      enum:
+      - TEST_STEP_TYPE_UNSPECIFIED
+      - TEST_STEP_TYPE_SEQUENCE
+      - TEST_STEP_TYPE_GROUP
+      - TEST_STEP_TYPE_ACTION
+      - TEST_STEP_TYPE_FLOW_CONTROL
+      default: TEST_STEP_TYPE_UNSPECIFIED
+      title: "- TEST_STEP_TYPE_SEQUENCE: ResultSet/MainSequence - top-level test sequence\n - TEST_STEP_TYPE_GROUP: TestGroup - logical grouping of test steps\n - TEST_STEP_TYPE_ACTION: SessionAction - individual executable action\n - TEST_STEP_TYPE_FLOW_CONTROL: Flow control elements (While, If, etc.)"
+    v1TestMeasurementType:
+      type: string
+      enum:
+      - TEST_MEASUREMENT_TYPE_UNSPECIFIED
+      - TEST_MEASUREMENT_TYPE_DOUBLE
+      - TEST_MEASUREMENT_TYPE_STRING
+      - TEST_MEASUREMENT_TYPE_BOOLEAN
+      - TEST_MEASUREMENT_TYPE_LIMIT
+      default: TEST_MEASUREMENT_TYPE_UNSPECIFIED
+    v1ListTestMeasurementsResponse:
+      type: object
+      properties:
+        testMeasurements:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1TestMeasurement'
+          title: The list of test measurements
+        nextPageToken:
+          type: string
+          title: The next page token for pagination
+      title: Response message for ListTestMeasurements
+    unitv2Unit:
+      type: object
+      properties:
+        unitId:
+          type: string
+        abbreviatedName:
+          type: string
+      required:
+      - unitId
+      - abbreviatedName
+    v1UpdateTestMeasurementRequest:
+      type: object
+      properties:
+        testMeasurement:
+          $ref: '#/components/schemas/v1TestMeasurement'
+        updateMask:
+          type: string
+          description: 'The field mask specifying which fields to update. The fields available to be updated are
+
+            `name`, `measurement_type`, `numeric_value`, `string_value`, `boolean_value`, `unit`, `numeric_bounds`,
+
+            `string_bounds`, `passed`, `timestamp`, `description`, and `channel_names` and `metadata`. When `metadata` is in the
+
+            mask, the supplied list replaces all existing metadata for the measurement; sending
+
+            an empty or omitted list clears all metadata.'
+      title: Request message for UpdateTestMeasurement
+      required:
+      - testMeasurement
+    v1DeleteTestMeasurementResponse:
+      type: object
+      description: Empty response indicating successful deletion
+      title: Response message for DeleteTestMeasurement
+    v1TestStatus:
+      type: string
+      enum:
+      - TEST_STATUS_UNSPECIFIED
+      - TEST_STATUS_DRAFT
+      - TEST_STATUS_PASSED
+      - TEST_STATUS_FAILED
+      - TEST_STATUS_ABORTED
+      - TEST_STATUS_ERROR
+      - TEST_STATUS_IN_PROGRESS
+      - TEST_STATUS_SKIPPED
+      default: TEST_STATUS_UNSPECIFIED
+      title: '- TEST_STATUS_DRAFT: Barebones test report created, waiting for file processing'
+    v1UpdateTestStepResponse:
+      type: object
+      properties:
+        testStep:
+          $ref: '#/components/schemas/v1TestStep'
+      title: Response message for UpdateTestStep
+    v1CountTestMeasurementsResponse:
+      type: object
+      properties:
+        count:
+          type: string
+          format: int64
+          title: The total count of test measurements matching the filter
+      title: Response message for CountTestMeasurements
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v1TestMeasurement:
+      type: object
+      properties:
+        measurementId:
+          type: string
+        measurementType:
+          $ref: '#/components/schemas/v1TestMeasurementType'
+        name:
+          type: string
+        testStepId:
+          type: string
+        testReportId:
+          type: string
+        numericValue:
+          type: number
+          format: double
+        stringValue:
+          type: string
+        booleanValue:
+          type: boolean
+        unit:
+          $ref: '#/components/schemas/unitv2Unit'
+        numericBounds:
+          $ref: '#/components/schemas/v1NumericBounds'
+        stringBounds:
+          $ref: '#/components/schemas/v1StringBounds'
+        passed:
+          type: boolean
+        timestamp:
+          type: string
+          format: date-time
+        description:
+          type: string
+          title: Description or note about the measurement
+        channelNames:
+          type: array
+          items:
+            type: string
+          description: 'Names of Sift channels this measurement is associated with. Allows cross-plotting
+
+            in Explore using the Report''s associated Run to resolve channels from names.'
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          title: The metadata values associated with this measurement
+      required:
+      - measurementId
+      - measurementType
+      - name
+      - testStepId
+      - testReportId
+      - passed
+      - timestamp
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    v1UpdateTestReportRequest:
+      type: object
+      properties:
+        testReport:
+          $ref: '#/components/schemas/v1TestReport'
+        updateMask:
+          type: string
+          description: 'The field mask specifying which fields to update. The fields available to be updated are
+
+            `status`, `name`, `test_system_name`, `test_case`, `start_time`, `end_time`, `serial_number`,
+
+            `part_number`, `system_operator`, `run_id`, and `is_archived`.'
+      title: Request message for UpdateTestReport
+      required:
+      - testReport
+    v1CreateTestMeasurementsRequest:
+      type: object
+      properties:
+        testMeasurements:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1TestMeasurement'
+          title: The test measurements to create
+      title: Request message for CreateTestMeasurements
+      required:
+      - testMeasurements
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
+    v1CreateTestReportRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/v1TestStatus'
+        name:
+          type: string
+          title: The name of the test run
+        testSystemName:
+          type: string
+          title: The name of the test system
+        testCase:
+          type: string
+          title: The test case that was run
+        startTime:
+          type: string
+          format: date-time
+          title: The start time of the test run
+        endTime:
+          type: string
+          format: date-time
+          title: The end time of the test run
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          title: The metadata values associated with this test run
+        serialNumber:
+          type: string
+          title: The serial number for the DUT
+        partNumber:
+          type: string
+          title: The part number for the DUT
+        systemOperator:
+          type: string
+          title: Unique identifier for user owner
+        runId:
+          type: string
+          title: The run ID for the test report
+      title: Request message for CreateTestReport
+      required:
+      - status
+      - name
+      - testSystemName
+      - testCase
+      - startTime
+      - endTime
+    v1TestReport:
+      type: object
+      properties:
+        testReportId:
+          type: string
+          title: Unique identifier for the run
+        status:
+          $ref: '#/components/schemas/v1TestStatus'
+        name:
+          type: string
+          title: The name of the test run
+        testSystemName:
+          type: string
+          title: The name of the test system
+        testCase:
+          type: string
+          title: The test case that was run
+        startTime:
+          type: string
+          format: date-time
+          title: The start time of the test run
+        endTime:
+          type: string
+          format: date-time
+          title: The end time of the test run
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          title: The metadata values associated with this test run
+        serialNumber:
+          type: string
+          title: The serial number for the DUT
+        partNumber:
+          type: string
+          title: The part number for the DUT
+        systemOperator:
+          type: string
+          title: Unique identifier for user owner
+        archivedDate:
+          type: string
+          format: date-time
+          title: The date and time the test run was archived (internal)
+        isArchived:
+          type: boolean
+          title: Whether the test run is archived (externally exposed)
+        runId:
+          type: string
+          title: The run ID for the test run
+      required:
+      - testReportId
+      - status
+      - name
+      - testSystemName
+      - testCase
+      - startTime
+      - endTime
+    v1CreateTestMeasurementRequest:
+      type: object
+      properties:
+        testMeasurement:
+          $ref: '#/components/schemas/v1TestMeasurement'
+      title: Request message for CreateTestMeasurement
+      required:
+      - testMeasurement
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

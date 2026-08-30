@@ -1,0 +1,290 @@
+openapi: 3.2.0
+info:
+  title: Sift Export Service API
+  version: '1.0'
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: ExportService
+paths:
+  /api/v1/export:
+    post:
+      summary: ExportData
+      description: Export data.
+      operationId: ExportService_ExportData
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ExportDataResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1ExportDataRequest'
+        required: true
+      tags:
+      - ExportService
+  /api/v1/export/{jobId}/download-url:
+    get:
+      summary: GetDownloadUrl
+      description: Retrieve the download URL for a completed job.
+      operationId: ExportService_GetDownloadUrl
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetDownloadUrlResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ExportService
+components:
+  schemas:
+    siftexportsv1CalculatedChannelConfig:
+      type: object
+      properties:
+        name:
+          type: string
+        expression:
+          type: string
+        channelReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannelAbstractChannelReference'
+        units:
+          type: string
+      required:
+      - name
+      - expression
+      - channelReferences
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1ExportDataResponse:
+      type: object
+      properties:
+        presignedUrl:
+          type: string
+          description: 'Pre-signed URL of exported zip containing export files. This will be blank if
+
+            the job is processed as a background job, in which case `job_id` will be non-empty.'
+        jobId:
+          type: string
+          description: This will be non-empty if the export is being processed asynchronously in a background job.
+        serviceMessage:
+          type: string
+          description: Optional message for the client to display in success or error notification (e.g. exclusions or 403 reason).
+    v1GetDownloadUrlResponse:
+      type: object
+      properties:
+        presignedUrl:
+          type: string
+        serviceMessage:
+          type: string
+          description: Optional message for the client to display in success or error notification.
+      required:
+      - presignedUrl
+    v1ExportOptions:
+      type: object
+      properties:
+        useLegacyFormat:
+          type: boolean
+          description: Whether to use legacy format string for channel headers which contains key-value metadata.
+        simplifyChannelNames:
+          type: boolean
+          title: Whether to simplify channel names by removing the component part of the name if name is unique in export file
+        combineRuns:
+          type: boolean
+          description: Whether to combine runs. e.g. channels from the same asset in different runs will be combined into a single column of data.
+        splitExportByAsset:
+          type: boolean
+          title: Split each asset into their own export file
+        splitExportByRun:
+          type: boolean
+          title: Split each run into their own export file
+        embedChannelConfigs:
+          type: boolean
+          description: 'Embeds a re-importable channel configuration into the export: for CSV, as a config row
+
+            inserted immediately after the header row; for Parquet, as per-column field metadata
+
+            under the "sift_channel_config" key. Ignored for the SUN output format.'
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v2CalculatedChannelAbstractChannelReference:
+      type: object
+      properties:
+        channelReference:
+          type: string
+        channelIdentifier:
+          type: string
+          title: must use either a channel_identifier or a calculated_channel_reference, not both
+        calculatedChannelVersionId:
+          type: string
+        calculatedChannel:
+          $ref: '#/components/schemas/v1ExpressionRequest'
+      required:
+      - channelReference
+    v1ExpressionChannelReference:
+      type: object
+      properties:
+        channelReference:
+          type: string
+        channelId:
+          type: string
+        calculatedChannel:
+          $ref: '#/components/schemas/v1ExpressionRequest'
+      required:
+      - channelReference
+      - channelId
+    v1ExportOutputFormat:
+      type: string
+      enum:
+      - EXPORT_OUTPUT_FORMAT_UNSPECIFIED
+      - EXPORT_OUTPUT_FORMAT_CSV
+      - EXPORT_OUTPUT_FORMAT_SUN
+      - EXPORT_OUTPUT_FORMAT_PARQUET
+      default: EXPORT_OUTPUT_FORMAT_UNSPECIFIED
+    v1RunsAndTimeRange:
+      type: object
+      properties:
+        runIds:
+          type: array
+          items:
+            type: string
+        startTime:
+          type: string
+          format: date-time
+        stopTime:
+          type: string
+          format: date-time
+      required:
+      - runIds
+    v1FunctionDependency:
+      type: object
+      properties:
+        userDefinedFunctionVersionId:
+          type: string
+      required:
+      - userDefinedFunctionVersionId
+    v1AssetsAndTimeRange:
+      type: object
+      properties:
+        assetIds:
+          type: array
+          items:
+            type: string
+        startTime:
+          type: string
+          format: date-time
+        stopTime:
+          type: string
+          format: date-time
+      required:
+      - assetIds
+      - startTime
+      - stopTime
+    v1ExportDataRequest:
+      type: object
+      properties:
+        timeRange:
+          $ref: '#/components/schemas/v1TimeRange'
+        runsAndTimeRange:
+          $ref: '#/components/schemas/v1RunsAndTimeRange'
+        assetsAndTimeRange:
+          $ref: '#/components/schemas/v1AssetsAndTimeRange'
+        channelIds:
+          type: array
+          items:
+            type: string
+        calculatedChannelConfigs:
+          type: array
+          items:
+            $ref: '#/components/schemas/siftexportsv1CalculatedChannelConfig'
+        outputFormat:
+          $ref: '#/components/schemas/v1ExportOutputFormat'
+        exportOptions:
+          $ref: '#/components/schemas/v1ExportOptions'
+      required:
+      - outputFormat
+      - exportOptions
+    v1TimeRange:
+      type: object
+      properties:
+        startTime:
+          type: string
+          format: date-time
+        stopTime:
+          type: string
+          format: date-time
+      required:
+      - startTime
+      - stopTime
+    v1ExpressionRequest:
+      type: object
+      properties:
+        channelReferences:
+          type: object
+          additionalProperties:
+            type: string
+          description: 'A map from the channel reference in the expression string (e.g. $1) to the channel id (uuid).
+
+            This is deprecated and should be passed in expression_channel_references instead.'
+        expression:
+          type: string
+        expressionChannelReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ExpressionChannelReference'
+        functionDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionDependency'
+      required:
+      - expression
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

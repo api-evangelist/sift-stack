@@ -1,0 +1,483 @@
+openapi: 3.2.0
+info:
+  title: Sift Protobuf Descriptor Service API
+  version: '1.0'
+  description: Service to programmatically interact with protobuf descriptors used for protobuf ingestion.
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: ProtobufDescriptorService
+  description: Service to programmatically interact with protobuf descriptors used for protobuf ingestion.
+  externalDocs:
+    description: Read more about what protobuf ingestion.
+    url: /ingestion/protobuf_ingestion
+paths:
+  /api/v1/protobuf-descriptors:
+    get:
+      summary: ListProtobufDescriptors
+      description: Retrieve protobuf descriptors using an optional filter.
+      operationId: ProtobufDescriptorService_ListProtobufDescriptors
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protobuf_descriptorsv1ListProtobufDescriptorsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: organizationId
+        description: organization_id is deprecated
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: pageSize
+        description: 'The maximum number of protobuf descriptors to return.
+
+          The service may return fewer than this value.
+
+          If unspecified, at most 50 protobuf descriptors will be returned.
+
+          The maximum value is 1000; values above 1000 will be coerced to 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListProtobufDescriptors` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListProtobufDescriptors` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `protobuf_descriptor_id`, `proto_file_name`, `namespace`, and `message_type_full_name`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).
+
+          For more information about the fields used for filtering, please refer to [this definition](/protocol-buffers/documentation#protobufdescriptor). Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - ProtobufDescriptorService
+    delete:
+      summary: DeleteProtobufDescriptors
+      description: Delete protobuf descriptors of that match the provided `namespace` and `message_type_full_name`.
+      operationId: ProtobufDescriptorService_DeleteProtobufDescriptors
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protobuf_descriptorsv1DeleteProtobufDescriptorsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: messageTypeFullName
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: namespace
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: organizationId
+        description: organization_id is deprecated
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: protobufDescriptorId
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - ProtobufDescriptorService
+  /api/v1/protobuf-descriptors:add:
+    post:
+      summary: AddProtobufDescriptor
+      description: Used to register a protobuf message to be ingested.
+      operationId: ProtobufDescriptorService_AddProtobufDescriptor
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protobuf_descriptorsv1AddProtobufDescriptorResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: protobufDescriptor.messageTypeFullName
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: protobufDescriptor.fileDescriptorSet
+        in: query
+        required: false
+        schema:
+          type: string
+          format: byte
+      - name: protobufDescriptor.protoFileName
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: protobufDescriptor.namespace
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: protobufDescriptor.protobufDescriptorId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: organizationId
+        description: organization_id is deprecated
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: forceDuplicateRegistration
+        description: 'If set to true, the service will ignore checks that this descriptor has already been registered
+
+          and will ensure that it is registered as the latest proto descriptor for the message type.'
+        in: query
+        required: false
+        schema:
+          type: boolean
+      tags:
+      - ProtobufDescriptorService
+  /api/v2/protobuf-descriptors:
+    get:
+      summary: ListProtobufDescriptors
+      description: Retrieve protobuf descriptors using an optional filter.
+      operationId: ProtobufDescriptorService_ListProtobufDescriptorsV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protobuf_descriptorsv2ListProtobufDescriptorsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of protobuf descriptors to return.
+
+          The service may return fewer than this value.
+
+          If unspecified, at most 50 protobuf descriptors will be returned.
+
+          The maximum value is 1000; values above 1000 will be coerced to 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListProtobufDescriptors` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListProtobufDescriptors` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `protobuf_descriptor_id`, `proto_file_name`, `namespace`, and `message_type_full_name`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved protobuf descriptors. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `created_date`, `modified_date`, and `message_type_full_name` and `namespace`.
+
+          If left empty, items are ordered by `created_date` in ascending order (oldest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - ProtobufDescriptorService
+    delete:
+      summary: DeleteProtobufDescriptors
+      description: Delete protobuf descriptors of that match the provided `namespace` and `message_type_full_name`.
+      operationId: ProtobufDescriptorService_DeleteProtobufDescriptorsV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protobuf_descriptorsv2DeleteProtobufDescriptorsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: messageTypeFullName
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: namespace
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: organizationId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: protobufDescriptorId
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - ProtobufDescriptorService
+  /api/v2/protobuf-descriptors:add:
+    post:
+      summary: AddProtobufDescriptor
+      description: Used to register a protobuf message to be ingested.
+      operationId: ProtobufDescriptorService_AddProtobufDescriptorV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protobuf_descriptorsv2AddProtobufDescriptorResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/protobuf_descriptorsv2AddProtobufDescriptorRequest'
+        required: true
+      tags:
+      - ProtobufDescriptorService
+  /api/v2/protobuf-descriptors:check-compatibility:
+    post:
+      summary: CheckProtobufDescriptorCompatibility
+      description: Used to check if a protobuf descriptor is compatible with the existing descriptors.
+      operationId: ProtobufDescriptorService_CheckProtobufDescriptorCompatibilityV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2CheckProtobufDescriptorCompatibilityResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v2CheckProtobufDescriptorCompatibilityRequest'
+        required: true
+      tags:
+      - ProtobufDescriptorService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    protobuf_descriptorsv1DeleteProtobufDescriptorsResponse:
+      type: object
+    v2CheckProtobufDescriptorCompatibilityRequest:
+      type: object
+      properties:
+        protobufDescriptor:
+          $ref: '#/components/schemas/protobuf_descriptorsv2ProtobufDescriptor'
+    protobuf_descriptorsv2DeleteProtobufDescriptorsResponse:
+      type: object
+    protobuf_descriptorsv1ProtobufDescriptor:
+      type: object
+      properties:
+        messageTypeFullName:
+          type: string
+        fileDescriptorSet:
+          type: string
+          format: byte
+        protoFileName:
+          type: string
+        namespace:
+          type: string
+        protobufDescriptorId:
+          type: string
+    protobuf_descriptorsv1ListProtobufDescriptorsResponse:
+      type: object
+      properties:
+        protobufDescriptors:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobuf_descriptorsv1ProtobufDescriptor'
+        nextPageToken:
+          type: string
+      description: The response of a call to `ProtobufDescriptorService_ListProtobufDescriptors`.
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    protobuf_descriptorsv1AddProtobufDescriptorResponse:
+      type: object
+      properties:
+        protobufDescriptor:
+          $ref: '#/components/schemas/protobuf_descriptorsv1ProtobufDescriptor'
+    v2IncompatibleProtobufField:
+      type: object
+      properties:
+        protobufDescriptorId:
+          type: string
+        messageFullName:
+          type: string
+        desiredFieldName:
+          type: string
+        currentFieldName:
+          type: string
+        fieldNumber:
+          type: string
+        reason:
+          type: string
+        details:
+          type: string
+        fieldKind:
+          type: string
+    protobuf_descriptorsv2ProtobufDescriptor:
+      type: object
+      properties:
+        messageTypeFullName:
+          type: string
+        fileDescriptorSet:
+          type: string
+          format: byte
+        protoFileName:
+          type: string
+        namespace:
+          type: string
+        protobufDescriptorId:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+          readOnly: true
+    protobuf_descriptorsv2AddProtobufDescriptorResponse:
+      type: object
+      properties:
+        protobufDescriptor:
+          $ref: '#/components/schemas/protobuf_descriptorsv2ProtobufDescriptor'
+    protobuf_descriptorsv2ListProtobufDescriptorsResponse:
+      type: object
+      properties:
+        protobufDescriptors:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobuf_descriptorsv2ProtobufDescriptor'
+        nextPageToken:
+          type: string
+      description: The response of a call to `ProtobufDescriptorService_ListProtobufDescriptors`.
+    protobuf_descriptorsv2AddProtobufDescriptorRequest:
+      type: object
+      properties:
+        protobufDescriptor:
+          $ref: '#/components/schemas/protobuf_descriptorsv2ProtobufDescriptor'
+        forceDuplicateRegistration:
+          type: boolean
+          description: 'If set to true, the service will ignore checks that this descriptor has already been registered
+
+            and will ensure that it is registered as the latest proto descriptor for the message type.'
+    v2CheckProtobufDescriptorCompatibilityResponse:
+      type: object
+      properties:
+        isValid:
+          type: boolean
+        incompatibleProtobufDescriptorFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2IncompatibleProtobufField'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

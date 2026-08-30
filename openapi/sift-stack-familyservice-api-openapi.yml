@@ -1,0 +1,2127 @@
+openapi: 3.2.0
+info:
+  title: Sift Family Service API
+  version: '1.0'
+  description: Service to programmatically interact with family configurations.
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: FamilyService
+  description: Service to programmatically interact with family configurations.
+paths:
+  /api/v1/families:
+    get:
+      summary: ListFamilies
+      description: Retrieves families using an optional filter.
+      operationId: FamilyService_ListFamilies
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListFamiliesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of families to return. The service may return fewer than this value, even if
+
+          there are additional pages. If unspecified, the limit defaults to 50. The maximum value is 100.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListFamilies` call. Provide this to retrieve the
+
+          subsequent page. When paginating, all other parameters provided to `ListFamilies` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are: `family_id`, `client_key`, `organization_id`, `archived_date`, `is_archived`, `created_by_user_id`, `created_date`, `modified_by_user_id`, `modified_date`, `name`, `description`, `run_query`, `run_id_includes`, `run_id_excludes`, `alignment_name`, `alignment_description`, `metadata`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved families. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are: `created_date`, `modified_date`, `archived_date`.
+
+          If left empty, items are ordered by `created_date` in descending order.
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - FamilyService
+    post:
+      summary: CreateFamily
+      description: Creates a new family.
+      operationId: FamilyService_CreateFamily
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateFamilyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateFamilyRequest'
+        required: true
+      tags:
+      - FamilyService
+  /api/v1/families/alignments/{familyAlignmentId}/points:
+    get:
+      summary: ListFamilyAlignmentPoints
+      description: Lists all alignment points for a specific family version alignment.
+      operationId: FamilyService_ListFamilyAlignmentPoints
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListFamilyAlignmentPointsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyAlignmentId
+        description: Provide family_alignment_id to identify the family to list alignments points.
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        description: 'The maximum number of family version alignment points to return. The service may return fewer than this value, even if
+
+          there are additional pages. If unspecified, the limit defaults to 200. The maximum value is 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are: `family_run_id`, and for the associated Run: `name`, `description`, `start_time`, `end_time`, `duration`.
+
+          Note: `name`, `description`, `start_time`, `end_time`, and `duration` are filters on the associated run.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: pageToken
+        description: 'A page token, received from a previous `ListFamilyAlignmentPoints` call. Provide this to retrieve the
+
+          subsequent page. When paginating, all other parameters provided to `ListFamilyAlignmentPoints` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/families/candidate-runs:
+    get:
+      summary: ListFamilyCandidateRuns
+      description: Lists runs that match a candidate-run CEL filter. Supports `include_archived` as a CEL directive (archived runs are excluded by default; pass `include_archived == true` in the filter to include them). When `family_id` is provided, runs already on that family's persisted membership (both included and excluded) are filtered out so the response only contains runs not yet on the family.
+      operationId: FamilyService_ListFamilyCandidateRuns
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListFamilyCandidateRunsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of runs to return.
+
+          The service may return fewer than this value.
+
+          If unspecified, at most 50 runs will be returned.
+
+          The maximum value is 1000; values above 1000 will be coerced to 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Supports all ListRuns filter fields plus `include_archived`.
+
+          When `include_archived` is not present in the filter, archived runs are excluded by default.
+
+          Set `include_archived == true` in the filter to include archived runs.
+
+          Note: `include_archived` is a directive and must appear at the top level of the filter
+
+          (or within a top-level AND chain). It cannot be used inside an OR expression.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved runs. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `name`, `description`, `created_date`, `modified_date`, `start_time`, and `stop_time`.
+
+          If left empty, items are ordered by `created_date` in descending order (newest-first).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: familyId
+        description: 'Optional family ID to filter out runs already on the family''s persisted membership.
+
+          When set, the response excludes runs that are already included or excluded in the family.
+
+          Omit this field when working with draft membership changes.'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/families/client_key/{clientKey}:
+    get:
+      summary: GetFamily
+      description: Retrieves the latest version of a family.
+      operationId: FamilyService_GetFamily2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetFamilyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: clientKey
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: familyId
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - FamilyService
+    patch:
+      summary: UpdateFamily
+      description: Updates an existing family using the list of fields specified in `update_mask`.
+      operationId: FamilyService_UpdateFamily2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateFamilyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: clientKey
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                familyId:
+                  type: string
+                family:
+                  $ref: '#/components/schemas/v1FamilyDetails'
+                updateMask:
+                  type: string
+                  description: 'Note: Whenever the family is updated, the family stats are also updated to point to the new family version to ensure the family stats are always up to date.
+
+                    client_key can only be updated if it is not already set. It must be passed in via the family request and cannot be used as identifier.'
+              required:
+              - family
+              - updateMask
+        required: true
+      tags:
+      - FamilyService
+  /api/v1/families/client_key/{clientKey}/export:
+    get:
+      summary: ExportFamily
+      description: Exports a family to YAML.
+      operationId: FamilyService_ExportFamily2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ExportFamilyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: clientKey
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: familyId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: familyVersionId
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/families/client_key/{clientKey}/import-update:
+    patch:
+      summary: ImportUpdateFamily
+      description: Updates an existing family from YAML.
+      operationId: FamilyService_ImportUpdateFamily2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ImportUpdateFamilyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: clientKey
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                familyId:
+                  type: string
+                familyYaml:
+                  type: string
+                  description: 'The source to update the family from. Must provide family_yaml. The contents of the source
+
+                    should match the shape of UpdateFamilyRequest FamilyDetails. The update_mask is optional and defaults to updating provided fields.'
+                updateMask:
+                  type: string
+                  title: See UpdateFamilyRequest
+              required:
+              - familyYaml
+        required: true
+      tags:
+      - FamilyService
+  /api/v1/families/stat-range/name:
+    post:
+      summary: GenerateFamilyStatRangeName
+      description: Derives a name for a family range based on the range configuration. Nothing is persisted to the database.
+      operationId: FamilyService_GenerateFamilyStatRangeName
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GenerateFamilyStatRangeNameResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyAlignmentName
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: windowStart.familyAlignmentName
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: windowStart.duration
+        description: Duration relative to the alignment used to compare the data. Defaults to 0 seconds.
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: windowEnd.familyAlignmentName
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: windowEnd.duration
+        description: Duration relative to the alignment used to compare the data. Defaults to 0 seconds.
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/families/versions:
+    get:
+      summary: ListFamilyVersions
+      description: Lists all versions of a family.
+      operationId: FamilyService_ListFamilyVersions
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListFamilyVersionsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of family versions to return. The service may return fewer than this value, even if
+
+          there are additional pages. If unspecified, the max limit defaults to 50. The maximum value is 200.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are: `family_id`, `family_version_id`, `organization_id`, `name`, `description`, `run_query`, `user_notes`, `change_message`, `created_by_user_id`, `created_date`, `modified_by_user_id`, `modified_date`, `archived_date`, `is_archived`, `run_id_includes`, `run_id_excludes`, `alignment_name`, `alignment_description`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: pageToken
+        description: 'A page token, received from a previous `ListFamilyVersions` call. Provide this to retrieve the
+
+          subsequent page. When paginating, all other parameters provided to `ListFamilyVersions` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved family versions. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are: `created_date`, `modified_date`, `name`.
+
+          If left empty, items are ordered by `created_date` in descending order.
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/families/versions/{familyVersionId}:
+    get:
+      summary: GetFamilyVersion
+      description: Retrieves a specific version of a family.
+      operationId: FamilyService_GetFamilyVersion
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetFamilyVersionResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyVersionId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/families/versions/{familyVersionId}/alignments:
+    get:
+      summary: ListFamilyAlignments
+      description: Lists all alignments for a specific family version.
+      operationId: FamilyService_ListFamilyAlignments
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListFamilyAlignmentsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyVersionId
+        description: Provide family_id to identify the family to list alignments.
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        description: 'The maximum number of family version alignments to return. The service may return fewer than this value, even if
+
+          there are additional pages. If unspecified, the limit defaults to 200. The maximum value is 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are: `name`, `description`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: pageToken
+        description: 'A page token, received from a previous `ListFamilyAlignments` call. Provide this to retrieve the
+
+          subsequent page. When paginating, all other parameters provided to `ListFamilyAlignments` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/families/versions/{familyVersionId}/candidate-run-count:
+    get:
+      summary: GetFamilyCandidateRunCount
+      description: Returns the count of candidate runs for a family version that are not already included or excluded.
+      operationId: FamilyService_GetFamilyCandidateRunCount
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetFamilyCandidateRunCountResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyVersionId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/families/versions/{familyVersionId}/candidate-runs:
+    get:
+      summary: GetFamilyCandidateRuns
+      description: Retrieves the candidate runs for a family version based on the run query stored in the family version.
+      operationId: FamilyService_GetFamilyCandidateRuns
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetFamilyCandidateRunsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyVersionId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/families/versions/{familyVersionId}/export:
+    get:
+      summary: ExportFamily
+      description: Exports a family to YAML.
+      operationId: FamilyService_ExportFamily3
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ExportFamilyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyVersionId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: familyId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: clientKey
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/families/versions/{familyVersionId}/members:
+    get:
+      summary: ListFamilyMembers
+      description: Lists all members of a family version.
+      operationId: FamilyService_ListFamilyMembers
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListFamilyMembersResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyVersionId
+        description: Provide family_version_id to identify the family to list members for.
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        description: 'The maximum number of family members to return. The service may return fewer than this value, even if
+
+          there are additional pages. If unspecified, the max limit defaults to 200. The maximum value is 500.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are: `is_exclusion`, `rationale`, `added_date`, `added_by_user_id`, `added_in_version_id`, and for the associated Run:`name`, `description`, `start_time`, `end_time`, `duration`.
+
+          Note: `name`, `description`, `start_time`, `end_time`, and `duration` are filters on the associated run.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: pageToken
+        description: 'A page token, received from a previous `ListFamilyMembers` call. Provide this to retrieve the
+
+          subsequent page. When paginating, all other parameters provided to `ListFamilyMembers` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/families/{familyId}:
+    get:
+      summary: GetFamily
+      description: Retrieves the latest version of a family.
+      operationId: FamilyService_GetFamily
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetFamilyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientKey
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - FamilyService
+    patch:
+      summary: UpdateFamily
+      description: Updates an existing family using the list of fields specified in `update_mask`.
+      operationId: FamilyService_UpdateFamily
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateFamilyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientKey:
+                  type: string
+                family:
+                  $ref: '#/components/schemas/v1FamilyDetails'
+                updateMask:
+                  type: string
+                  description: 'Note: Whenever the family is updated, the family stats are also updated to point to the new family version to ensure the family stats are always up to date.
+
+                    client_key can only be updated if it is not already set. It must be passed in via the family request and cannot be used as identifier.'
+              required:
+              - family
+              - updateMask
+        required: true
+      tags:
+      - FamilyService
+  /api/v1/families/{familyId}/export:
+    get:
+      summary: ExportFamily
+      description: Exports a family to YAML.
+      operationId: FamilyService_ExportFamily
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ExportFamilyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientKey
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: familyVersionId
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/families/{familyId}/import-update:
+    patch:
+      summary: ImportUpdateFamily
+      description: Updates an existing family from YAML.
+      operationId: FamilyService_ImportUpdateFamily
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ImportUpdateFamilyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientKey:
+                  type: string
+                familyYaml:
+                  type: string
+                  description: 'The source to update the family from. Must provide family_yaml. The contents of the source
+
+                    should match the shape of UpdateFamilyRequest FamilyDetails. The update_mask is optional and defaults to updating provided fields.'
+                updateMask:
+                  type: string
+                  title: See UpdateFamilyRequest
+              required:
+              - familyYaml
+        required: true
+      tags:
+      - FamilyService
+  /api/v1/families/{familyId}/rule-dependencies:
+    get:
+      summary: GetFamilyRuleDependencies
+      description: Retrieves all rules that reference the specified family across any of its stats.
+      operationId: FamilyService_GetFamilyRuleDependencies
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetFamilyRuleDependenciesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/families:batchGet:
+    post:
+      summary: GetFamilies
+      description: Retrieves the latest versions of multiple families.
+      operationId: FamilyService_GetFamilies
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetFamiliesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1GetFamiliesRequest'
+        required: true
+      tags:
+      - FamilyService
+  /api/v1/families:import:
+    post:
+      summary: ImportFamily
+      description: Imports a new family from YAML.
+      operationId: FamilyService_ImportFamily
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ImportFamilyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1ImportFamilyRequest'
+        required: true
+      tags:
+      - FamilyService
+  /api/v1/families:validateClientKey:
+    post:
+      summary: ValidateFamilyClientKey
+      description: Used to validate whether or not a client key is valid.
+      operationId: FamilyService_ValidateFamilyClientKey
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ValidateFamilyClientKeyResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1ValidateFamilyClientKeyRequest'
+        required: true
+      tags:
+      - FamilyService
+  /api/v1/families:validateFamilyName:
+    post:
+      summary: ValidateFamilyName
+      description: Used to validate whether or not a family name is valid.
+      operationId: FamilyService_ValidateFamilyName
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ValidateFamilyNameResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1ValidateFamilyNameRequest'
+        required: true
+      tags:
+      - FamilyService
+  /api/v1/family_stats/create-ranges:
+    post:
+      summary: CreateFamilyStatRanges
+      description: Creates family stat ranges for existing family stats (within a given family).
+      operationId: FamilyService_CreateFamilyStatRanges
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateFamilyStatRangesResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateFamilyStatRangesRequest'
+        required: true
+      tags:
+      - FamilyService
+  /api/v1/family_stats/{familyStatId}:
+    get:
+      summary: GetFamilyStat
+      description: Retrieves a family stat configuration.
+      operationId: FamilyService_GetFamilyStat
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetFamilyStatResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyStatId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - FamilyService
+  /api/v1/family_stats/{familyVersionId}:
+    get:
+      summary: GetFamilyStats
+      description: Retrieves family stats configurations for a family version.
+      operationId: FamilyService_GetFamilyStats
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetFamilyStatsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: familyVersionId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - FamilyService
+components:
+  schemas:
+    v1ListFamilyCandidateRunsResponse:
+      type: object
+      properties:
+        runs:
+          type: array
+          items:
+            $ref: '#/components/schemas/runsv2Run'
+        nextPageToken:
+          type: string
+      required:
+      - runs
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1ValidateFamilyClientKeyResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        errorMessage:
+          type: string
+    v1AnnotationOccurrence:
+      type: string
+      enum:
+      - ANNOTATION_OCCURRENCE_UNSPECIFIED
+      - ANNOTATION_OCCURRENCE_FIRST
+      - ANNOTATION_OCCURRENCE_LAST
+      - ANNOTATION_OCCURRENCE_EVERY
+      - ANNOTATION_OCCURRENCE_NTH
+      default: ANNOTATION_OCCURRENCE_UNSPECIFIED
+    v1GetFamilyResponse:
+      type: object
+      properties:
+        family:
+          $ref: '#/components/schemas/v1FamilyDetails'
+      required:
+      - family
+    v1CreateFamilyResponse:
+      type: object
+      properties:
+        familyId:
+          type: string
+        family:
+          $ref: '#/components/schemas/v1FamilyDetails'
+      required:
+      - familyId
+      - family
+    v1GetFamilyVersionResponse:
+      type: object
+      properties:
+        family:
+          $ref: '#/components/schemas/v1FamilyDetails'
+      required:
+      - family
+    v1GetFamilyRuleDependenciesResponse:
+      type: object
+      properties:
+        ruleDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyRuleDependency'
+      required:
+      - ruleDependencies
+    v1FamilyStatDetails:
+      type: object
+      properties:
+        familyStat:
+          $ref: '#/components/schemas/v1FamilyStat'
+        familyStatExpressions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyStatExpression'
+        familyStatChannels:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyStatChannel'
+        familyStatRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyStatRange'
+      required:
+      - familyStat
+      - familyStatExpressions
+      - familyStatRanges
+    v1RunAlignment:
+      type: object
+      properties:
+        bound:
+          $ref: '#/components/schemas/v1TimeRangeBound'
+      required:
+      - bound
+    v1GetFamilyStatsResponse:
+      type: object
+      properties:
+        familyStatsDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyStatDetails'
+      required:
+      - familyStatsDetails
+    v1CreateFamilyStatRangesRequest:
+      type: object
+      properties:
+        familyStatIds:
+          type: array
+          items:
+            type: string
+        familyStatRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyStatRange'
+      required:
+      - familyStatIds
+      - familyStatRanges
+    v1FamilyStat:
+      type: object
+      properties:
+        familyStatId:
+          type: string
+          readOnly: true
+        familyVersionId:
+          type: string
+          description: The family version id of the family stat.
+          readOnly: true
+        name:
+          type: string
+          description: The name of the family stat.
+        description:
+          type: string
+          description: The description of the family stat.
+        sampleRate:
+          type: number
+          format: double
+          description: The sample rate of the family stat (Hz).
+        defaultChannelNames:
+          type: array
+          items:
+            type: string
+          description: 'Ordered list of channel names to include in the family stat.
+
+            The first channel name is the primary channel name across all the family members.
+
+            The remaining channel names are fallback channels or individual overrides when the primary channel
+
+            is not available across all the family members.'
+        createdDate:
+          type: string
+          format: date-time
+          readOnly: true
+        modifiedDate:
+          type: string
+          format: date-time
+          readOnly: true
+        createdByUserId:
+          type: string
+          readOnly: true
+        modifiedByUserId:
+          type: string
+          readOnly: true
+        organizationId:
+          type: string
+          readOnly: true
+      required:
+      - familyStatId
+      - familyVersionId
+      - name
+      - sampleRate
+      - defaultChannelNames
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - organizationId
+    v1GetFamiliesRequest:
+      type: object
+      properties:
+        familyIds:
+          type: array
+          items:
+            type: string
+        clientKeys:
+          type: array
+          items:
+            type: string
+    v1GenerateFamilyStatRangeNameResponse:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
+    v1ValidateFamilyNameResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        errorMessage:
+          type: string
+    v1ListFamilyVersionsResponse:
+      type: object
+      properties:
+        familyVersions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyVersion'
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.
+      required:
+      - familyVersions
+    v1FamilyRuleDependency:
+      type: object
+      properties:
+        ruleId:
+          type: string
+        name:
+          type: string
+        statReference:
+          $ref: '#/components/schemas/v1FamilyStatReference'
+      required:
+      - ruleId
+      - name
+      - statReference
+    v1AnnotationAlignment:
+      type: object
+      properties:
+        annotationId:
+          type: string
+        bound:
+          $ref: '#/components/schemas/v1TimeRangeBound'
+      required:
+      - annotationId
+      - bound
+    v1ExportFamilyResponse:
+      type: object
+      properties:
+        exportedFamily:
+          type: string
+      required:
+      - exportedFamily
+    v1ListFamilyMembersResponse:
+      type: object
+      properties:
+        familyRuns:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyRun'
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.
+      required:
+      - familyRuns
+    v1Family:
+      type: object
+      properties:
+        familyId:
+          type: string
+          readOnly: true
+        clientKey:
+          type: string
+          title: Client key is a user-provided unique identifier for the family
+        currentVersionId:
+          type: string
+          description: The latest family_version_id for the family.
+          readOnly: true
+        isArchived:
+          type: boolean
+          description: Whether the family is archived.
+        createdDate:
+          type: string
+          format: date-time
+          readOnly: true
+        modifiedDate:
+          type: string
+          format: date-time
+          readOnly: true
+        archivedDate:
+          type: string
+          format: date-time
+          readOnly: true
+        createdByUserId:
+          type: string
+          readOnly: true
+        modifiedByUserId:
+          type: string
+          readOnly: true
+        organizationId:
+          type: string
+          readOnly: true
+      required:
+      - familyId
+      - currentVersionId
+      - isArchived
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - organizationId
+    v1TimeRangeBound:
+      type: string
+      enum:
+      - TIME_RANGE_BOUND_UNSPECIFIED
+      - TIME_RANGE_BOUND_START
+      - TIME_RANGE_BOUND_END
+      default: TIME_RANGE_BOUND_UNSPECIFIED
+    v1FamilyDetails:
+      type: object
+      properties:
+        family:
+          $ref: '#/components/schemas/v1Family'
+        familyVersion:
+          $ref: '#/components/schemas/v1FamilyVersion'
+        familyRuns:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyRun'
+          description: The family members associated with the FamilyVersion.
+        familyAlignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyAlignment'
+          description: The alignments associated with the FamilyVersion.
+        familyStats:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyStatDetails'
+          description: The family stats associated with the FamilyVersion.
+      required:
+      - family
+      - familyVersion
+      - familyRuns
+      - familyAlignments
+    v1MetadataValue:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/v1MetadataKey'
+        stringValue:
+          type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+        relationValue:
+          $ref: '#/components/schemas/v1MetadataRelationValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
+      required:
+      - key
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v1ListFamiliesResponse:
+      type: object
+      properties:
+        families:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ListFamily'
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.
+      required:
+      - families
+      - nextPageToken
+    v1CreateFamilyStatRangesResponse:
+      type: object
+      properties:
+        familyVersionId:
+          type: string
+        family:
+          $ref: '#/components/schemas/v1FamilyDetails'
+        familyStats:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyStatDetails'
+      required:
+      - familyVersionId
+      - family
+      - familyStats
+    v1GetFamiliesResponse:
+      type: object
+      properties:
+        families:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyDetails'
+      required:
+      - families
+    v1ValidateFamilyClientKeyRequest:
+      type: object
+      properties:
+        clientKey:
+          type: string
+      required:
+      - clientKey
+    v1FamilyStatReference:
+      type: object
+      properties:
+        reference:
+          type: string
+          title: How to refer to the family stat in the expression, e.g. $A
+        familyId:
+          type: string
+          title: Choose the family, e.g. Sift Rocket Engine
+        familyStatName:
+          type: string
+          title: Choose the stat, e.g. TC-TURB.avg
+        familyStatExpression:
+          type: string
+        familyStatRangeName:
+          type: string
+          title: Choose the range by name, which will be used to resolve the alignment and range, e.g. Startup +/- 5s
+      required:
+      - reference
+      - familyId
+      - familyStatName
+      - familyStatExpression
+      - familyStatRangeName
+    runsv2Run:
+      type: object
+      properties:
+        runId:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        organizationId:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        stopTime:
+          type: string
+          format: date-time
+        isPinned:
+          type: boolean
+        name:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        defaultReportId:
+          type: string
+        clientKey:
+          type: string
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          description: The metadata values associated with this run.
+        assetIds:
+          type: array
+          items:
+            type: string
+        archivedDate:
+          type: string
+          format: date-time
+        isAdhoc:
+          type: boolean
+        isArchived:
+          type: boolean
+          description: Whether the Run is archived. This is inferred from whether archived_date is set.
+        duration:
+          type: string
+          description: 'The duration of the run. Calculated as the difference between stop_time and start_time.
+
+            If the run is ongoing (no stop_time), this represents the duration from start_time to current time.'
+      required:
+      - runId
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - organizationId
+      - isPinned
+      - name
+      - description
+      - tags
+      - metadata
+      - assetIds
+      - isAdhoc
+      - isArchived
+    v1FamilyStatChannel:
+      type: object
+      properties:
+        familyStatChannelId:
+          type: string
+          readOnly: true
+        familyStatId:
+          type: string
+          readOnly: true
+        channelId:
+          type: string
+          description: The channel id of the channel to include in the family stat given the list of channel names provided in the family stat.
+        alignmentPointId:
+          type: string
+          description: 'Specific alignment point id of the family member / channel to include in the family stat.
+
+            When creating a family stat with a new Family, this field should contain the temporary_id
+
+            from FamilyAlignmentPoint.family_alignment_point_id. The service will resolve it to the actual alignment_point_id.
+
+            When updating a family stat, this field must contain the actual alignment_point_id.
+
+            This will be prevalent when multiple alignment points are supported for a given family member.'
+      required:
+      - familyStatChannelId
+      - familyStatId
+      - channelId
+      - alignmentPointId
+    v1CreateFamilyRequest:
+      type: object
+      properties:
+        family:
+          $ref: '#/components/schemas/v1Family'
+        familyVersion:
+          $ref: '#/components/schemas/v1FamilyVersion'
+        familyRuns:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyRun'
+          description: The runs to include in the family. At least one run must be specified.
+        familyAlignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyAlignment'
+          description: The alignments to apply to the family. If not provided, a default alignment will be created for the Family.
+        familyStats:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyStatDetails'
+          description: The family stats to create for the family. If not provided, no family stats will be created.
+      required:
+      - family
+      - familyVersion
+      - familyRuns
+    v1ListFamily:
+      type: object
+      properties:
+        family:
+          $ref: '#/components/schemas/v1Family'
+        familyVersion:
+          $ref: '#/components/schemas/v1FamilyVersion'
+      required:
+      - family
+      - familyVersion
+    v1GetFamilyCandidateRunCountResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+      required:
+      - count
+    v1ImportUpdateFamilyResponse:
+      type: object
+      properties:
+        familyVersionId:
+          type: string
+        family:
+          $ref: '#/components/schemas/v1FamilyDetails'
+      required:
+      - familyVersionId
+      - family
+    v1FamilyVersion:
+      type: object
+      properties:
+        familyVersionId:
+          type: string
+          readOnly: true
+        familyId:
+          type: string
+          readOnly: true
+        version:
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          type: string
+          description: The name of the family. Must be unique within the organization for the latest family versions.
+        description:
+          type: string
+        runQuery:
+          type: string
+          description: 'An optional query to track a CEL expression against the ListRuns endpoint. This query is only for reference,
+
+            and does not affect the runs that are included in the family. To specify which runs are included in the family,
+
+            use the `runs` field.'
+        userNotes:
+          type: string
+          title: Notes provided by the user to describe the family version changes
+        changeMessage:
+          type: string
+          description: Family Service provided message describing the changes made to the family version.
+          readOnly: true
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          description: Metadata associated with the family version.
+        sigmaDefaultValues:
+          type: array
+          items:
+            type: number
+            format: double
+          description: 'User-configurable default sigma multiplier values, e.g. [1, 2, 3].
+
+            If not provided, the default values [-1, 1, -2, 2, -3, 3] will be used.'
+        createdDate:
+          type: string
+          format: date-time
+          readOnly: true
+        modifiedDate:
+          type: string
+          format: date-time
+          readOnly: true
+        createdByUserId:
+          type: string
+          readOnly: true
+        modifiedByUserId:
+          type: string
+          readOnly: true
+        organizationId:
+          type: string
+          readOnly: true
+      required:
+      - familyVersionId
+      - familyId
+      - version
+      - name
+      - changeMessage
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - organizationId
+    v1ListFamilyAlignmentsResponse:
+      type: object
+      properties:
+        familyAlignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyAlignment'
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.
+      required:
+      - familyAlignments
+    v1FamilyRun:
+      type: object
+      properties:
+        familyRunId:
+          type: string
+          readOnly: true
+        familyVersionId:
+          type: string
+          readOnly: true
+        runId:
+          type: string
+        isExclusion:
+          type: boolean
+          description: Whether the run is excluded from the family. If `true` the run is explicitly excluded, otherwise it is included.
+        rationale:
+          type: string
+          description: User rationale for the inclusion or exclusion.
+        addedDate:
+          type: string
+          format: date-time
+          description: Date when the run was included or excluded from the family.
+          readOnly: true
+        addedByUserId:
+          type: string
+          description: User id of the user who included or excluded the run from the family.
+          readOnly: true
+        addedInVersionId:
+          type: string
+          description: Version id of the version in which the run was included or excluded from the family.
+          readOnly: true
+      description: FamilyRun represents a run which is either included in the family or explicitly excluded.
+      required:
+      - familyRunId
+      - familyVersionId
+      - runId
+      - addedDate
+      - addedByUserId
+      - addedInVersionId
+    v1ImportFamilyResponse:
+      type: object
+      properties:
+        familyId:
+          type: string
+        family:
+          $ref: '#/components/schemas/v1FamilyDetails'
+      required:
+      - familyId
+      - family
+    v1FamilyStatRange:
+      type: object
+      properties:
+        familyStatRangeId:
+          type: string
+          readOnly: true
+        familyStatId:
+          type: string
+          readOnly: true
+        familyAlignmentId:
+          type: string
+          description: 'T-0 Alignment ID to align the data for stat calculation.
+
+            When creating a family stat with a new Family, this field should contain the temporary_id
+
+            from FamilyAlignment.family_alignment_id. The service will resolve it to the actual alignment ID.
+
+            When updating a family stat, this field must contain the actual family_alignment_id.'
+        name:
+          type: string
+          description: Unique name for the family stat range.
+          readOnly: true
+        windowStart:
+          $ref: '#/components/schemas/v1WindowType'
+        windowEnd:
+          $ref: '#/components/schemas/v1WindowType'
+      required:
+      - familyStatRangeId
+      - familyStatId
+      - familyAlignmentId
+      - name
+    v1FamilyStatExpression:
+      type: object
+      properties:
+        familyStatExpressionId:
+          type: string
+          readOnly: true
+        familyStatId:
+          type: string
+          readOnly: true
+        avg:
+          type: object
+          properties: {}
+        median:
+          type: object
+          properties: {}
+        min:
+          type: object
+          properties: {}
+        max:
+          type: object
+          properties: {}
+        stdev:
+          type: object
+          properties: {}
+        sum:
+          type: object
+          properties: {}
+        inputCount:
+          type: object
+          properties: {}
+        sigma:
+          type: object
+          properties: {}
+          readOnly: true
+      required:
+      - familyStatExpressionId
+      - familyStatId
+    v1ListFamilyAlignmentPointsResponse:
+      type: object
+      properties:
+        familyAlignmentPoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyAlignmentPoint'
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.
+      required:
+      - familyAlignmentPoints
+    v1FamilyAlignmentPoint:
+      type: object
+      properties:
+        familyAlignmentPointId:
+          type: string
+          description: 'When creating a family, this field can contain a temporary identifier
+
+            provided by the client for referencing this alignment point in family_stats. The temporary ID
+
+            must be unique within the CreateFamilyRequest and is required when this alignment point is
+
+            referenced in family_stats. The service will resolve it to the actual alignment_point_id.
+
+            When updating a family, this field must contain the actual family_alignment_point_id.
+
+            In responses, this field contains the actual family_alignment_point_id.
+
+            Can be empty string if not referenced in family_stats.'
+        familyRunId:
+          type: string
+          readOnly: true
+        runId:
+          type: string
+        familyAlignmentId:
+          type: string
+          readOnly: true
+        run:
+          $ref: '#/components/schemas/v1RunAlignment'
+        annotation:
+          $ref: '#/components/schemas/v1AnnotationAlignment'
+        timestamp:
+          $ref: '#/components/schemas/v1TimestampAlignment'
+      description: FamilyAlignmentPoint represents a member specific time-alignment for the FamilyAlignment.
+      required:
+      - familyAlignmentPointId
+      - familyRunId
+      - runId
+      - familyAlignmentId
+    v1UpdateFamilyResponse:
+      type: object
+      properties:
+        familyVersionId:
+          type: string
+        family:
+          $ref: '#/components/schemas/v1FamilyDetails'
+        familyStats:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyStatDetails'
+      required:
+      - familyVersionId
+      - family
+    v1FamilyAlignment:
+      type: object
+      properties:
+        familyAlignmentId:
+          type: string
+          description: 'When creating a family, this field can contain a temporary identifier
+
+            provided by the client for referencing this alignment in family_stats. The temporary ID
+
+            must be unique within the CreateFamilyRequest and is required when this alignment is
+
+            referenced in family_stats. The service will resolve it to the actual alignment ID.
+
+            When updating a family, this field must contain the actual family_alignment_id.
+
+            In responses, this field contains the actual family_alignment_id.'
+        familyVersionId:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          description: The name of the alignment. Must be unique within the family.
+        description:
+          type: string
+        run:
+          $ref: '#/components/schemas/v1RunAlignment'
+        annotation:
+          $ref: '#/components/schemas/v1DefaultAnnotationAlignment'
+        timestamp:
+          $ref: '#/components/schemas/v1TimestampAlignment'
+        familyAlignmentPoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FamilyAlignmentPoint'
+          description: Specific alignment points for each family member for the alignment. If not provided for a family member, the member does not implement this alignment.
+      description: FamilyAlignment represents a family-level time-alignment for naming and resolving run relative times.
+      required:
+      - familyAlignmentId
+      - familyVersionId
+      - name
+      - familyAlignmentPoints
+    v1DefaultAnnotationAlignment:
+      type: object
+      properties:
+        annotationName:
+          type: string
+        bound:
+          $ref: '#/components/schemas/v1TimeRangeBound'
+        occurrence:
+          $ref: '#/components/schemas/v1AnnotationOccurrence'
+        occurrenceIndex:
+          type: integer
+          format: int32
+          description: Index of the annotation to use when occurrence is "nth". Positive indices start from the beginning, negative from the end.
+      required:
+      - annotationName
+      - bound
+      - occurrence
+    v1ValidateFamilyNameRequest:
+      type: object
+      properties:
+        familyName:
+          type: string
+      required:
+      - familyName
+    v1WindowType:
+      type: object
+      properties:
+        familyAlignmentId:
+          type: string
+          description: 'Alignment ID to use as the window boundary.
+
+            When creating a family stat with a new Family, this field should contain the temporary_id
+
+            from FamilyAlignment.family_alignment_id. Default to the window''s T-0 alignment.
+
+            The service will resolve it to the actual alignment ID.
+
+            When updating a family stat, this field must contain the actual family_alignment_id.'
+        duration:
+          type: string
+          description: Duration relative to the alignment used to compare the data. Defaults to 0 seconds.
+      description: WindowType represents a window boundary that can be either an alignment ID or a duration.
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1ImportFamilyRequest:
+      type: object
+      properties:
+        familyYaml:
+          type: string
+          title: 'The source to import the family from. Must provide family_yaml. The contents of the source
+
+            should match the shape of CreateFamilyRequest'
+      required:
+      - familyYaml
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    v1GetFamilyCandidateRunsResponse:
+      type: object
+      properties:
+        runQuery:
+          type: string
+        candidateRunIds:
+          type: array
+          items:
+            type: string
+      required:
+      - runQuery
+      - candidateRunIds
+    v1GetFamilyStatResponse:
+      type: object
+      properties:
+        familyStatDetails:
+          $ref: '#/components/schemas/v1FamilyStatDetails'
+      required:
+      - familyStatDetails
+    v1TimestampAlignment:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+      required:
+      - timestamp
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

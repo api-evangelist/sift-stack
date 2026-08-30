@@ -1,0 +1,953 @@
+openapi: 3.2.0
+info:
+  title: Sift Data Import Service API
+  version: '1.0'
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: DataImportService
+paths:
+  /api/v2/data-imports:
+    get:
+      summary: ListDataImports
+      description: Lists all data imports.
+      operationId: DataImportService_ListDataImportsV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2ListDataImportsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of data imports to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 data imports will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListDataImports` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListDataImports` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `data_import_id`, `source_url`, `status`, `run_id`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved data imports. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `created_date` and `modified_date`.
+
+          If left empty, items are ordered by `created_date` in ascending order (oldest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - DataImportService
+  /api/v2/data-imports/{dataImportId}:
+    get:
+      summary: GetDataImport
+      description: Gets a data import.
+      operationId: DataImportService_GetDataImportV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2GetDataImportResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: dataImportId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - DataImportService
+  /api/v2/data-imports/{dataImportId}:retry:
+    post:
+      summary: RetryDataImport
+      description: Retries a data import.
+      operationId: DataImportService_RetryDataImportV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2RetryDataImportResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: dataImportId
+        description: 'data_import_id is the id of the data import to retry.
+
+          You can only retry an import that is a "url" based import (created with CreateDataImportFromUrl) and is in a failed state.'
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - DataImportService
+  /api/v2/data-imports:detect-config:
+    post:
+      summary: DetectConfig
+      description: Detects the config for a data import.
+      operationId: DataImportService_DetectConfigV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2DetectConfigResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v2DetectConfigRequest'
+        required: true
+      tags:
+      - DataImportService
+  /api/v2/data-imports:upload:
+    post:
+      summary: CreateDataImportFromUpload
+      description: Creates a data import from a file upload.
+      operationId: DataImportService_CreateDataImportFromUploadV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2CreateDataImportFromUploadResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v2CreateDataImportFromUploadRequest'
+        required: true
+      tags:
+      - DataImportService
+  /api/v2/data-imports:url:
+    post:
+      summary: CreateDataImportFromUrl
+      description: Creates a data import from a file hosted at a url.
+      operationId: DataImportService_CreateDataImportFromUrlV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2CreateDataImportFromUrlResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v2CreateDataImportFromUrlRequest'
+        required: true
+      tags:
+      - DataImportService
+components:
+  schemas:
+    v2DataTypeKey:
+      type: string
+      enum:
+      - DATA_TYPE_KEY_UNSPECIFIED
+      - DATA_TYPE_KEY_CSV
+      - DATA_TYPE_KEY_TDMS
+      - DATA_TYPE_KEY_CH10
+      - DATA_TYPE_KEY_PARQUET_FLATDATASET
+      - DATA_TYPE_KEY_PARQUET_SINGLE_CHANNEL_PER_ROW
+      - DATA_TYPE_KEY_HDF5
+      - DATA_TYPE_KEY_ULOG
+      default: DATA_TYPE_KEY_UNSPECIFIED
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v2CsvTimeColumn:
+      type: object
+      properties:
+        columnNumber:
+          type: integer
+          format: int64
+          description: The column number (1-indexed) of the time column.
+        format:
+          $ref: '#/components/schemas/v2TimeFormat'
+        relativeStartTime:
+          type: string
+          format: date-time
+    v2TDMSConfig:
+      type: object
+      properties:
+        assetName:
+          type: string
+        runName:
+          type: string
+        startTimeOverride:
+          type: string
+          format: date-time
+          description: 'Override the wf_start_time metadata field for all channels.
+
+            Useful if your waveform channels have wf_increment but no wf_start_time (Veristand is guilty of this).'
+        fileSize:
+          type: string
+          format: uint64
+          description: 'The file size in bytes.
+
+            If the file has truncated chunks, this will be required to pass validation.'
+        runId:
+          type: string
+          description: The id of the run to add this data to. If set, `run_name` is ignored.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2TdmsDataConfig'
+          description: 'If no data entries are present attempt to ingest everything relying
+
+            on the fallback method for any ambiguous channels.'
+        fallbackMethod:
+          $ref: '#/components/schemas/v2TdmsFallbackMethod'
+        timeFormat:
+          $ref: '#/components/schemas/v2TimeFormat'
+        relativeStartTime:
+          type: string
+          format: date-time
+          description: Relative start time for channels using a non standard time channel.
+        importFileProperties:
+          type: boolean
+          description: 'If true, will import TDMS file properties to the run as metadata.
+
+            Only valid if a run_name or run_id is set.'
+    v2ListDataImportsResponse:
+      type: object
+      properties:
+        dataImports:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2DataImport'
+        nextPageToken:
+          type: string
+    v2Hdf5Config:
+      type: object
+      properties:
+        assetName:
+          type: string
+        runName:
+          type: string
+        runId:
+          type: string
+          description: The id of the run to add this data to. If set, `run_name` is ignored.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2Hdf5DataConfig'
+        timeFormat:
+          $ref: '#/components/schemas/v2TimeFormat'
+        relativeStartTime:
+          type: string
+          format: date-time
+    v2UlogConfig:
+      type: object
+      properties:
+        assetName:
+          type: string
+        runName:
+          type: string
+        runId:
+          type: string
+          description: The id of the run to add this data to. If set, `run_name` is ignored.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2UlogDataConfig'
+          description: 'Channels to import. Empty imports all detected channels with their
+
+            defaults; if set, only the listed channels are imported, each with a
+
+            required channel config.'
+        relativeStartTime:
+          type: string
+          format: date-time
+          description: 'Log-start UTC. When set, it anchors the timeline and takes precedence over
+
+            the log''s GPS fix; otherwise the GPS fix anchors the timeline. The import
+
+            fails if neither is available.'
+        infoKeys:
+          type: array
+          items:
+            type: string
+          description: 'I/M message info keys to import as run metadata (stored as info.{key}). Empty: none.'
+        paramKeys:
+          type: array
+          items:
+            type: string
+          description: 'P parameter names to import as run metadata (stored as param.{name}). Empty: none.'
+        parseErrorPolicy:
+          $ref: '#/components/schemas/v2UlogParseErrorPolicy'
+    v2ParquetSingleChannelPerRowMultiChannelConfig:
+      type: object
+      properties:
+        namePath:
+          type: string
+        dataPath:
+          type: string
+        channels:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/commontypev1ChannelConfig'
+          description: 'A map from names (from `name_path`) to the channel configuration for that name.
+
+            Names without an entry are imported with the data column''s data type and no
+
+            other configuration.'
+    v1ChannelDataType:
+      type: string
+      enum:
+      - CHANNEL_DATA_TYPE_UNSPECIFIED
+      - CHANNEL_DATA_TYPE_DOUBLE
+      - CHANNEL_DATA_TYPE_STRING
+      - CHANNEL_DATA_TYPE_ENUM
+      - CHANNEL_DATA_TYPE_BIT_FIELD
+      - CHANNEL_DATA_TYPE_BOOL
+      - CHANNEL_DATA_TYPE_FLOAT
+      - CHANNEL_DATA_TYPE_INT_32
+      - CHANNEL_DATA_TYPE_UINT_32
+      - CHANNEL_DATA_TYPE_INT_64
+      - CHANNEL_DATA_TYPE_UINT_64
+      - CHANNEL_DATA_TYPE_BYTES
+      default: CHANNEL_DATA_TYPE_UNSPECIFIED
+    v2TdmsDataConfig:
+      type: object
+      properties:
+        groupName:
+          type: string
+          description: The TDMS group name associated with this channel.
+        channelName:
+          type: string
+          description: The TDMS channel name associated with this channel.
+        channelConfig:
+          $ref: '#/components/schemas/commontypev1ChannelConfig'
+        timeChannelName:
+          type: string
+          description: 'The time channel associated with this channel. If this is empty
+
+            then we assume it''s a waveform channel with waveform properties.'
+        scaled:
+          type: boolean
+          description: Whether to import scaled or raw values. Defaults to True to import scaled values.
+        complexComponent:
+          $ref: '#/components/schemas/v2TdmsComplexComponent'
+    v2ParquetComplexTypesImportMode:
+      type: string
+      enum:
+      - PARQUET_COMPLEX_TYPES_IMPORT_MODE_UNSPECIFIED
+      - PARQUET_COMPLEX_TYPES_IMPORT_MODE_IGNORE
+      - PARQUET_COMPLEX_TYPES_IMPORT_MODE_BOTH
+      - PARQUET_COMPLEX_TYPES_IMPORT_MODE_STRING
+      - PARQUET_COMPLEX_TYPES_IMPORT_MODE_BYTES
+      default: PARQUET_COMPLEX_TYPES_IMPORT_MODE_UNSPECIFIED
+      description: " - PARQUET_COMPLEX_TYPES_IMPORT_MODE_IGNORE: Ignore complex types and do not ingest them.\n - PARQUET_COMPLEX_TYPES_IMPORT_MODE_BOTH: Import complex types as both Arrow bytes and JSON strings.\n - PARQUET_COMPLEX_TYPES_IMPORT_MODE_STRING: Import complex types as only JSON strings.\n - PARQUET_COMPLEX_TYPES_IMPORT_MODE_BYTES: Import complex types as only Arrow bytes."
+    v1ChannelEnumType:
+      type: object
+      properties:
+        name:
+          type: string
+        key:
+          type: integer
+          format: int64
+        isSigned:
+          type: boolean
+      required:
+      - name
+      - key
+    v2ParquetColumn:
+      type: object
+      properties:
+        path:
+          type: string
+        columnConfig:
+          $ref: '#/components/schemas/commontypev1ChannelConfig'
+    v2CreateDataImportFromUploadResponse:
+      type: object
+      properties:
+        uploadUrl:
+          type: string
+        dataImportId:
+          type: string
+    v2ParquetConfig:
+      type: object
+      properties:
+        assetName:
+          type: string
+        runName:
+          type: string
+        runId:
+          type: string
+          description: The id of the run to add this data to. If set, `run_name` is ignored.
+        flatDataset:
+          $ref: '#/components/schemas/v2ParquetFlatDatasetConfig'
+        singleChannelPerRow:
+          $ref: '#/components/schemas/v2ParquetSingleChannelPerRowConfig'
+        footerOffset:
+          type: string
+          format: uint64
+        footerLength:
+          type: integer
+          format: int64
+        complexTypesImportMode:
+          $ref: '#/components/schemas/v2ParquetComplexTypesImportMode'
+    v1ChannelBitFieldElement:
+      type: object
+      properties:
+        name:
+          type: string
+        index:
+          type: integer
+          format: int32
+          description: The index of this element's first bit in the logical bit field array.
+        bitCount:
+          type: integer
+          format: int64
+      required:
+      - name
+      - index
+      - bitCount
+    v2CreateDataImportFromUrlRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          description: 'The url to import. HTTP and S3 urls are supported.
+
+            If you need to import non-public S3 objects, please contact Sift to set that up.'
+        csvConfig:
+          $ref: '#/components/schemas/v2CsvConfig'
+        ch10Config:
+          $ref: '#/components/schemas/v2Ch10Config'
+        tdmsConfig:
+          $ref: '#/components/schemas/v2TDMSConfig'
+        parquetConfig:
+          $ref: '#/components/schemas/v2ParquetConfig'
+        hdf5Config:
+          $ref: '#/components/schemas/v2Hdf5Config'
+        batchConfig:
+          $ref: '#/components/schemas/v2BatchConfig'
+        ulogConfig:
+          $ref: '#/components/schemas/v2UlogConfig'
+      required:
+      - url
+    v2TdmsComplexComponent:
+      type: string
+      enum:
+      - TDMS_COMPLEX_COMPONENT_UNSPECIFIED
+      - TDMS_COMPLEX_COMPONENT_REAL
+      - TDMS_COMPLEX_COMPONENT_IMAGINARY
+      default: TDMS_COMPLEX_COMPONENT_UNSPECIFIED
+      description: ' - TDMS_COMPLEX_COMPONENT_UNSPECIFIED: Default is to select the real component.'
+    v2DataImportStatus:
+      type: string
+      enum:
+      - DATA_IMPORT_STATUS_UNSPECIFIED
+      - DATA_IMPORT_STATUS_PENDING
+      - DATA_IMPORT_STATUS_IN_PROGRESS
+      - DATA_IMPORT_STATUS_SUCCEEDED
+      - DATA_IMPORT_STATUS_FAILED
+      default: DATA_IMPORT_STATUS_UNSPECIFIED
+    v2Ch10Config:
+      type: object
+      properties:
+        assetName:
+          type: string
+        runName:
+          type: string
+        scaleValues:
+          type: boolean
+    v2DetectConfigRequest:
+      type: object
+      properties:
+        data:
+          type: string
+          format: byte
+        type:
+          $ref: '#/components/schemas/v2DataTypeKey'
+    v1MetadataValue:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/v1MetadataKey'
+        stringValue:
+          type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+        relationValue:
+          $ref: '#/components/schemas/v1MetadataRelationValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
+      required:
+      - key
+    v2CreateDataImportFromUploadRequest:
+      type: object
+      properties:
+        csvConfig:
+          $ref: '#/components/schemas/v2CsvConfig'
+        ch10Config:
+          $ref: '#/components/schemas/v2Ch10Config'
+        tdmsConfig:
+          $ref: '#/components/schemas/v2TDMSConfig'
+        parquetConfig:
+          $ref: '#/components/schemas/v2ParquetConfig'
+        hdf5Config:
+          $ref: '#/components/schemas/v2Hdf5Config'
+        batchConfig:
+          $ref: '#/components/schemas/v2BatchConfig'
+        ulogConfig:
+          $ref: '#/components/schemas/v2UlogConfig'
+    v2BatchConfig:
+      type: object
+      properties:
+        runName:
+          type: string
+          description: 'Shared run for all files. Both are optional. If neither is set, data is ingested without a run.
+
+            Run information must be set here instead of the per file configs if a Run is desired.'
+        runId:
+          type: string
+        assetName:
+          type: string
+          description: 'Default asset name for all files.
+
+            The asset name must be set here instead of the per file configs.'
+        defaultCsvConfig:
+          $ref: '#/components/schemas/v2CsvConfig'
+        defaultTdmsConfig:
+          $ref: '#/components/schemas/v2TDMSConfig'
+        defaultParquetConfig:
+          $ref: '#/components/schemas/v2ParquetConfig'
+        defaultHdf5Config:
+          $ref: '#/components/schemas/v2Hdf5Config'
+        defaultUlogConfig:
+          $ref: '#/components/schemas/v2UlogConfig'
+        fileConfigs:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/v2BatchFileConfig'
+          description: 'Files to import. Key is the filepath as it appears within the archive.
+
+            Only files listed here are imported; other archive files are ignored.'
+    v2GetDataImportResponse:
+      type: object
+      properties:
+        dataImport:
+          $ref: '#/components/schemas/v2DataImport'
+    v2BatchFileConfig:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/v2DataTypeKey'
+        csvConfig:
+          $ref: '#/components/schemas/v2CsvConfig'
+        tdmsConfig:
+          $ref: '#/components/schemas/v2TDMSConfig'
+        parquetConfig:
+          $ref: '#/components/schemas/v2ParquetConfig'
+        hdf5Config:
+          $ref: '#/components/schemas/v2Hdf5Config'
+        ulogConfig:
+          $ref: '#/components/schemas/v2UlogConfig'
+    v2CreateDataImportFromUrlResponse:
+      type: object
+      properties:
+        dataImportId:
+          type: string
+    v2ParquetDataColumn:
+      type: object
+      properties:
+        path:
+          type: string
+        channelConfig:
+          $ref: '#/components/schemas/commontypev1ChannelConfig'
+    v2RetryDataImportResponse:
+      type: object
+    v2TimeFormat:
+      type: string
+      enum:
+      - TIME_FORMAT_UNSPECIFIED
+      - TIME_FORMAT_RELATIVE_NANOSECONDS
+      - TIME_FORMAT_RELATIVE_MICROSECONDS
+      - TIME_FORMAT_RELATIVE_MILLISECONDS
+      - TIME_FORMAT_RELATIVE_SECONDS
+      - TIME_FORMAT_RELATIVE_MINUTES
+      - TIME_FORMAT_RELATIVE_HOURS
+      - TIME_FORMAT_ABSOLUTE_RFC3339
+      - TIME_FORMAT_ABSOLUTE_DATETIME
+      - TIME_FORMAT_ABSOLUTE_UNIX_SECONDS
+      - TIME_FORMAT_ABSOLUTE_UNIX_MILLISECONDS
+      - TIME_FORMAT_ABSOLUTE_UNIX_MICROSECONDS
+      - TIME_FORMAT_ABSOLUTE_UNIX_NANOSECONDS
+      default: TIME_FORMAT_UNSPECIFIED
+    v2ParquetTimeColumn:
+      type: object
+      properties:
+        path:
+          type: string
+        format:
+          $ref: '#/components/schemas/v2TimeFormat'
+        relativeStartTime:
+          type: string
+          format: date-time
+    v2Hdf5DataConfig:
+      type: object
+      properties:
+        timeDataset:
+          type: string
+        timeIndex:
+          type: string
+          format: uint64
+        valueDataset:
+          type: string
+        valueIndex:
+          type: string
+          format: uint64
+        channelConfig:
+          $ref: '#/components/schemas/commontypev1ChannelConfig'
+        timeField:
+          type: string
+          description: For compound types, allow specifying which fields to use.
+        valueField:
+          type: string
+    v2ParquetSingleChannelPerRowConfig:
+      type: object
+      properties:
+        timeColumn:
+          $ref: '#/components/schemas/v2ParquetTimeColumn'
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2ParquetColumn'
+          description: Detected columns.
+        singleChannel:
+          $ref: '#/components/schemas/v2ParquetSingleChannelPerRowSingleChannelConfig'
+        multiChannel:
+          $ref: '#/components/schemas/v2ParquetSingleChannelPerRowMultiChannelConfig'
+    commontypev1ChannelConfig:
+      type: object
+      properties:
+        name:
+          type: string
+        units:
+          type: string
+        description:
+          type: string
+        dataType:
+          $ref: '#/components/schemas/v1ChannelDataType'
+        enumTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ChannelEnumType'
+        bitFieldElements:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ChannelBitFieldElement'
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v2UlogDataConfig:
+      type: object
+      properties:
+        messageName:
+          type: string
+          description: The ULog message name (e.g. "sensor_accel").
+        instance:
+          type: string
+          format: int64
+          description: The message instance (e.g. 0).
+        fieldName:
+          type: string
+          description: 'The full ULog field name (e.g. "x", "esc[0].v"). Empty for log-message
+
+            channels ("log_messages", "log_messages_{tag}"), which set message_name
+
+            to the channel name and instance to 0.'
+        channelConfig:
+          $ref: '#/components/schemas/commontypev1ChannelConfig'
+    v2DataImport:
+      type: object
+      properties:
+        dataImportId:
+          type: string
+        sourceUrl:
+          type: string
+        status:
+          $ref: '#/components/schemas/v2DataImportStatus'
+        errorMessage:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        csvConfig:
+          $ref: '#/components/schemas/v2CsvConfig'
+        ch10Config:
+          $ref: '#/components/schemas/v2Ch10Config'
+        tdmsConfig:
+          $ref: '#/components/schemas/v2TDMSConfig'
+        parquetConfig:
+          $ref: '#/components/schemas/v2ParquetConfig'
+        hdf5Config:
+          $ref: '#/components/schemas/v2Hdf5Config'
+        batchConfig:
+          $ref: '#/components/schemas/v2BatchConfig'
+        ulogConfig:
+          $ref: '#/components/schemas/v2UlogConfig'
+        runId:
+          type: string
+          description: The run id will be set if the data import ingests to a run once the run is available.
+        reportId:
+          type: string
+          description: The report id will be set if the data import creates a report once the report is available.
+        assetId:
+          type: string
+        dataStartTime:
+          type: string
+          format: date-time
+        dataStopTime:
+          type: string
+          format: date-time
+        warningMessages:
+          type: array
+          items:
+            type: string
+          description: 'What the import left out, such as records it could not read. A data import can
+
+            succeed and still have warnings. The list may be trimmed; when it is, the last
+
+            entry says how many were left off.'
+      required:
+      - dataImportId
+      - status
+      - createdDate
+      - modifiedDate
+      - warningMessages
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
+    v2ParquetSingleChannelPerRowSingleChannelConfig:
+      type: object
+      properties:
+        dataPath:
+          type: string
+        channel:
+          $ref: '#/components/schemas/commontypev1ChannelConfig'
+    v2TdmsFallbackMethod:
+      type: string
+      enum:
+      - TDMS_FALLBACK_METHOD_UNSPECIFIED
+      - TDMS_FALLBACK_METHOD_FAIL_ON_ERROR
+      - TDMS_FALLBACK_METHOD_IGNORE_ERROR
+      default: TDMS_FALLBACK_METHOD_UNSPECIFIED
+      description: "The fallback method tells the importer how to treat channels without\nany timing information (i.e, waveform properties or time channels).\n\n - TDMS_FALLBACK_METHOD_FAIL_ON_ERROR: Fails the import if any specified channels have missing timing information.\n - TDMS_FALLBACK_METHOD_IGNORE_ERROR: Ignores channels without any timing information."
+    v2CsvConfig:
+      type: object
+      properties:
+        assetName:
+          type: string
+        runName:
+          type: string
+        runId:
+          type: string
+          description: The id of the run to add this data to. If set, `run_name` is ignored.
+        firstDataRow:
+          type: integer
+          format: int64
+          description: 'The first row to start reading as data. Can be used to skip header rows.
+
+            The first row in the file is 1.'
+        timeColumn:
+          $ref: '#/components/schemas/v2CsvTimeColumn'
+        dataColumns:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/commontypev1ChannelConfig'
+          description: A map from column number (1-indexed) to the channel configuration for that column.
+        numRows:
+          type: string
+          format: uint64
+          description: This will be read on upload from the file if not set.
+        useEmbeddedConfig:
+          type: boolean
+          description: 'If true, the time and data column configuration is read from a config
+
+            embedded in the file (written when the file was exported with
+
+            embed_channel_configs). Any time_column/data_columns supplied here are
+
+            ignored and replaced by the embedded config.'
+    v2UlogParseErrorPolicy:
+      type: string
+      enum:
+      - ULOG_PARSE_ERROR_POLICY_UNSPECIFIED
+      - ULOG_PARSE_ERROR_POLICY_FAIL_ON_ERROR
+      - ULOG_PARSE_ERROR_POLICY_IGNORE_ERROR
+      default: ULOG_PARSE_ERROR_POLICY_UNSPECIFIED
+      description: " - ULOG_PARSE_ERROR_POLICY_UNSPECIFIED: Treated as ULOG_PARSE_ERROR_POLICY_FAIL_ON_ERROR.\n - ULOG_PARSE_ERROR_POLICY_FAIL_ON_ERROR: Fail the import on any recoverable parse error.\n - ULOG_PARSE_ERROR_POLICY_IGNORE_ERROR: Import what parsed; skipped records are logged."
+    v2DetectConfigResponse:
+      type: object
+      properties:
+        csvConfig:
+          $ref: '#/components/schemas/v2CsvConfig'
+        parquetConfig:
+          $ref: '#/components/schemas/v2ParquetConfig'
+        hdf5Config:
+          $ref: '#/components/schemas/v2Hdf5Config'
+        tdmsConfig:
+          $ref: '#/components/schemas/v2TDMSConfig'
+    v2ParquetFlatDatasetConfig:
+      type: object
+      properties:
+        timeColumn:
+          $ref: '#/components/schemas/v2ParquetTimeColumn'
+        dataColumns:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2ParquetDataColumn'
+        useEmbeddedConfig:
+          type: boolean
+          description: 'If true, the time and data column configuration is read from the config
+
+            embedded in the file''s Arrow field metadata (written when the file was
+
+            exported with embed_channel_configs). Any time_column/data_columns supplied
+
+            here are ignored and replaced by the embedded config.'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

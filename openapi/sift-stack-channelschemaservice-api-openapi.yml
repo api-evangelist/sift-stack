@@ -1,0 +1,304 @@
+openapi: 3.2.0
+info:
+  title: Sift Channel Schema Service API
+  version: '1.0'
+  description: Service to programmatically interact with channel schemas
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: ChannelSchemaService
+  description: Service to programmatically interact with channel schemas
+paths:
+  /api/v1/channel-schemas:
+    post:
+      summary: CreateChannelSchema
+      description: Create a channel schema
+      operationId: ChannelSchemaService_CreateChannelSchema
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/channel_schemasv1CreateChannelSchemaResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/channel_schemasv1CreateChannelSchemaRequest'
+        description: The request for a call to `ChannelSchemaService_CreateChannelSchema`.
+        required: true
+      tags:
+      - ChannelSchemaService
+  /api/v1/channel-schemas:batch-create:
+    post:
+      summary: BatchCreateChannelSchemas
+      description: Create a batch of channel schemas
+      operationId: ChannelSchemaService_BatchCreateChannelSchemas
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/channel_schemasv1BatchCreateChannelSchemasResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/channel_schemasv1BatchCreateChannelSchemasRequest'
+        description: The request for a call to `ChannelSchemaService_BatchCreateChannelSchemas`.
+        required: true
+      tags:
+      - ChannelSchemaService
+  /api/v2/channel-schemas:
+    post:
+      summary: CreateChannelSchema
+      description: Create a channel schema
+      operationId: ChannelSchemaService_CreateChannelSchemaV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/channel_schemasv2CreateChannelSchemaResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/channel_schemasv2CreateChannelSchemaRequest'
+        description: The request for a call to `ChannelSchemaService_CreateChannelSchema`.
+        required: true
+      tags:
+      - ChannelSchemaService
+  /api/v2/channel-schemas:batch-create:
+    post:
+      summary: BatchCreateChannelSchemas
+      description: Create a batch of channel schemas
+      operationId: ChannelSchemaService_BatchCreateChannelSchemasV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/channel_schemasv2BatchCreateChannelSchemasResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/channel_schemasv2BatchCreateChannelSchemasRequest'
+        description: The request for a call to `ChannelSchemaService_BatchCreateChannelSchemas`.
+        required: true
+      tags:
+      - ChannelSchemaService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    channel_schemasv2BatchCreateChannelSchemasRequest:
+      type: object
+      properties:
+        requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/channel_schemasv2CreateChannelSchemaRequest'
+          title: Limit of 1000 channels schemas per batch
+        assetName:
+          type: string
+          description: 'The asset to which the channel schemas belong (case-insensitive).
+
+            If this field, and any of the child requests specify an asset, the assets must match.'
+      description: The request for a call to `ChannelSchemaService_BatchCreateChannelSchemas`.
+      required:
+      - requests
+    channel_schemasv1BatchCreateChannelSchemasRequest:
+      type: object
+      properties:
+        requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/channel_schemasv1CreateChannelSchemaRequest'
+          title: Limit of 1000 channels schemas per batch
+        assetName:
+          type: string
+          description: 'The asset to which the channel schemas belong (case-insensitive).
+
+            If this field, and any of the child requests specify an asset, the assets must match.'
+        organizationId:
+          type: string
+          description: 'The organization to which the channel schemas belong.
+
+            If this field, and any of the child requests specify an organization_id, the organization_ids must match.
+
+            This field is optional if the caller belongs to a single organization.'
+      description: The request for a call to `ChannelSchemaService_BatchCreateChannelSchemas`.
+      required:
+      - requests
+    v1ChannelBitFieldElement:
+      type: object
+      properties:
+        name:
+          type: string
+        index:
+          type: integer
+          format: int32
+          description: The index of this element's first bit in the logical bit field array.
+        bitCount:
+          type: integer
+          format: int64
+      required:
+      - name
+      - index
+      - bitCount
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    channel_schemasv1BatchCreateChannelSchemasResponse:
+      type: object
+      description: The response of a call to `ChannelSchemaService_BatchCreateChannelSchemas`.
+    channel_schemasv1CreateChannelSchemaRequest:
+      type: object
+      properties:
+        component:
+          type: string
+          description: The name of the component (case-insensitive).
+        channel:
+          type: string
+          description: The name of the channel (case-insensitive).
+        unit:
+          type: string
+        dataType:
+          $ref: '#/components/schemas/v1ChannelDataType'
+        enumTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ChannelEnumType'
+        bitFieldElements:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ChannelBitFieldElement'
+        assetName:
+          type: string
+          description: The name of the asset (case-insensitive).
+        organizationId:
+          type: string
+          description: This field is optional if the caller belongs to a single organization.
+      description: The request for a call to `ChannelSchemaService_CreateChannelSchema`.
+      required:
+      - channel
+      - dataType
+      - assetName
+    channel_schemasv2CreateChannelSchemaRequest:
+      type: object
+      properties:
+        channel:
+          type: string
+        unit:
+          type: string
+        dataType:
+          $ref: '#/components/schemas/v1ChannelDataType'
+        enumTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ChannelEnumType'
+        bitFieldElements:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ChannelBitFieldElement'
+        assetName:
+          type: string
+          description: The name of the asset (case-insensitive).
+      description: The request for a call to `ChannelSchemaService_CreateChannelSchema`.
+      required:
+      - channel
+      - dataType
+      - assetName
+    channel_schemasv2CreateChannelSchemaResponse:
+      type: object
+      description: The response of a call to `ChannelSchemaService_CreateChannelSchema`.
+    v1ChannelDataType:
+      type: string
+      enum:
+      - CHANNEL_DATA_TYPE_UNSPECIFIED
+      - CHANNEL_DATA_TYPE_DOUBLE
+      - CHANNEL_DATA_TYPE_STRING
+      - CHANNEL_DATA_TYPE_ENUM
+      - CHANNEL_DATA_TYPE_BIT_FIELD
+      - CHANNEL_DATA_TYPE_BOOL
+      - CHANNEL_DATA_TYPE_FLOAT
+      - CHANNEL_DATA_TYPE_INT_32
+      - CHANNEL_DATA_TYPE_UINT_32
+      - CHANNEL_DATA_TYPE_INT_64
+      - CHANNEL_DATA_TYPE_UINT_64
+      - CHANNEL_DATA_TYPE_BYTES
+      default: CHANNEL_DATA_TYPE_UNSPECIFIED
+    channel_schemasv2BatchCreateChannelSchemasResponse:
+      type: object
+      description: The response of a call to `ChannelSchemaService_BatchCreateChannelSchemas`.
+    channel_schemasv1CreateChannelSchemaResponse:
+      type: object
+      description: The response of a call to `ChannelSchemaService_CreateChannelSchema`.
+    v1ChannelEnumType:
+      type: object
+      properties:
+        name:
+          type: string
+        key:
+          type: integer
+          format: int64
+        isSigned:
+          type: boolean
+      required:
+      - name
+      - key
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

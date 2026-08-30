@@ -1,0 +1,795 @@
+openapi: 3.2.0
+info:
+  title: Sift Annotation Service API
+  version: '1.0'
+  description: Service to programmatically interact with annotations.
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: AnnotationService
+  description: Service to programmatically interact with annotations.
+  externalDocs:
+    description: Read more about annotations.
+    url: https://customer.support.siftstack.com/servicedesk/customer/portal/2/article/265486685
+paths:
+  /api/v1/annotations:
+    get:
+      summary: ListAnnotation
+      description: Retrieves annotations using an optional filter.
+      operationId: AnnotationService_ListAnnotations
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListAnnotationsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of annotations to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 annotations will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListAnnotations` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListAnnotations` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `annotation_id`, `start_time`, `end_time`,
+
+          `created_date`, `modified_date`, `run_id`, `name`, `description`, `state`, `created_by_user_id`, `created_by_rule_condition_version_id`, `rule_id`,
+
+          `annotation_type`, `tag_name`, `report_id`, `asset_id`, `asset_name`, `pending`, `assignee`, `campaign_reports`, `metadata`, `archived_date`, and `is_archived`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: organizationId
+        description: This field is only required if your user belongs to multiple organizations.
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved annotations. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `created_date`, `modified_date`, `start_time`, `end_time`, `name`, and `description`.
+
+          If left empty, items are ordered by `created_date` in descending order (newest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - AnnotationService
+    post:
+      summary: CreateAnnotation
+      description: Creates an annotation.
+      operationId: AnnotationService_CreateAnnotation
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateAnnotationResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateAnnotationRequest'
+        description: 'The request for a call to `AnnotationService_CreateAnnotation` to create a new annotation.
+
+          At least 1 asset, tag, or channel must be specified.'
+        required: true
+      tags:
+      - AnnotationService
+    patch:
+      summary: UpdateAnnotation
+      description: Updates an existing annotation using using the list of fields specified in `update_mask`.
+      operationId: AnnotationService_UpdateAnnotation
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateAnnotationResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1UpdateAnnotationRequest'
+        description: The request for a call to `AnnotationService_UpdateAnnotation` to update an annotation.
+        required: true
+      tags:
+      - AnnotationService
+  /api/v1/annotations/{annotationId}:
+    get:
+      summary: GetAnnotation
+      description: Retrieves an annotation
+      operationId: AnnotationService_GetAnnotation
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetAnnotationResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: annotationId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - AnnotationService
+    delete:
+      summary: DeleteAnnotation
+      description: Archives an annotation.
+      operationId: AnnotationService_DeleteAnnotation
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1DeleteAnnotationResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: annotationId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - AnnotationService
+  /api/v1/annotations/{annotationId}:archive:
+    post:
+      summary: ArchiveAnnotation
+      description: Archives an annotation.
+      operationId: AnnotationService_ArchiveAnnotation
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ArchiveAnnotationResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: annotationId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: The request for a call to `AnnotationService_ArchiveAnnotation`.
+        required: true
+      tags:
+      - AnnotationService
+  /api/v1/annotations/{annotationId}:unarchive:
+    post:
+      summary: UnarchiveAnnotation
+      description: Unarchives an annotation.
+      operationId: AnnotationService_UnarchiveAnnotation
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UnarchiveAnnotationResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: annotationId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: The request for a call to `AnnotationService_UnarchiveAnnotation`.
+        required: true
+      tags:
+      - AnnotationService
+  /api/v1/annotations:batchArchive:
+    post:
+      summary: BatchArchiveAnnotations
+      description: Batch archives annotations.
+      operationId: AnnotationService_BatchArchiveAnnotations
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchArchiveAnnotationsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchArchiveAnnotationsRequest'
+        description: The request for a call to `AnnotationService_BatchArchiveAnnotations`.
+        required: true
+      tags:
+      - AnnotationService
+  /api/v1/annotations:batchDelete:
+    post:
+      summary: BatchDeleteAnnotation
+      description: Batch archives annotations.
+      operationId: AnnotationService_BatchDeleteAnnotations
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchDeleteAnnotationsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchDeleteAnnotationsRequest'
+        required: true
+      tags:
+      - AnnotationService
+  /api/v1/annotations:batchUnarchive:
+    post:
+      summary: BatchUnarchiveAnnotations
+      description: Batch unarchives annotations.
+      operationId: AnnotationService_BatchUnarchiveAnnotations
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchUnarchiveAnnotationsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchUnarchiveAnnotationsRequest'
+        description: The request for a call to `AnnotationService_BatchUnarchiveAnnotations`.
+        required: true
+      tags:
+      - AnnotationService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1BatchArchiveAnnotationsRequest:
+      type: object
+      properties:
+        annotationIds:
+          type: array
+          items:
+            type: string
+          title: Limit of 1000 annotations per batch
+      description: The request for a call to `AnnotationService_BatchArchiveAnnotations`.
+      required:
+      - annotationIds
+    v1BatchArchiveAnnotationsResponse:
+      type: object
+      properties:
+        annotations:
+          type: array
+          items:
+            $ref: '#/components/schemas/annotationsv1Annotation'
+      description: The response of a call to `AnnotationService_BatchArchiveAnnotations`.
+      required:
+      - annotations
+    v1BatchUnarchiveAnnotationsResponse:
+      type: object
+      properties:
+        annotations:
+          type: array
+          items:
+            $ref: '#/components/schemas/annotationsv1Annotation'
+      description: The response of a call to `AnnotationService_BatchUnarchiveAnnotations`.
+      required:
+      - annotations
+    v1MetadataValue:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/v1MetadataKey'
+        stringValue:
+          type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+        relationValue:
+          $ref: '#/components/schemas/v1MetadataRelationValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
+      required:
+      - key
+    v1AnnotationLinkedCalculatedChannel:
+      type: object
+      properties:
+        calculatedChannelVersionId:
+          type: string
+      required:
+      - calculatedChannelVersionId
+    annotationsv1Annotation:
+      type: object
+      properties:
+        annotationId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        runId:
+          type: string
+        state:
+          $ref: '#/components/schemas/v1AnnotationState'
+        organizationId:
+          type: string
+        assignedToUserId:
+          type: string
+        annotationType:
+          $ref: '#/components/schemas/v1AnnotationType'
+        tags:
+          type: array
+          items:
+            type: string
+        legendConfig:
+          type: string
+        createdByConditionId:
+          type: string
+        createdByRuleConditionVersionId:
+          type: string
+        reportRuleVersionId:
+          type: string
+        pending:
+          type: boolean
+          description: 'An annotation is pending if it is part of an ongoing violation of a rule condition.
+
+            The `end_time` of a pending annotation might be set, but is not yet finalized.'
+          readOnly: true
+        assignedToUser:
+          $ref: '#/components/schemas/v1User'
+        deletedDate:
+          type: string
+          format: date-time
+        linkedChannels:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1AnnotationLinkedChannel'
+        assetIds:
+          type: array
+          items:
+            type: string
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          title: is_archived is a inferred from when archived_date is not null
+        batchedTriggers:
+          type: integer
+          format: int32
+        isNoisyRule:
+          type: boolean
+      required:
+      - annotationId
+      - name
+      - description
+      - startTime
+      - endTime
+      - createdByUserId
+      - modifiedByUserId
+      - createdDate
+      - modifiedDate
+      - organizationId
+      - annotationType
+      - tags
+      - isArchived
+      - batchedTriggers
+    v1BatchDeleteAnnotationsRequest:
+      type: object
+      properties:
+        annotationIds:
+          type: array
+          items:
+            type: string
+          title: Limit of 1000 annotations per batch
+      required:
+      - annotationIds
+    v1DeleteAnnotationResponse:
+      type: object
+      description: The response of a call to `AnnotationService_DeleteAnnotation`.
+    v1UnarchiveAnnotationResponse:
+      type: object
+      properties:
+        annotation:
+          $ref: '#/components/schemas/annotationsv1Annotation'
+      description: The response of a call to `AnnotationService_UnarchiveAnnotation`.
+      required:
+      - annotation
+    v1UpdateAnnotationRequest:
+      type: object
+      properties:
+        annotation:
+          $ref: '#/components/schemas/annotationsv1Annotation'
+        updateMask:
+          type: string
+          description: 'The list of fields to be updated. The fields available to be updated are `name`, `description`, `start_time`,
+
+            `end_time`, `assigned_to_user_id`, `state`, `tags`, `legend_config`, `linked_channels`, and `metadata`.
+
+            Important Note: if `tags` is specified in the update mask and `annotation.tags` is an empty list then all associated tags on the annotation
+
+            will be removed.'
+      description: The request for a call to `AnnotationService_UpdateAnnotation` to update an annotation.
+      required:
+      - annotation
+      - updateMask
+    v1AnnotationLinkedChannelsBitFieldElement:
+      type: object
+      properties:
+        channelId:
+          type: string
+        bitFieldName:
+          type: string
+      required:
+      - channelId
+      - bitFieldName
+    v1BatchUnarchiveAnnotationsRequest:
+      type: object
+      properties:
+        annotationIds:
+          type: array
+          items:
+            type: string
+          title: Limit of 1000 annotations per batch
+      description: The request for a call to `AnnotationService_BatchUnarchiveAnnotations`.
+      required:
+      - annotationIds
+    v1ListAnnotationsResponse:
+      type: object
+      properties:
+        annotations:
+          type: array
+          items:
+            $ref: '#/components/schemas/annotationsv1Annotation'
+        nextPageToken:
+          type: string
+          description: Oops, we skipped to index 5! No reason for that; the indices between aren't reserved or anything.
+      description: The result of a call to `AnnotationService_ListAnnotations`.
+    v1AnnotationLinkedChannelsChannel:
+      type: object
+      properties:
+        channelId:
+          type: string
+      required:
+      - channelId
+    v1AnnotationState:
+      type: string
+      enum:
+      - ANNOTATION_STATE_UNSPECIFIED
+      - ANNOTATION_STATE_OPEN
+      - ANNOTATION_STATE_FLAGGED
+      - ANNOTATION_STATE_RESOLVED
+      default: ANNOTATION_STATE_UNSPECIFIED
+    v1AnnotationType:
+      type: string
+      enum:
+      - ANNOTATION_TYPE_UNSPECIFIED
+      - ANNOTATION_TYPE_DATA_REVIEW
+      - ANNOTATION_TYPE_PHASE
+      default: ANNOTATION_TYPE_UNSPECIFIED
+    v1GetAnnotationResponse:
+      type: object
+      properties:
+        annotation:
+          $ref: '#/components/schemas/annotationsv1Annotation'
+      description: The response of a call to `AnnotationService_GetAnnotation`.
+      required:
+      - annotation
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    v1CreateAnnotationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name assigned to the new annotation.
+        description:
+          type: string
+          description: A short description about the new annotation.
+        startTime:
+          type: string
+          format: date-time
+          description: When the annotation starts.
+        endTime:
+          type: string
+          format: date-time
+          description: When the annotation ends.
+        assets:
+          type: array
+          items:
+            type: string
+          description: The names of the assets to associate with this annotation.
+        linkedChannels:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1AnnotationLinkedChannel'
+          description: The channels to associate with this annotation.
+        tags:
+          type: array
+          items:
+            type: string
+          description: The names of the tags to associate with this annotation.
+        runId:
+          type: string
+          description: The ID of the run that this annotation is associated with.
+        assignToUserId:
+          type: string
+          description: The ID of the user that this annotation is assigned to.
+        organizationId:
+          type: string
+          description: 'The organization associated with this annotation. An organization ID is only required
+
+            if the user belongs to multiple organizations.'
+        state:
+          $ref: '#/components/schemas/v1AnnotationState'
+        annotationType:
+          $ref: '#/components/schemas/v1AnnotationType'
+        createdByConditionId:
+          type: string
+          description: The ID of the rule condition that created this annotation.
+        legendConfig:
+          type: string
+          description: A JSON string containing the axes configuration of the annotation's linked channels.
+        createdByRuleConditionVersionId:
+          type: string
+          description: The ID of the rule condition version that created this annotation.
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          description: The metadata associated with this annotation.
+      description: 'The request for a call to `AnnotationService_CreateAnnotation` to create a new annotation.
+
+        At least 1 asset, tag, or channel must be specified.'
+      required:
+      - name
+      - startTime
+      - endTime
+    v1CreateAnnotationResponse:
+      type: object
+      properties:
+        annotation:
+          $ref: '#/components/schemas/annotationsv1Annotation'
+      description: The result of a call to `AnnotationService_CreateAnnotation`.
+      required:
+      - annotation
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1Organization:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        organizationName:
+          type: string
+        isAbacEnabled:
+          type: boolean
+      required:
+      - organizationId
+      - organizationName
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
+    v1User:
+      type: object
+      properties:
+        userId:
+          type: string
+        userName:
+          type: string
+        organizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1Organization'
+      required:
+      - userId
+      - userName
+    v1ArchiveAnnotationResponse:
+      type: object
+      properties:
+        annotation:
+          $ref: '#/components/schemas/annotationsv1Annotation'
+      description: The response of a call to `AnnotationService_ArchiveAnnotation`.
+      required:
+      - annotation
+    v1UpdateAnnotationResponse:
+      type: object
+      properties:
+        annotation:
+          $ref: '#/components/schemas/annotationsv1Annotation'
+      description: The response of a call to `AnnotationService_UpdateAnnotation`.
+    v1BatchDeleteAnnotationsResponse:
+      type: object
+    v1AnnotationLinkedChannel:
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/v1AnnotationLinkedChannelsChannel'
+        bitFieldElement:
+          $ref: '#/components/schemas/v1AnnotationLinkedChannelsBitFieldElement'
+        calculatedChannel:
+          $ref: '#/components/schemas/v1AnnotationLinkedCalculatedChannel'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

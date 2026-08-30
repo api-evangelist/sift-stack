@@ -1,0 +1,556 @@
+openapi: 3.2.0
+info:
+  title: Sift Panel Configuration Service API
+  version: '1.0'
+  description: Service to programmatically interact with panel configurations.
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: PanelConfigurationService
+  description: Service to programmatically interact with panel configurations.
+paths:
+  /api/v1/panel-configurations:
+    get:
+      summary: ListPanelConfigurations
+      description: Retrieves panel configurations using an optional filter.
+      operationId: PanelConfigurationService_ListPanelConfigurations
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListPanelConfigurationsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of panel configurations to return.
+
+          The service may return fewer than this value.
+
+          If unspecified, at most 50 panel configurations will be returned.
+
+          The maximum value is 1000; values above 1000 will be coerced to 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListPanelConfigurations` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListPanelConfigurations` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string
+
+          Available fields to filter by are ''name'', ''created_date'', ''modified_date'', ''is_archived'', and `metadata`.
+
+          Metadata can be used in filters by using `metadata.{metadata_key_name}` as the field name.
+
+          Folder membership is filterable via the `folders` and `activeFolders` fields. Both contain the ids of the folders
+
+          the panel configuration belongs to; `activeFolders` excludes archived folders. Use `"<folder_id>" in folders` to
+
+          return panel configurations in the given folder, and `size(activeFolders) == 0` to return uncategorized panel
+
+          configurations (panel configurations whose only memberships are in archived folders count as uncategorized).
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved panel configurations. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `name`.
+
+          If left empty, items are ordered by `name` in ascending order (alphabetical).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "name"'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: runIds
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: assetIds
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      tags:
+      - PanelConfigurationService
+    post:
+      summary: CreatePanelConfiguration
+      description: Creates a panel configuration.
+      operationId: PanelConfigurationService_CreatePanelConfiguration
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreatePanelConfigurationResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreatePanelConfigurationRequest'
+        required: true
+      tags:
+      - PanelConfigurationService
+  /api/v1/panel-configurations/{panelConfiguration.panelConfigurationId}:
+    patch:
+      summary: UpdatePanelConfiguration
+      description: Updates an existing panel configuration using using the list of fields specified in `update_mask`.
+      operationId: PanelConfigurationService_UpdatePanelConfiguration
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdatePanelConfigurationResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: panelConfiguration.panelConfigurationId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                panelConfiguration:
+                  type: object
+                  properties:
+                    versionId:
+                      type: string
+                    version:
+                      type: integer
+                      format: int64
+                    changeMessage:
+                      type: string
+                    name:
+                      type: string
+                    channelConfigurations:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/v1ChannelConfigurations'
+                    chartSettings:
+                      type: object
+                    createdDate:
+                      type: string
+                      format: date-time
+                    modifiedDate:
+                      type: string
+                      format: date-time
+                    archivedDate:
+                      type: string
+                      format: date-time
+                    createdByUserId:
+                      type: string
+                    modifiedByUserId:
+                      type: string
+                    isArchived:
+                      type: boolean
+                    metadata:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/v1MetadataValue'
+                    folderIds:
+                      type: array
+                      items:
+                        type: string
+                      description: Ids of the folders this panel configuration belongs to.
+                  description: The panel configuration to update.
+                  title: The panel configuration to update.
+                updateMask:
+                  type: string
+                  description: 'The list of fields to be updated. The fields available to be updated are `name`, `channel_configurations`,
+
+                    `chart_settings`, `is_archived`, and `metadata`.'
+              description: 'The request for a call to `PanelConfigurationService_UpdatePanelConfiguration` to update a panel configuration. Updating a panel
+
+                configuration creates a new version of the panel configuration, leaving the previous untouched. If no update is deemed necessary, then the
+
+                the current version is returned. Use `is_archived` to archive/unarchive a panel configuration.'
+              required:
+              - updateMask
+        required: true
+      tags:
+      - PanelConfigurationService
+  /api/v1/panel-configurations/{panelConfigurationId}:
+    get:
+      summary: GetPanelConfiguration
+      description: Retrieves a panel configuration.
+      operationId: PanelConfigurationService_GetPanelConfiguration
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetPanelConfigurationResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: panelConfigurationId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - PanelConfigurationService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1PlottedChannelType:
+      type: string
+      enum:
+      - PLOTTED_CHANNEL_TYPE_UNSPECIFIED
+      - PLOTTED_CHANNEL_TYPE_REGULAR
+      - PLOTTED_CHANNEL_TYPE_CALCULATED_CHANNEL
+      - PLOTTED_CHANNEL_TYPE_BIT_FIELD_ELEMENT
+      - PLOTTED_CHANNEL_TYPE_ENUM
+      default: PLOTTED_CHANNEL_TYPE_UNSPECIFIED
+    v1GetPanelConfigurationResponse:
+      type: object
+      properties:
+        panelConfiguration:
+          $ref: '#/components/schemas/v1PanelConfiguration'
+    v1ChannelDataType:
+      type: string
+      enum:
+      - CHANNEL_DATA_TYPE_UNSPECIFIED
+      - CHANNEL_DATA_TYPE_DOUBLE
+      - CHANNEL_DATA_TYPE_STRING
+      - CHANNEL_DATA_TYPE_ENUM
+      - CHANNEL_DATA_TYPE_BIT_FIELD
+      - CHANNEL_DATA_TYPE_BOOL
+      - CHANNEL_DATA_TYPE_FLOAT
+      - CHANNEL_DATA_TYPE_INT_32
+      - CHANNEL_DATA_TYPE_UINT_32
+      - CHANNEL_DATA_TYPE_INT_64
+      - CHANNEL_DATA_TYPE_UINT_64
+      - CHANNEL_DATA_TYPE_BYTES
+      default: CHANNEL_DATA_TYPE_UNSPECIFIED
+    v1ChannelBitFieldElement:
+      type: object
+      properties:
+        name:
+          type: string
+        index:
+          type: integer
+          format: int32
+          description: The index of this element's first bit in the logical bit field array.
+        bitCount:
+          type: integer
+          format: int64
+      required:
+      - name
+      - index
+      - bitCount
+    v1PanelConfiguration:
+      type: object
+      properties:
+        panelConfigurationId:
+          type: string
+        versionId:
+          type: string
+        version:
+          type: integer
+          format: int64
+        changeMessage:
+          type: string
+        name:
+          type: string
+        channelConfigurations:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ChannelConfigurations'
+        chartSettings:
+          type: object
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        archivedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        isArchived:
+          type: boolean
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        folderIds:
+          type: array
+          items:
+            type: string
+          description: Ids of the folders this panel configuration belongs to.
+    v2CalculatedChannelAbstractChannelReference:
+      type: object
+      properties:
+        channelReference:
+          type: string
+        channelIdentifier:
+          type: string
+          title: must use either a channel_identifier or a calculated_channel_reference, not both
+        calculatedChannelVersionId:
+          type: string
+        calculatedChannel:
+          $ref: '#/components/schemas/v1ExpressionRequest'
+      required:
+      - channelReference
+    v1MetadataValue:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/v1MetadataKey'
+        stringValue:
+          type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+        relationValue:
+          $ref: '#/components/schemas/v1MetadataRelationValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
+      required:
+      - key
+    v1CreatePanelConfigurationResponse:
+      type: object
+      properties:
+        panelConfiguration:
+          $ref: '#/components/schemas/v1PanelConfiguration'
+    v1CreatePanelConfigurationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        channelConfigurations:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ChannelConfigurations'
+        chartSettings:
+          type: object
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+      required:
+      - name
+      - channelConfigurations
+    v1ListPanelConfigurationsResponse:
+      type: object
+      properties:
+        panelConfigurations:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1PanelConfiguration'
+        nextPageToken:
+          type: string
+          description: 'A token, which can be sent as `page_token` to retrieve the next page.
+
+            If this field is omitted, there are no subsequent pages.'
+    v1FunctionDependency:
+      type: object
+      properties:
+        userDefinedFunctionVersionId:
+          type: string
+      required:
+      - userDefinedFunctionVersionId
+    v1ExpressionRequest:
+      type: object
+      properties:
+        channelReferences:
+          type: object
+          additionalProperties:
+            type: string
+          description: 'A map from the channel reference in the expression string (e.g. $1) to the channel id (uuid).
+
+            This is deprecated and should be passed in expression_channel_references instead.'
+        expression:
+          type: string
+        expressionChannelReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ExpressionChannelReference'
+        functionDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionDependency'
+      required:
+      - expression
+    v1ChannelConfigurations:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1PlottedChannelType'
+        color:
+          type: string
+        channelSettings:
+          type: object
+        bitFieldIndex:
+          type: integer
+          format: int32
+          title: bitfield
+        bitFieldElement:
+          $ref: '#/components/schemas/v1ChannelBitFieldElement'
+        expression:
+          type: string
+          title: temporary calculated channel
+        expressionChannelReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannelAbstractChannelReference'
+        dataType:
+          $ref: '#/components/schemas/v1ChannelDataType'
+        calculatedChannelId:
+          type: string
+          title: published calculated channel reference; preferred over name for lookup
+      required:
+      - name
+      - type
+      - color
+      - channelSettings
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
+    v1ExpressionChannelReference:
+      type: object
+      properties:
+        channelReference:
+          type: string
+        channelId:
+          type: string
+        calculatedChannel:
+          $ref: '#/components/schemas/v1ExpressionRequest'
+      required:
+      - channelReference
+      - channelId
+    v1UpdatePanelConfigurationResponse:
+      type: object
+      properties:
+        panelConfiguration:
+          $ref: '#/components/schemas/v1PanelConfiguration'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

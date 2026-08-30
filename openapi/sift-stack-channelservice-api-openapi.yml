@@ -1,0 +1,620 @@
+openapi: 3.2.0
+info:
+  title: Sift Channel Service API
+  version: '1.0'
+  description: Service to programmatically interact with [channels](/glossary#channel).
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: ChannelService
+  description: Service to programmatically interact with [channels](/glossary#channel).
+  externalDocs:
+    description: Read more about what channels are.
+    url: https://customer.support.siftstack.com/servicedesk/customer/portal/2/article/265453943
+paths:
+  /api/v2/channels:
+    get:
+      summary: ListChannels
+      description: Retrieve channels using an optional filter.
+      operationId: ChannelService_ListChannels
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/channelsv2ListChannelsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of channels to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 channels will be returned. The maximum value is 10,000; values above
+
+          10,000 will be coerced to 10,000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListChannels` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListChannels` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `channel_id`, `asset_id`, `name`, `component`, `description`
+
+          `run_id`, `run_name`, `run_client_key`, `created_date`, and `modified_date`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: organizationId
+        description: This field is only required if your user belongs to multiple organizations.
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved channels. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `created_date` and `modified_date`, `active`.
+
+          If left empty, items are ordered by `created_date` in ascending order (oldest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - ChannelService
+  /api/v2/channels/{channelId}:
+    get:
+      summary: GetChannel
+      description: Retrieve a channel.
+      operationId: ChannelService_GetChannel
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/channelsv2GetChannelResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: channelId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ChannelService
+  /api/v3/channels:
+    get:
+      summary: ListChannels
+      description: Retrieve channels using an optional filter.
+      operationId: ChannelService_ListChannelsV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/channelsv3ListChannelsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of channels to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 channels will be returned. The maximum value is 10,000; values above
+
+          10,000 will be coerced to 10,000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListChannels` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListChannels` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `channel_id`, `asset_id`, `name`, `description`
+
+          `run_id`, `run_name`, `run_client_key`, `created_date`, `modified_date`, `created_by_user_id`, and `modified_by_user_id`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved channels. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `name`, `created_date` and `modified_date`, `active`.
+
+          If left empty, items are ordered by `created_date` in ascending order (oldest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date"'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - ChannelService
+    patch:
+      summary: UpdateChannel
+      description: Update a channel.
+      operationId: ChannelService_UpdateChannelV3
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v3UpdateChannelResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v3UpdateChannelRequest'
+        description: The request for a call to ChannelService_UpdateChannel.
+        required: true
+      tags:
+      - ChannelService
+  /api/v3/channels/{channelId}:
+    get:
+      summary: GetChannel
+      description: Retrieve a channel.
+      operationId: ChannelService_GetChannelV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/channelsv3GetChannelResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: channelId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ChannelService
+  /api/v3/channels:batchArchive:
+    post:
+      summary: BatchArchiveChannels
+      description: Batch archives channels by setting active to false.
+      operationId: ChannelService_BatchArchiveChannels
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v3BatchArchiveChannelsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v3BatchArchiveChannelsRequest'
+        description: The request for a call to ChannelService_BatchArchiveChannels.
+        required: true
+      tags:
+      - ChannelService
+  /api/v3/channels:batchUnarchive:
+    post:
+      summary: BatchUnarchiveChannels
+      description: Batch unarchives channels by setting active to true.
+      operationId: ChannelService_BatchUnarchiveChannels
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v3BatchUnarchiveChannelsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v3BatchUnarchiveChannelsRequest'
+        description: The request for a call to ChannelService_BatchUnarchiveChannels.
+        required: true
+      tags:
+      - ChannelService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1ChannelDataType:
+      type: string
+      enum:
+      - CHANNEL_DATA_TYPE_UNSPECIFIED
+      - CHANNEL_DATA_TYPE_DOUBLE
+      - CHANNEL_DATA_TYPE_STRING
+      - CHANNEL_DATA_TYPE_ENUM
+      - CHANNEL_DATA_TYPE_BIT_FIELD
+      - CHANNEL_DATA_TYPE_BOOL
+      - CHANNEL_DATA_TYPE_FLOAT
+      - CHANNEL_DATA_TYPE_INT_32
+      - CHANNEL_DATA_TYPE_UINT_32
+      - CHANNEL_DATA_TYPE_INT_64
+      - CHANNEL_DATA_TYPE_UINT_64
+      - CHANNEL_DATA_TYPE_BYTES
+      default: CHANNEL_DATA_TYPE_UNSPECIFIED
+    channelsv3GetChannelResponse:
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/channelsv3Channel'
+      description: The response of a call to `ChannelService_GetChannel`.
+      required:
+      - channel
+    v1ChannelEnumType:
+      type: object
+      properties:
+        name:
+          type: string
+        key:
+          type: integer
+          format: int64
+        isSigned:
+          type: boolean
+      required:
+      - name
+      - key
+    channelsv3ListChannelsResponse:
+      type: object
+      properties:
+        channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/channelsv3Channel'
+        nextPageToken:
+          type: string
+      description: The result of a call to ChannelService_ListChannels.
+    v3BatchUnarchiveChannelsResponse:
+      type: object
+      description: The result of a call to ChannelService_BatchUnarchiveChannels.
+    v1ChannelBitFieldElement:
+      type: object
+      properties:
+        name:
+          type: string
+        index:
+          type: integer
+          format: int32
+          description: The index of this element's first bit in the logical bit field array.
+        bitCount:
+          type: integer
+          format: int64
+      required:
+      - name
+      - index
+      - bitCount
+    v3BatchArchiveChannelsResponse:
+      type: object
+      description: The result of a call to ChannelService_BatchArchiveChannels.
+    v1MetadataValue:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/v1MetadataKey'
+        stringValue:
+          type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+        relationValue:
+          $ref: '#/components/schemas/v1MetadataRelationValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
+      required:
+      - key
+    v3BatchUnarchiveChannelsRequest:
+      type: object
+      properties:
+        channelIds:
+          type: array
+          items:
+            type: string
+      description: The request for a call to ChannelService_BatchUnarchiveChannels.
+      required:
+      - channelIds
+    channelsv3Channel:
+      type: object
+      properties:
+        channelId:
+          type: string
+        name:
+          type: string
+          description: The full name of the channel.
+        assetId:
+          type: string
+        description:
+          type: string
+        unitId:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        dataType:
+          $ref: '#/components/schemas/v1ChannelDataType'
+        enumTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ChannelEnumType'
+        bitFieldElements:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ChannelBitFieldElement'
+        displayDescription:
+          type: string
+        displayUnitId:
+          type: string
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        active:
+          type: boolean
+      required:
+      - channelId
+      - name
+      - assetId
+      - description
+      - unitId
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - dataType
+      - metadata
+    channelsv2GetChannelResponse:
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/channelsv2Channel'
+      description: The response of a call to `ChannelService_GetChannel`.
+      required:
+      - channel
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
+    v3BatchArchiveChannelsRequest:
+      type: object
+      properties:
+        channelIds:
+          type: array
+          items:
+            type: string
+      description: The request for a call to ChannelService_BatchArchiveChannels.
+      required:
+      - channelIds
+    v3UpdateChannelResponse:
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/channelsv3Channel'
+      description: The result of a call to ChannelService_UpdateChannel.
+      required:
+      - channel
+    v3UpdateChannelRequest:
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/channelsv3Channel'
+        updateMask:
+          type: string
+          description: The list of fields to be updated. The fields available to be updated are `display_description`, `display_units`, `metadata`, and `active`.
+      description: The request for a call to ChannelService_UpdateChannel.
+      required:
+      - channel
+      - updateMask
+    channelsv2ListChannelsResponse:
+      type: object
+      properties:
+        channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/channelsv2Channel'
+        nextPageToken:
+          type: string
+      description: The result of a call to `ChannelService_ListChannels`.
+    channelsv2Channel:
+      type: object
+      properties:
+        channelId:
+          type: string
+        name:
+          type: string
+        component:
+          type: string
+        assetId:
+          type: string
+        description:
+          type: string
+        unitId:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        organizationId:
+          type: string
+        dataType:
+          $ref: '#/components/schemas/v1ChannelDataType'
+        enumTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ChannelEnumType'
+        bitFieldElements:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ChannelBitFieldElement'
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+      required:
+      - channelId
+      - name
+      - component
+      - assetId
+      - description
+      - unitId
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - organizationId
+      - dataType
+      - metadata
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

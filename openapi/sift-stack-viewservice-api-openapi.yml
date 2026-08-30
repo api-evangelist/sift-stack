@@ -1,0 +1,940 @@
+openapi: 3.2.0
+info:
+  title: Sift View Service API
+  version: '1.0'
+  description: Service to programmatically interact with views.
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: ViewService
+  description: Service to programmatically interact with views.
+  externalDocs:
+    description: Read more about what views are.
+    url: https://customer.support.siftstack.com/servicedesk/customer/portal/2/article/298188809
+paths:
+  /api/v1/views:
+    get:
+      summary: ListViews
+      description: Retrieves views using an optional filter.
+      operationId: ViewService_ListViews
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv1ListViewsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of views to return.
+
+          The service may return fewer than this value.
+
+          If unspecified, at most 50 views will be returned.
+
+          The maximum value is 1000; values above 1000 will be coerced to 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListViews` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListViews` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string
+
+          Available fields to filter by are ''name'', ''createdDate'', and ''modifiedDate''.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - ViewService
+    post:
+      summary: CreateView
+      description: Creates a view.
+      operationId: ViewService_CreateView
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv1CreateViewResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/viewsv1View'
+        required: true
+      tags:
+      - ViewService
+  /api/v1/views/{view.viewId}:
+    patch:
+      summary: UpdateView
+      description: Updates an existing view using using the list of fields specified in `update_mask`.
+      operationId: ViewService_UpdateView
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv1UpdateViewResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: view.viewId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                view:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    axisGroups:
+                      $ref: '#/components/schemas/viewsv1ViewAxisGroups'
+                    channels:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/viewsv1ViewChannel'
+                    createdDate:
+                      type: string
+                      format: date-time
+                    modifiedDate:
+                      type: string
+                      format: date-time
+                    createdByUserId:
+                      type: string
+                    organizationId:
+                      type: string
+                    modifiedByUserId:
+                      type: string
+                    isPinned:
+                      type: boolean
+                updateMask:
+                  type: string
+                  description: The list of fields to update.
+        required: true
+      tags:
+      - ViewService
+  /api/v1/views/{viewId}:
+    get:
+      summary: GetView
+      description: Retrieves a view.
+      operationId: ViewService_GetView
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv1GetViewResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: viewId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ViewService
+    delete:
+      summary: DeleteView
+      description: Deletes a view.
+      operationId: ViewService_DeleteView
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv1DeleteViewResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: viewId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ViewService
+  /api/v1/views/{viewId}/pin:
+    patch:
+      summary: PinView
+      description: Pins a view.
+      operationId: ViewService_PinView
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv1PinViewResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: viewId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/ViewService_PinViewBody'
+      tags:
+      - ViewService
+      externalDocs:
+        description: Learn more about pinning views.
+        url: https://customer.support.siftstack.com/servicedesk/customer/portal/2/article/295436289
+  /api/v1/views/{viewId}/unpin:
+    patch:
+      summary: UnpinView
+      description: Unpins a view.
+      operationId: ViewService_UnpinView
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv1UnpinViewResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: viewId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/ViewService_PinViewBody'
+      tags:
+      - ViewService
+      externalDocs:
+        description: Learn more about pinning views.
+        url: https://customer.support.siftstack.com/servicedesk/customer/portal/2/article/295436289
+  /api/v1/views:applicable:
+    get:
+      summary: Lists views that apply to assets/runs.
+      operationId: ViewService_ListApplicableViews
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv1ListApplicableViewsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of views to return.
+
+          The service may return fewer than this value.
+
+          If unspecified, at most 50 views will be returned.
+
+          The maximum value is 1000; values above 1000 will be coerced to 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListApplicableViews` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListApplicableViews` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: assetIds
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: runIds
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      tags:
+      - ViewService
+  /api/v2/views:
+    get:
+      summary: ListViews
+      description: Retrieves views using an optional filter.
+      operationId: ViewService_ListViewsV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv2ListViewsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of views to return.
+
+          The service may return fewer than this value.
+
+          If unspecified, at most 50 views will be returned.
+
+          The maximum value is 1000; values above 1000 will be coerced to 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListViews` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListViews` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string
+
+          Available fields to filter by are ''name'', ''createdDate'', and ''modifiedDate''.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - ViewService
+    post:
+      summary: CreateView
+      description: Creates a view.
+      operationId: ViewService_CreateViewV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv2CreateViewResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/viewsv2CreateViewRequest'
+        required: true
+      tags:
+      - ViewService
+  /api/v2/views/{view.viewId}:
+    patch:
+      summary: UpdateView
+      description: Updates an existing view using using the list of fields specified in `update_mask`.
+      operationId: ViewService_UpdateViewV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv2UpdateViewResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: view.viewId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                view:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    axisGroups:
+                      $ref: '#/components/schemas/viewsv2ViewAxisGroups'
+                    channels:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/viewsv2ViewChannel'
+                    createdDate:
+                      type: string
+                      format: date-time
+                    modifiedDate:
+                      type: string
+                      format: date-time
+                    createdByUserId:
+                      type: string
+                    modifiedByUserId:
+                      type: string
+                    isPinned:
+                      type: boolean
+                updateMask:
+                  type: string
+                  description: The list of fields to update.
+        required: true
+      tags:
+      - ViewService
+  /api/v2/views/{viewId}:
+    get:
+      summary: GetView
+      description: Retrieves a view.
+      operationId: ViewService_GetViewV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv2GetViewResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: viewId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ViewService
+    delete:
+      summary: DeleteView
+      description: Deletes a view.
+      operationId: ViewService_DeleteViewV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv2DeleteViewResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: viewId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - ViewService
+  /api/v2/views/{viewId}/pin:
+    patch:
+      summary: PinView
+      description: Pins a view.
+      operationId: ViewService_PinViewV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv2PinViewResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: viewId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/ViewService_PinViewBody'
+      tags:
+      - ViewService
+      externalDocs:
+        description: Learn more about pinning views.
+        url: https://customer.support.siftstack.com/servicedesk/customer/portal/2/article/295436289
+  /api/v2/views/{viewId}/unpin:
+    patch:
+      summary: UnpinView
+      description: Unpins a view.
+      operationId: ViewService_UnpinViewV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv2UnpinViewResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: viewId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/ViewService_PinViewBody'
+      tags:
+      - ViewService
+      externalDocs:
+        description: Learn more about pinning views.
+        url: https://customer.support.siftstack.com/servicedesk/customer/portal/2/article/295436289
+  /api/v2/views:applicable:
+    get:
+      summary: ListApplicableViews
+      description: Lists views that apply to assets/runs.
+      operationId: ViewService_ListApplicableViewsV2
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/viewsv2ListApplicableViewsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of views to return.
+
+          The service may return fewer than this value.
+
+          If unspecified, at most 50 views will be returned.
+
+          The maximum value is 1000; values above 1000 will be coerced to 1000.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListApplicableViews` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListApplicableViews` must match
+
+          the call that provided the page token.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: assetIds
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: runIds
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      tags:
+      - ViewService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    viewsv1ListViewsResponse:
+      type: object
+      properties:
+        views:
+          type: array
+          items:
+            $ref: '#/components/schemas/viewsv1View'
+        nextPageToken:
+          type: string
+          description: 'A token, which can be sent as `page_token` to retrieve the next page.
+
+            If this field is omitted, there are no subsequent pages.'
+    viewsv1ViewAxisGroups:
+      type: object
+      properties:
+        left:
+          type: array
+          items:
+            type: string
+        right:
+          type: array
+          items:
+            type: string
+    viewsv1UpdateViewResponse:
+      type: object
+      properties:
+        view:
+          $ref: '#/components/schemas/viewsv1View'
+    viewsv2ViewChannel:
+      type: object
+      properties:
+        name:
+          type: string
+        dataType:
+          type: string
+        axisGroup:
+          type: string
+        bitFieldNames:
+          type: array
+          items:
+            type: string
+        calculatedChannelConfig:
+          $ref: '#/components/schemas/viewsv2ViewChannelCalculatedChannelConfig'
+      required:
+      - name
+      - dataType
+    viewsv1DeleteViewResponse:
+      type: object
+    viewsv2ViewAxisGroups:
+      type: object
+      properties:
+        left:
+          type: array
+          items:
+            type: string
+        right:
+          type: array
+          items:
+            type: string
+    viewsv2UnpinViewResponse:
+      type: object
+    viewsv2ViewChannelCalculatedChannelConfig:
+      type: object
+      properties:
+        channelKey:
+          type: string
+        channelReferences:
+          type: object
+          additionalProperties:
+            type: string
+        expression:
+          type: string
+        unit:
+          type: string
+      required:
+      - channelKey
+      - channelReferences
+      - expression
+      - unit
+    viewsv2CreateViewRequest:
+      type: object
+      properties:
+        view:
+          $ref: '#/components/schemas/viewsv2View'
+      required:
+      - view
+    ChannelCalculatedChannelConfigChannelReference:
+      type: object
+      properties:
+        name:
+          type: string
+        component:
+          type: string
+      required:
+      - name
+      - component
+    viewsv2UpdateViewResponse:
+      type: object
+      properties:
+        view:
+          $ref: '#/components/schemas/viewsv2View'
+    viewsv1ViewChannel:
+      type: object
+      properties:
+        name:
+          type: string
+        component:
+          type: string
+        dataType:
+          type: string
+        axisGroup:
+          type: string
+        bitFieldNames:
+          type: array
+          items:
+            type: string
+        calculatedChannelConfig:
+          $ref: '#/components/schemas/viewsv1ViewChannelCalculatedChannelConfig'
+      required:
+      - name
+      - component
+      - dataType
+    viewsv1UnpinViewResponse:
+      type: object
+    viewsv2GetViewResponse:
+      type: object
+      properties:
+        view:
+          $ref: '#/components/schemas/viewsv2View'
+    viewsv2CreateViewResponse:
+      type: object
+      properties:
+        view:
+          $ref: '#/components/schemas/viewsv2View'
+    viewsv1ListApplicableViewsResponse:
+      type: object
+      properties:
+        views:
+          type: array
+          items:
+            $ref: '#/components/schemas/viewsv1View'
+        nextPageToken:
+          type: string
+          description: 'A token, which can be sent as `page_token` to retrieve the next page.
+
+            If this field is omitted, there are no subsequent pages.'
+    viewsv2PinViewResponse:
+      type: object
+    viewsv1CreateViewResponse:
+      type: object
+      properties:
+        view:
+          $ref: '#/components/schemas/viewsv1View'
+    viewsv2DeleteViewResponse:
+      type: object
+    viewsv1View:
+      type: object
+      properties:
+        viewId:
+          type: string
+        name:
+          type: string
+        axisGroups:
+          $ref: '#/components/schemas/viewsv1ViewAxisGroups'
+        channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/viewsv1ViewChannel'
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        organizationId:
+          type: string
+        modifiedByUserId:
+          type: string
+        isPinned:
+          type: boolean
+    viewsv2ListApplicableViewsResponse:
+      type: object
+      properties:
+        views:
+          type: array
+          items:
+            $ref: '#/components/schemas/viewsv2View'
+        nextPageToken:
+          type: string
+          description: 'A token, which can be sent as `page_token` to retrieve the next page.
+
+            If this field is omitted, there are no subsequent pages.'
+    viewsv2ListViewsResponse:
+      type: object
+      properties:
+        views:
+          type: array
+          items:
+            $ref: '#/components/schemas/viewsv2View'
+        nextPageToken:
+          type: string
+          description: 'A token, which can be sent as `page_token` to retrieve the next page.
+
+            If this field is omitted, there are no subsequent pages.'
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    viewsv1ViewChannelCalculatedChannelConfig:
+      type: object
+      properties:
+        channelKey:
+          type: string
+        channelReferences:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ChannelCalculatedChannelConfigChannelReference'
+        expression:
+          type: string
+        unit:
+          type: string
+      required:
+      - channelKey
+      - channelReferences
+      - expression
+      - unit
+    viewsv2View:
+      type: object
+      properties:
+        viewId:
+          type: string
+        name:
+          type: string
+        axisGroups:
+          $ref: '#/components/schemas/viewsv2ViewAxisGroups'
+        channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/viewsv2ViewChannel'
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        isPinned:
+          type: boolean
+    viewsv1PinViewResponse:
+      type: object
+    viewsv1GetViewResponse:
+      type: object
+      properties:
+        view:
+          $ref: '#/components/schemas/viewsv1View'
+  requestBodies:
+    ViewService_PinViewBody:
+      content:
+        application/json:
+          schema:
+            type: object
+      required: true
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

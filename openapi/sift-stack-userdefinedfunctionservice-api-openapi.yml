@@ -1,0 +1,1320 @@
+openapi: 3.2.0
+info:
+  title: Sift User Defined Function Service API
+  version: '1.0'
+servers:
+- url: https://api.siftstack.com
+  description: Production
+- url: https://gov.api.siftstack.com
+  description: Gov
+security:
+- BearerAuth: []
+tags:
+- name: UserDefinedFunctionService
+paths:
+  /api/v1/user-defined-functions:
+    get:
+      summary: ListUserDefinedFunctions
+      description: Retrieve the latest versions of user defined functions based on an optional filter.
+      operationId: UserDefinedFunctionService_ListUserDefinedFunctions
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListUserDefinedFunctionsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        description: 'The maximum number of user defined functions to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 user defined functions will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListUserDefinedFunctions` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListUserDefinedFunctions` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `user_defined_function_id`, `name`, `archived_date`, and `is_archived`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved user defined functions. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `created_date`, `modified_date`, and `name`.
+
+          If left empty, items are ordered by `created_date` in descending order (newest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "created_date desc,modified_date".'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - UserDefinedFunctionService
+    post:
+      summary: CreateUserDefinedFunction
+      description: Create a user defined function.
+      operationId: UserDefinedFunctionService_CreateUserDefinedFunction
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateUserDefinedFunctionResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateUserDefinedFunctionRequest'
+        required: true
+      tags:
+      - UserDefinedFunctionService
+    patch:
+      summary: UpdateUserDefinedFunction
+      description: Update and create a new version of a user defined function.
+      operationId: UserDefinedFunctionService_UpdateUserDefinedFunction
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UpdateUserDefinedFunctionResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1UpdateUserDefinedFunctionRequest'
+        description: 'The request for a call to `UserDefinedFunctionService_UpdateUserDefinedFunction` to update a user defined function. Updating a user
+
+          defined function creates a new version of the user defined function, leaving the previous untouched. If no update is deemed necessary, then the
+
+          the current version is returned. If name is changed then only name will be changed. If archive date is changed then only archive date will be changed.
+
+          To archive user defined function, specify `archived_date` in the `update mask` as well as a non-null value for `archived_date` in the
+
+          `user_defined_function` object. To unarchive a user defined function, specify `archived_date` in the `update mask` and a `null` value for `archived_date`
+
+          in the `user_defined_function` object. Alternatively, use `is_archived` with a boolean value to archive/unarchive.'
+        required: true
+      tags:
+      - UserDefinedFunctionService
+  /api/v1/user-defined-functions/dependents:
+    get:
+      summary: GetUserDefinedFunctionDependents
+      description: Retrieve dependents of a user defined function.
+      operationId: UserDefinedFunctionService_GetUserDefinedFunctionDependents
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetUserDefinedFunctionDependentsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: userDefinedFunctionId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: userDefinedFunctionName
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: userDefinedFunctionVersionId
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - UserDefinedFunctionService
+  /api/v1/user-defined-functions/updatable-fields:
+    post:
+      summary: CheckUpdatableFields
+      description: Check if given update paths are allowed to update for the user defined function
+      operationId: UserDefinedFunctionService_CheckUpdatableFields
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CheckUpdatableFieldsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: userDefinedFunctionId
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        required: true
+        schema:
+          type: string
+      tags:
+      - UserDefinedFunctionService
+  /api/v1/user-defined-functions/versions:
+    get:
+      summary: GetUserDefinedFunctionVersions
+      description: Retrieve versions of user defined functions.
+      operationId: UserDefinedFunctionService_GetUserDefinedFunctionVersions
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetUserDefinedFunctionVersionsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: userDefinedFunctionVersionIds
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      tags:
+      - UserDefinedFunctionService
+  /api/v1/user-defined-functions/versions/{userDefinedFunctionVersionId}:
+    get:
+      summary: GetUserDefinedFunctionVersion
+      description: Retrieve a specific version of a user defined function.
+      operationId: UserDefinedFunctionService_GetUserDefinedFunctionVersion
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetUserDefinedFunctionVersionResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: userDefinedFunctionVersionId
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - UserDefinedFunctionService
+  /api/v1/user-defined-functions/{userDefinedFunctionId}:
+    get:
+      summary: GetUserDefinedFunction
+      description: Retrieve the latest version of a user defined function.
+      operationId: UserDefinedFunctionService_GetUserDefinedFunction
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetUserDefinedFunctionResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: userDefinedFunctionId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - UserDefinedFunctionService
+  /api/v1/user-defined-functions/{userDefinedFunctionId}/versions:
+    get:
+      summary: ListUserDefinedFunctionVersions
+      description: List versions of a particular user defined function with an optional filter.
+      operationId: UserDefinedFunctionService_ListUserDefinedFunctionVersions
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListUserDefinedFunctionVersionsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      parameters:
+      - name: userDefinedFunctionId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: pageSize
+        description: 'The maximum number of user defined function versions to return. The service may return fewer than this value.
+
+          If unspecified, at most 50 user defined function versions will be returned. The maximum value is 1000; values above
+
+          1000 will be coerced to 1000. Optional.'
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: pageToken
+        description: 'A page token, received from a previous `ListUserDefinedFunctions` call.
+
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListUserDefinedFunctions` must match
+
+          the call that provided the page token. Optional.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter
+        description: 'A [Common Expression Language (CEL)](https://github.com/google/cel-spec) filter string.
+
+          Available fields to filter by are `user_defined_function_id`, `name`, `version`, `archived_date`, and `is_archived`.
+
+          For further information about how to use CELs, please refer to [this guide](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions).'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orderBy
+        description: 'How to order the retrieved user defined functions. Formatted as a comma-separated string i.e. "FIELD_NAME[ desc],...".
+
+          Available fields to order_by are `created_date`, `modified_date`, `name`, and `version`.
+
+          If left empty, items are ordered by `name` in ascending order (oldest-first).
+
+          For more information about the format of this field, read [this](https://google.aip.dev/132#ordering)
+
+          Example: "version desc,name".'
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - UserDefinedFunctionService
+  /api/v1/user-defined-functions:validate:
+    post:
+      summary: ValidateUserDefinedFunction
+      description: Validates a potential user defined function.
+      operationId: UserDefinedFunctionService_ValidateUserDefinedFunction
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ValidateUserDefinedFunctionResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1ValidateUserDefinedFunctionRequest'
+        required: true
+      tags:
+      - UserDefinedFunctionService
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    CalculatedChannelQueryConfigurationSel:
+      type: object
+      properties:
+        expression:
+          type: string
+        expressionChannelReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannelAbstractChannelReference'
+      description: Sift Expression Language.
+      required:
+      - expression
+      - expressionChannelReferences
+    ValidateUserDefinedFunctionResponseSuccessValidatingUserDefinedFunctionResult:
+      type: object
+      properties:
+        userDefinedFunction:
+          $ref: '#/components/schemas/v1UserDefinedFunction'
+      required:
+      - userDefinedFunction
+    v1ValidateUserDefinedFunctionResponse:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ValidateUserDefinedFunctionResponseErrorValidatingUserDefinedFunctionResult'
+        success:
+          $ref: '#/components/schemas/ValidateUserDefinedFunctionResponseSuccessValidatingUserDefinedFunctionResult'
+    v1ValidateUserDefinedFunctionRequest:
+      type: object
+      properties:
+        expression:
+          type: string
+        functionInputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionInput'
+      required:
+      - expression
+      - functionInputs
+    v1GetUserDefinedFunctionDependentsResponse:
+      type: object
+      properties:
+        userDefinedFunctions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1UserDefinedFunction'
+        nextPageTokenUserDefinedFunction:
+          type: string
+        calculatedChannels:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannel'
+        nextPageTokenCalculatedChannel:
+          type: string
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1Rule'
+        nextPageTokenRule:
+          type: string
+      required:
+      - userDefinedFunctions
+      - calculatedChannels
+      - rules
+    v1SingleChannelComparisonExpression:
+      type: object
+      properties:
+        channelComponent:
+          type: string
+          title: Deprecated - use channel_name instead. If provided, channel_component will be joined with the name as `channel_component.channel_name`
+        channelName:
+          type: string
+        comparator:
+          $ref: '#/components/schemas/v1ConditionComparator'
+        double:
+          type: number
+          format: double
+        string:
+          type: string
+        lastValue:
+          $ref: '#/components/schemas/v1LastValueThreshold'
+      description: Deprecated - use CalculatedChannelConfig.
+      required:
+      - channelComponent
+      - channelName
+      - comparator
+    v1FunctionDataType:
+      type: string
+      enum:
+      - FUNCTION_DATA_TYPE_UNSPECIFIED
+      - FUNCTION_DATA_TYPE_NUMERIC
+      - FUNCTION_DATA_TYPE_STRING
+      - FUNCTION_DATA_TYPE_BOOL
+      default: FUNCTION_DATA_TYPE_UNSPECIFIED
+    v1NotificationActionConfiguration:
+      type: object
+      properties:
+        recipientUserIds:
+          type: array
+          items:
+            type: string
+      required:
+      - recipientUserIds
+    v1Rule:
+      type: object
+      properties:
+        ruleId:
+          type: string
+        assetId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        isEnabled:
+          type: boolean
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        organizationId:
+          type: string
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1RuleCondition'
+        ruleVersion:
+          $ref: '#/components/schemas/v1RuleVersion'
+        clientKey:
+          type: string
+          description: client_key is a client provided identifier for the rule. It is immutable after rule creation.
+        assetConfiguration:
+          $ref: '#/components/schemas/v1RuleAssetConfiguration'
+        contextualChannels:
+          $ref: '#/components/schemas/v1ContextualChannels'
+        deletedDate:
+          type: string
+          format: date-time
+        isExternal:
+          type: boolean
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        archivedDate:
+          type: string
+          format: date-time
+          title: archived_date indicates when the rule was archived
+        isArchived:
+          type: boolean
+          title: is_archived is inferred from when archived_date is not null
+        isLiveEvaluationEnabled:
+          type: boolean
+          description: 'If `true`, this rule will be evaluated on live data; if `false`, live rule evaluation is
+
+            disabled (the rule remains usable for report generation).
+
+
+            Note: this value is the server''s effective state, not necessarily what was requested. A rule
+
+            saved via `BatchUpdateRulesRequest.override_expression_validation = true` whose UDF inlining
+
+            fails (e.g. type resolution exhausted; see error returned by `BatchUpdateRules`) is forced
+
+            to `is_live_evaluation_enabled = false` even when the caller requested `true`. To recover
+
+            after the underlying issue is fixed (channels populated, expression simplified, etc.),
+
+            reissue an `UpdateRule` / `BatchUpdateRules` request that explicitly sets
+
+            `is_live_evaluation_enabled = true`.'
+        currentVersionId:
+          type: string
+          description: The current version of the rule. This is may be different from the rule_version.version if the rule has been updated since the rule_version was created.
+        folderIds:
+          type: array
+          items:
+            type: string
+          description: Ids of the folders this rule belongs to.
+      required:
+      - ruleId
+      - assetId
+      - name
+      - description
+      - isEnabled
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - organizationId
+      - conditions
+      - ruleVersion
+      - assetConfiguration
+      - contextualChannels
+      - isExternal
+      - metadata
+      - isArchived
+      - currentVersionId
+    v1RuleAction:
+      type: object
+      properties:
+        ruleActionId:
+          type: string
+        ruleConditionId:
+          type: string
+        actionType:
+          $ref: '#/components/schemas/v1ActionKind'
+        configuration:
+          $ref: '#/components/schemas/v1RuleActionConfiguration'
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        ruleActionVersionId:
+          type: string
+      required:
+      - ruleActionId
+      - ruleConditionId
+      - actionType
+      - configuration
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - ruleActionVersionId
+    siftrulesv1CalculatedChannelConfig:
+      type: object
+      properties:
+        channelReferences:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/rulesv1ChannelReference'
+        expression:
+          type: string
+        functionDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionDependency'
+          description: This will be ignored in requests and will be generated automatically.
+        calculatedChannelDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/typev1CalculatedChannelDependency'
+          description: 'This will be ignored in requests and will be generated automatically.
+
+            Tracks which calculated channel versions this rule depends on.'
+          readOnly: true
+      required:
+      - channelReferences
+      - expression
+    typev1CalculatedChannelDependency:
+      type: object
+      properties:
+        calculatedChannelVersionId:
+          type: string
+      description: A dependency on another calculated channel.
+      required:
+      - calculatedChannelVersionId
+    calculated_channelsv2CalculatedChannelDependency:
+      type: object
+      properties:
+        calculatedChannelVersionId:
+          type: string
+      description: A dependency on another calculated channel.
+      required:
+      - calculatedChannelVersionId
+    v1GetUserDefinedFunctionResponse:
+      type: object
+      properties:
+        userDefinedFunction:
+          $ref: '#/components/schemas/v1UserDefinedFunction'
+      required:
+      - userDefinedFunction
+    v1CreateUserDefinedFunctionResponse:
+      type: object
+      properties:
+        userDefinedFunction:
+          $ref: '#/components/schemas/v1UserDefinedFunction'
+      required:
+      - userDefinedFunction
+    v1ActionKind:
+      type: string
+      enum:
+      - ACTION_KIND_UNSPECIFIED
+      - NOTIFICATION
+      - ANNOTATION
+      - WEBHOOK
+      default: ACTION_KIND_UNSPECIFIED
+    v1CheckUpdatableFieldsResponse:
+      type: object
+      properties:
+        allowedFields:
+          type: string
+        disallowedFields:
+          type: object
+          additionalProperties:
+            type: string
+          description: Disallowed Fields will contain the update fields as the key and the reason for rejection as the value.
+      required:
+      - allowedFields
+      - disallowedFields
+    v1GetUserDefinedFunctionVersionResponse:
+      type: object
+      properties:
+        userDefinedFunction:
+          $ref: '#/components/schemas/v1UserDefinedFunction'
+      required:
+      - userDefinedFunction
+    v1UserDefinedFunction:
+      type: object
+      properties:
+        userDefinedFunctionId:
+          type: string
+        name:
+          type: string
+        archivedDate:
+          type: string
+          format: date-time
+        userDefinedFunctionVersionId:
+          type: string
+        version:
+          type: integer
+          format: int64
+        description:
+          type: string
+        changeMessage:
+          type: string
+        userNotes:
+          type: string
+        expression:
+          type: string
+        functionInputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionInput'
+        functionOutputType:
+          $ref: '#/components/schemas/v1FunctionDataType'
+        functionDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionDependency'
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        isArchived:
+          type: boolean
+      required:
+      - userDefinedFunctionId
+      - name
+      - userDefinedFunctionVersionId
+      - version
+      - description
+      - changeMessage
+      - userNotes
+      - expression
+      - functionInputs
+      - functionDependencies
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - metadata
+      - isArchived
+    v1ListUserDefinedFunctionsResponse:
+      type: object
+      properties:
+        userDefinedFunctions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1UserDefinedFunction'
+        nextPageToken:
+          type: string
+      description: The response of a call to `UserDefinedFunctionService_ListUserDefinedFunctions`.
+      required:
+      - userDefinedFunctions
+    v2CalculatedChannelAbstractChannelReference:
+      type: object
+      properties:
+        channelReference:
+          type: string
+        channelIdentifier:
+          type: string
+          title: must use either a channel_identifier or a calculated_channel_reference, not both
+        calculatedChannelVersionId:
+          type: string
+        calculatedChannel:
+          $ref: '#/components/schemas/v1ExpressionRequest'
+      required:
+      - channelReference
+    CalculatedChannelAssetConfigurationAssetSelection:
+      type: object
+      properties:
+        assetIds:
+          type: array
+          items:
+            type: string
+        tagIds:
+          type: array
+          items:
+            type: string
+      required:
+      - assetIds
+      - tagIds
+    v1FunctionInput:
+      type: object
+      properties:
+        identifier:
+          type: string
+        dataType:
+          $ref: '#/components/schemas/v1FunctionDataType'
+        constant:
+          type: boolean
+      required:
+      - identifier
+      - dataType
+      - constant
+    v1ConditionComparator:
+      type: string
+      enum:
+      - CONDITION_COMPARATOR_UNSPECIFIED
+      - LESS_THAN
+      - LESS_THAN_OR_EQUAL
+      - GREATER_THAN
+      - GREATER_THAN_OR_EQUAL
+      - EQUAL
+      - NOT_EQUAL
+      default: CONDITION_COMPARATOR_UNSPECIFIED
+    v1RuleAssetConfiguration:
+      type: object
+      properties:
+        assetIds:
+          type: array
+          items:
+            type: string
+        tagIds:
+          type: array
+          items:
+            type: string
+    v1MetadataValue:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/v1MetadataKey'
+        stringValue:
+          type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+        relationValue:
+          $ref: '#/components/schemas/v1MetadataRelationValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
+      required:
+      - key
+    v1UpdateUserDefinedFunctionResponse:
+      type: object
+      properties:
+        userDefinedFunction:
+          $ref: '#/components/schemas/v1UserDefinedFunction'
+      required:
+      - userDefinedFunction
+    rulesv1ChannelReference:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Required for native channel references. Must not be set when calculated_channel_version_id is provided.
+        component:
+          type: string
+          description: 'Deprecated - use name instead. If provided, name will be joined with the component as `component.name`.
+
+            Must not be set when calculated_channel_version_id is provided.'
+        calculatedChannelVersionId:
+          type: string
+          description: 'Reference to a calculated channel version. When set, the rule will use the calculated channel
+
+            instead of looking up a native channel by name. Must not be set when name is provided.'
+    v1RuleActionConfiguration:
+      type: object
+      properties:
+        notification:
+          $ref: '#/components/schemas/v1NotificationActionConfiguration'
+        annotation:
+          $ref: '#/components/schemas/v1AnnotationActionConfiguration'
+        webhook:
+          $ref: '#/components/schemas/v1WebhookActionConfiguration'
+    v2CalculatedChannelQueryConfiguration:
+      type: object
+      properties:
+        sel:
+          $ref: '#/components/schemas/CalculatedChannelQueryConfigurationSel'
+    v1AnnotationActionConfiguration:
+      type: object
+      properties:
+        tagIds:
+          type: array
+          items:
+            type: string
+        annotationType:
+          $ref: '#/components/schemas/v1AnnotationType'
+        assignedToUserId:
+          type: string
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+      required:
+      - tagIds
+    v1ListUserDefinedFunctionVersionsResponse:
+      type: object
+      properties:
+        userDefinedFunctions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1UserDefinedFunction'
+        nextPageToken:
+          type: string
+      description: The response of a call to `UserDefinedFunctionService_ListUserDefinedFunctionVersions`.
+      required:
+      - userDefinedFunctions
+    v1LastValueThreshold:
+      type: object
+    v2CalculatedChannelAssetConfiguration:
+      type: object
+      properties:
+        allAssets:
+          type: boolean
+        selection:
+          $ref: '#/components/schemas/CalculatedChannelAssetConfigurationAssetSelection'
+    v1RuleVersion:
+      type: object
+      properties:
+        ruleId:
+          type: string
+        ruleVersionId:
+          type: string
+        version:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        versionNotes:
+          type: string
+        generatedChangeMessage:
+          type: string
+        deletedDate:
+          type: string
+          format: date-time
+        archivedDate:
+          type: string
+          format: date-time
+          title: archived_date indicates when the rule version was archived
+        isArchived:
+          type: boolean
+          title: is_archived is inferred from when archived_date is not null
+      required:
+      - ruleId
+      - ruleVersionId
+      - version
+      - createdDate
+      - createdByUserId
+      - versionNotes
+      - generatedChangeMessage
+      - isArchived
+    v1RuleCondition:
+      type: object
+      properties:
+        ruleConditionId:
+          type: string
+        ruleId:
+          type: string
+        expression:
+          $ref: '#/components/schemas/v1RuleConditionExpression'
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1RuleAction'
+        ruleConditionVersionId:
+          type: string
+      required:
+      - ruleConditionId
+      - ruleId
+      - expression
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - actions
+      - ruleConditionVersionId
+    v1UpdateUserDefinedFunctionRequest:
+      type: object
+      properties:
+        userDefinedFunction:
+          $ref: '#/components/schemas/v1UserDefinedFunction'
+        updateMask:
+          type: string
+          title: "The list of fields to be updated. The fields available to be updated are `name`, `archived_date`, `is_archived`, `description`, `expression`, `function_inputs`, and `metadata`.\n -- `name` can't be updated if the function has ever had any dependencies\n -- `function_inputs` inputs can't be updated if the function has any dependents (functions or calculated channels with a dependency on this function).\n -- `expression` can't be updated if the function has dependents and the expression changes the output type.\n -- `metadata` updates metadata associated with the function"
+      description: 'The request for a call to `UserDefinedFunctionService_UpdateUserDefinedFunction` to update a user defined function. Updating a user
+
+        defined function creates a new version of the user defined function, leaving the previous untouched. If no update is deemed necessary, then the
+
+        the current version is returned. If name is changed then only name will be changed. If archive date is changed then only archive date will be changed.
+
+        To archive user defined function, specify `archived_date` in the `update mask` as well as a non-null value for `archived_date` in the
+
+        `user_defined_function` object. To unarchive a user defined function, specify `archived_date` in the `update mask` and a `null` value for `archived_date`
+
+        in the `user_defined_function` object. Alternatively, use `is_archived` with a boolean value to archive/unarchive.'
+      required:
+      - userDefinedFunction
+      - updateMask
+    v1RuleConditionExpression:
+      type: object
+      properties:
+        singleChannelComparison:
+          $ref: '#/components/schemas/v1SingleChannelComparisonExpression'
+        calculatedChannel:
+          $ref: '#/components/schemas/siftrulesv1CalculatedChannelConfig'
+    v1ContextualChannels:
+      type: object
+      properties:
+        channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/rulesv1ChannelReference'
+      required:
+      - channels
+    v1GetUserDefinedFunctionVersionsResponse:
+      type: object
+      properties:
+        userDefinedFunctions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1UserDefinedFunction'
+      required:
+      - userDefinedFunctions
+    v1AnnotationType:
+      type: string
+      enum:
+      - ANNOTATION_TYPE_UNSPECIFIED
+      - ANNOTATION_TYPE_DATA_REVIEW
+      - ANNOTATION_TYPE_PHASE
+      default: ANNOTATION_TYPE_UNSPECIFIED
+    v1FunctionDependency:
+      type: object
+      properties:
+        userDefinedFunctionVersionId:
+          type: string
+      required:
+      - userDefinedFunctionVersionId
+    v1WebhookActionConfiguration:
+      type: object
+      properties:
+        webhookId:
+          type: string
+      required:
+      - webhookId
+    v1ExpressionRequest:
+      type: object
+      properties:
+        channelReferences:
+          type: object
+          additionalProperties:
+            type: string
+          description: 'A map from the channel reference in the expression string (e.g. $1) to the channel id (uuid).
+
+            This is deprecated and should be passed in expression_channel_references instead.'
+        expression:
+          type: string
+        expressionChannelReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ExpressionChannelReference'
+        functionDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionDependency'
+      required:
+      - expression
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
+    v2CalculatedChannelConfiguration:
+      type: object
+      properties:
+        assetConfiguration:
+          $ref: '#/components/schemas/v2CalculatedChannelAssetConfiguration'
+        queryConfiguration:
+          $ref: '#/components/schemas/v2CalculatedChannelQueryConfiguration'
+      required:
+      - assetConfiguration
+      - queryConfiguration
+    v2CalculatedChannel:
+      type: object
+      properties:
+        calculatedChannelId:
+          type: string
+        organizationId:
+          type: string
+        clientKey:
+          type: string
+        archivedDate:
+          type: string
+          format: date-time
+        versionId:
+          type: string
+        version:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        changeMessage:
+          type: string
+        userNotes:
+          type: string
+        units:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        calculatedChannelConfiguration:
+          $ref: '#/components/schemas/v2CalculatedChannelConfiguration'
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        functionDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionDependency'
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        isArchived:
+          type: boolean
+          description: Whether the calculated channel is archived. This is inferred from whether archived_date is set.
+        calculatedChannelDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/calculated_channelsv2CalculatedChannelDependency'
+          description: Calculated channels that this channel depends on.
+        folderIds:
+          type: array
+          items:
+            type: string
+          description: Ids of the folders this calculated channel belongs to.
+      required:
+      - calculatedChannelId
+      - organizationId
+      - versionId
+      - version
+      - name
+      - description
+      - changeMessage
+      - userNotes
+      - createdDate
+      - modifiedDate
+      - calculatedChannelConfiguration
+      - createdByUserId
+      - modifiedByUserId
+      - functionDependencies
+      - metadata
+      - isArchived
+      - calculatedChannelDependencies
+    v1CreateUserDefinedFunctionRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        expression:
+          type: string
+        functionInputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionInput'
+        userNotes:
+          type: string
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+      required:
+      - name
+      - expression
+      - functionInputs
+      - metadata
+    v1ExpressionChannelReference:
+      type: object
+      properties:
+        channelReference:
+          type: string
+        channelId:
+          type: string
+        calculatedChannel:
+          $ref: '#/components/schemas/v1ExpressionRequest'
+      required:
+      - channelReference
+      - channelId
+    ValidateUserDefinedFunctionResponseErrorValidatingUserDefinedFunctionResult:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+      required:
+      - errorMessage
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
