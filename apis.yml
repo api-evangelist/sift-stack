@@ -82,6 +82,10 @@ apis:
   tags:
   - MCP
   - Agents
+  - Artificial Intelligence
+  tags_raw:
+  - MCP
+  - Agents
   - AI
   properties:
   - type: MCPServer
@@ -148,6 +152,8 @@ apis:
   humanURL: https://docs.siftstack.com/api/overview
   baseURL: https://api.siftstack.com
   tags:
+  - APIKeyService
+  tags_raw:
   - ApiKeyService
   properties:
   - type: OpenAPI
@@ -410,6 +416,8 @@ apis:
   humanURL: https://docs.siftstack.com/api/overview
   baseURL: https://api.siftstack.com
   tags:
+  - Data Service
+  tags_raw:
   - DataService
   properties:
   - type: OpenAPI
@@ -645,6 +653,8 @@ apis:
   humanURL: https://docs.siftstack.com/api/overview
   baseURL: https://api.siftstack.com
   tags:
+  - Metadata Service
+  tags_raw:
   - MetadataService
   properties:
   - type: OpenAPI
@@ -671,6 +681,8 @@ apis:
   humanURL: https://docs.siftstack.com/api/overview
   baseURL: https://api.siftstack.com
   tags:
+  - Notification Service
+  tags_raw:
   - NotificationService
   properties:
   - type: OpenAPI
