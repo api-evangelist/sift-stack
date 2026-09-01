@@ -152,7 +152,7 @@ apis:
   humanURL: https://docs.siftstack.com/api/overview
   baseURL: https://api.siftstack.com
   tags:
-  - APIKeyService
+  - ApiKeyService
   tags_raw:
   - ApiKeyService
   properties:
@@ -1284,6 +1284,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: License
+  name: MIT
+  url: https://github.com/sift-stack/sift/blob/main/LICENSE
 - type: CapabilityMap
   url: capabilities/sift-stack-capability-edges.yml
   name: Sift Stack Business Capability Map
