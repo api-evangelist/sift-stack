@@ -1,25 +1,21 @@
 ---
 kin_checks:
   slug: sift-stack
-  schema_version: 0.17.2
-  scored_at: '2026-09-01'
-  run_ts: 2026-09-01T063623
+  schema_version: 0.18.2
+  scored_at: '2026-09-04'
+  run_ts: 2026-09-04T062714
   note: Actionable checks only (missed + partial). earned/na are every other check
-    in rubric/scoring-0.17.2.yml; counts below let you verify that.
+    in rubric/scoring-0.18.2.yml; counts below let you verify that.
   counts:
-    total: 130
-    earned: 46
-    partial: 8
-    missed: 56
-    na: 20
+    total: 132
+    earned: 50
+    partial: 10
+    missed: 51
+    na: 21
   checks:
   - id: maintainer_present
     status: missed
   - id: multiple_apis
-    status: missed
-  - id: human_url_per_api
-    status: missed
-  - id: base_url_per_api
     status: missed
   - id: well_known_published
     status: missed
@@ -34,8 +30,6 @@ kin_checks:
   - id: info_complete
     status: missed
     detail: 0 of 45 openapi documents pass
-  - id: servers_resolvable
-    status: missed
   - id: error_responses_documented
     status: missed
     detail: 0 of 45 openapi documents pass
@@ -44,6 +38,8 @@ kin_checks:
   - id: webhooks_or_callbacks
     status: missed
     detail: 0 of 45 openapi documents pass
+  - id: inbound_contract_published
+    status: missed
   - id: json_schema_present
     status: missed
   - id: json_schema_per_resource
@@ -53,8 +49,6 @@ kin_checks:
   - id: json_ld_class_depth
     status: missed
   - id: json_ld_property_depth
-    status: missed
-  - id: lifecycle_documented
     status: missed
   - id: domain_standard_conformance
     status: missed
@@ -102,13 +96,9 @@ kin_checks:
     status: missed
   - id: reg_consent_model
     status: missed
-  - id: reg_certification_signal
-    status: missed
   - id: reg_mandate_verified
     status: missed
   - id: agentic_access
-    status: missed
-  - id: reversibility_documented
     status: missed
   - id: idempotency
     status: missed
@@ -142,10 +132,17 @@ kin_checks:
     status: partial
     earned: 2.8
     detail: 42 of 45 openapi documents pass
+  - id: lifecycle_documented
+    status: partial
+    earned: 1.66
   - id: github_org_present
     status: partial
     earned: 1.0
     detail: pointer liveness 0.5
+  - id: reversibility_documented
+    status: partial
+    earned: 2.4
+    detail: 'grade: documented'
   - id: mcp_server
     status: partial
     earned: 4.8
