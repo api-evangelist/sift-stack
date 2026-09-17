@@ -161,34 +161,6 @@ apis:
     url: data-model/sift-stack-data-model.yml
   - type: Webhooks
     url: asyncapi/sift-stack-webhooks.yml
-- aid: sift-stack:sift-stack-apikeyservice-api
-  name: Sift Stack API Key Service API
-  description: The ApiKeyService API from Sift Stack — 3 operation(s) for apikeyservice.
-  humanURL: https://docs.siftstack.com/api/overview
-  baseURL: https://api.siftstack.com
-  tags:
-  - ApiKeyService
-  tags_raw:
-  - ApiKeyService
-  properties:
-  - type: OpenAPI
-    url: openapi/sift-stack-apikeyservice-api-openapi.yml
-  - type: Documentation
-    url: https://docs.siftstack.com/documentation/home
-  - type: APIReference
-    url: https://docs.siftstack.com/api-reference
-  - type: Authentication
-    url: authentication/sift-stack-authentication.yml
-  - type: ErrorCatalog
-    url: errors/sift-stack-problem-types.yml
-  - type: RateLimits
-    url: rate-limits/sift-stack-rate-limits.yml
-  - type: Conventions
-    url: conventions/sift-stack-conventions.yml
-  - type: DataModel
-    url: data-model/sift-stack-data-model.yml
-  - type: Webhooks
-    url: asyncapi/sift-stack-webhooks.yml
 - aid: sift-stack:sift-stack-assetservice-api
   name: Sift Stack Asset Service API
   description: Service to programmatically interact with [assets](/glossary#asset).
@@ -346,32 +318,6 @@ apis:
     url: data-model/sift-stack-data-model.yml
   - type: Webhooks
     url: asyncapi/sift-stack-webhooks.yml
-- aid: sift-stack:sift-stack-channelservice-api
-  name: Sift Stack Channel Service API
-  description: Service to programmatically interact with [channels](/glossary#channel).
-  humanURL: https://docs.siftstack.com/api/overview
-  baseURL: https://api.siftstack.com
-  tags:
-  - ChannelService
-  properties:
-  - type: OpenAPI
-    url: openapi/sift-stack-channelservice-api-openapi.yml
-  - type: Documentation
-    url: https://docs.siftstack.com/documentation/home
-  - type: APIReference
-    url: https://docs.siftstack.com/api-reference
-  - type: Authentication
-    url: authentication/sift-stack-authentication.yml
-  - type: ErrorCatalog
-    url: errors/sift-stack-problem-types.yml
-  - type: RateLimits
-    url: rate-limits/sift-stack-rate-limits.yml
-  - type: Conventions
-    url: conventions/sift-stack-conventions.yml
-  - type: DataModel
-    url: data-model/sift-stack-data-model.yml
-  - type: Webhooks
-    url: asyncapi/sift-stack-webhooks.yml
 - aid: sift-stack:sift-stack-commentservice-api
   name: Sift Stack Comment Service API
   description: >-
@@ -409,34 +355,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/sift-stack-dataimportservice-api-openapi.yml
-  - type: Documentation
-    url: https://docs.siftstack.com/documentation/home
-  - type: APIReference
-    url: https://docs.siftstack.com/api-reference
-  - type: Authentication
-    url: authentication/sift-stack-authentication.yml
-  - type: ErrorCatalog
-    url: errors/sift-stack-problem-types.yml
-  - type: RateLimits
-    url: rate-limits/sift-stack-rate-limits.yml
-  - type: Conventions
-    url: conventions/sift-stack-conventions.yml
-  - type: DataModel
-    url: data-model/sift-stack-data-model.yml
-  - type: Webhooks
-    url: asyncapi/sift-stack-webhooks.yml
-- aid: sift-stack:sift-stack-dataservice-api
-  name: Sift Stack Data Service API
-  description: Service to query data
-  humanURL: https://docs.siftstack.com/api/overview
-  baseURL: https://api.siftstack.com
-  tags:
-  - Data Service
-  tags_raw:
-  - DataService
-  properties:
-  - type: OpenAPI
-    url: openapi/sift-stack-dataservice-api-openapi.yml
   - type: Documentation
     url: https://docs.siftstack.com/documentation/home
   - type: APIReference
@@ -610,32 +528,6 @@ apis:
     url: data-model/sift-stack-data-model.yml
   - type: Webhooks
     url: asyncapi/sift-stack-webhooks.yml
-- aid: sift-stack:sift-stack-jobservice-api
-  name: Sift Stack Job Service API
-  description: The JobService API from Sift Stack — 3 operation(s) for jobservice.
-  humanURL: https://docs.siftstack.com/api/overview
-  baseURL: https://api.siftstack.com
-  tags:
-  - JobService
-  properties:
-  - type: OpenAPI
-    url: openapi/sift-stack-jobservice-api-openapi.yml
-  - type: Documentation
-    url: https://docs.siftstack.com/documentation/home
-  - type: APIReference
-    url: https://docs.siftstack.com/api-reference
-  - type: Authentication
-    url: authentication/sift-stack-authentication.yml
-  - type: ErrorCatalog
-    url: errors/sift-stack-problem-types.yml
-  - type: RateLimits
-    url: rate-limits/sift-stack-rate-limits.yml
-  - type: Conventions
-    url: conventions/sift-stack-conventions.yml
-  - type: DataModel
-    url: data-model/sift-stack-data-model.yml
-  - type: Webhooks
-    url: asyncapi/sift-stack-webhooks.yml
 - aid: sift-stack:sift-stack-meservice-api
   name: Sift Stack Me Service API
   description: The MeService API from Sift Stack — 1 operation(s) for meservice.
@@ -646,62 +538,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/sift-stack-meservice-api-openapi.yml
-  - type: Documentation
-    url: https://docs.siftstack.com/documentation/home
-  - type: APIReference
-    url: https://docs.siftstack.com/api-reference
-  - type: Authentication
-    url: authentication/sift-stack-authentication.yml
-  - type: ErrorCatalog
-    url: errors/sift-stack-problem-types.yml
-  - type: RateLimits
-    url: rate-limits/sift-stack-rate-limits.yml
-  - type: Conventions
-    url: conventions/sift-stack-conventions.yml
-  - type: DataModel
-    url: data-model/sift-stack-data-model.yml
-  - type: Webhooks
-    url: asyncapi/sift-stack-webhooks.yml
-- aid: sift-stack:sift-stack-metadataservice-api
-  name: Sift Stack Metadata Service API
-  description: The MetadataService API from Sift Stack — 9 operation(s) for metadataservice.
-  humanURL: https://docs.siftstack.com/api/overview
-  baseURL: https://api.siftstack.com
-  tags:
-  - Metadata Service
-  tags_raw:
-  - MetadataService
-  properties:
-  - type: OpenAPI
-    url: openapi/sift-stack-metadataservice-api-openapi.yml
-  - type: Documentation
-    url: https://docs.siftstack.com/documentation/home
-  - type: APIReference
-    url: https://docs.siftstack.com/api-reference
-  - type: Authentication
-    url: authentication/sift-stack-authentication.yml
-  - type: ErrorCatalog
-    url: errors/sift-stack-problem-types.yml
-  - type: RateLimits
-    url: rate-limits/sift-stack-rate-limits.yml
-  - type: Conventions
-    url: conventions/sift-stack-conventions.yml
-  - type: DataModel
-    url: data-model/sift-stack-data-model.yml
-  - type: Webhooks
-    url: asyncapi/sift-stack-webhooks.yml
-- aid: sift-stack:sift-stack-notificationservice-api
-  name: Sift Stack Notification Service API
-  description: Service to programmatically interact with in-app notifications.
-  humanURL: https://docs.siftstack.com/api/overview
-  baseURL: https://api.siftstack.com
-  tags:
-  - Notification Service
-  tags_raw:
-  - NotificationService
-  properties:
-  - type: OpenAPI
-    url: openapi/sift-stack-notificationservice-api-openapi.yml
   - type: Documentation
     url: https://docs.siftstack.com/documentation/home
   - type: APIReference
@@ -1277,6 +1113,162 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/sift-stack-webhookservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.siftstack.com/documentation/home
+  - type: APIReference
+    url: https://docs.siftstack.com/api-reference
+  - type: Authentication
+    url: authentication/sift-stack-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sift-stack-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/sift-stack-rate-limits.yml
+  - type: Conventions
+    url: conventions/sift-stack-conventions.yml
+  - type: DataModel
+    url: data-model/sift-stack-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sift-stack-webhooks.yml
+- aid: sift-stack:sift-stack-api-key-service-api
+  name: Sift Stack Api Key Service API
+  description: The Api Key Service API from Sift Stack — 3 operation(s) for api key service.
+  humanURL: https://docs.siftstack.com/api/reference/protocol-buffers
+  baseURL: https://api.siftstack.com
+  tags:
+  - Api Key Service
+  properties:
+  - type: OpenAPI
+    url: openapi/sift-stack-api-key-service-api-openapi.yml
+  - type: Documentation
+    url: https://docs.siftstack.com/documentation/home
+  - type: APIReference
+    url: https://docs.siftstack.com/api-reference
+  - type: Authentication
+    url: authentication/sift-stack-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sift-stack-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/sift-stack-rate-limits.yml
+  - type: Conventions
+    url: conventions/sift-stack-conventions.yml
+  - type: DataModel
+    url: data-model/sift-stack-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sift-stack-webhooks.yml
+- aid: sift-stack:sift-stack-channel-service-api
+  name: Sift Stack Channel Service API
+  description: Service to programmatically interact with channels.
+  humanURL: https://docs.siftstack.com/api/reference/protocol-buffers
+  baseURL: https://api.siftstack.com
+  tags:
+  - Channel Service
+  properties:
+  - type: OpenAPI
+    url: openapi/sift-stack-channel-service-api-openapi.yml
+  - type: Documentation
+    url: https://docs.siftstack.com/documentation/home
+  - type: APIReference
+    url: https://docs.siftstack.com/api-reference
+  - type: Authentication
+    url: authentication/sift-stack-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sift-stack-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/sift-stack-rate-limits.yml
+  - type: Conventions
+    url: conventions/sift-stack-conventions.yml
+  - type: DataModel
+    url: data-model/sift-stack-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sift-stack-webhooks.yml
+- aid: sift-stack:sift-stack-data-service-api
+  name: Sift Stack Data Service API
+  description: Service to query data
+  humanURL: https://docs.siftstack.com/api/reference/protocol-buffers
+  baseURL: https://api.siftstack.com
+  tags:
+  - Data Service
+  properties:
+  - type: OpenAPI
+    url: openapi/sift-stack-data-service-api-openapi.yml
+  - type: Documentation
+    url: https://docs.siftstack.com/documentation/home
+  - type: APIReference
+    url: https://docs.siftstack.com/api-reference
+  - type: Authentication
+    url: authentication/sift-stack-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sift-stack-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/sift-stack-rate-limits.yml
+  - type: Conventions
+    url: conventions/sift-stack-conventions.yml
+  - type: DataModel
+    url: data-model/sift-stack-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sift-stack-webhooks.yml
+- aid: sift-stack:sift-stack-job-service-api
+  name: Sift Stack Job Service API
+  description: The Job Service API from Sift Stack — 3 operation(s) for job service.
+  humanURL: https://docs.siftstack.com/api/reference/protocol-buffers
+  baseURL: https://api.siftstack.com
+  tags:
+  - Job Service
+  properties:
+  - type: OpenAPI
+    url: openapi/sift-stack-job-service-api-openapi.yml
+  - type: Documentation
+    url: https://docs.siftstack.com/documentation/home
+  - type: APIReference
+    url: https://docs.siftstack.com/api-reference
+  - type: Authentication
+    url: authentication/sift-stack-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sift-stack-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/sift-stack-rate-limits.yml
+  - type: Conventions
+    url: conventions/sift-stack-conventions.yml
+  - type: DataModel
+    url: data-model/sift-stack-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sift-stack-webhooks.yml
+- aid: sift-stack:sift-stack-metadata-service-api
+  name: Sift Stack Metadata Service API
+  description: The Metadata Service API from Sift Stack — 9 operation(s) for metadata service.
+  humanURL: https://docs.siftstack.com/api/reference/protocol-buffers
+  baseURL: https://api.siftstack.com
+  tags:
+  - Metadata Service
+  properties:
+  - type: OpenAPI
+    url: openapi/sift-stack-metadata-service-api-openapi.yml
+  - type: Documentation
+    url: https://docs.siftstack.com/documentation/home
+  - type: APIReference
+    url: https://docs.siftstack.com/api-reference
+  - type: Authentication
+    url: authentication/sift-stack-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sift-stack-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/sift-stack-rate-limits.yml
+  - type: Conventions
+    url: conventions/sift-stack-conventions.yml
+  - type: DataModel
+    url: data-model/sift-stack-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sift-stack-webhooks.yml
+- aid: sift-stack:sift-stack-notification-service-api
+  name: Sift Stack Notification Service API
+  description: Service to programmatically interact with in-app notifications.
+  humanURL: https://docs.siftstack.com/api/reference/protocol-buffers
+  baseURL: https://api.siftstack.com
+  tags:
+  - Notification Service
+  properties:
+  - type: OpenAPI
+    url: openapi/sift-stack-notification-service-api-openapi.yml
   - type: Documentation
     url: https://docs.siftstack.com/documentation/home
   - type: APIReference
