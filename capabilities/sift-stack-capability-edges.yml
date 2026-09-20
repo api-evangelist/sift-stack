@@ -1,0 +1,95 @@
+slug: sift-stack
+provider: Sift Stack
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Oil & Gas
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 7
+edges:
+- tag: PolicyService
+  spec_file: sift-stack-policyservice-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.8
+  evidence: '"Service to manage ABAC policies." — CreatePolicy, UpdatePolicy, ValidatePolicy, ArchivePolicy
+    with v1PolicyConfiguration'
+  reason: Explicitly attribute-based access control policy lifecycle, which is authorisation administration
+    under Identity & Access Management. Note this is access policy, not corporate policy management (BC-130.20),
+    so the homograph is resolved by the ABAC description.
+  recovered_from: vertical-defense-aerospace-edges.json
+- tag: PrincipalAttributeService
+  spec_file: sift-stack-principalattributeservice-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.78
+  evidence: Service to manage ABAC principal attributes; v1PrincipalAttributePrincipalType; CreatePrincipalAttributeKey;
+    v1PrincipalAttributeValue
+  reason: Manages the attribute keys and values attached to principals (users/service accounts) that drive
+    attribute-based access decisions — squarely identity and access management administration.
+  recovered_from: sweep-20260829T005356Z-edges.json
+- tag: WebhookService
+  spec_file: sift-stack-webhookservice-api-openapi.yml
+  capability_id: BC-4270.80
+  capability_id_l1: BC-4270
+  capability_name: Webhook & Event Subscription Management
+  confidence: 0.78
+  evidence: POST /api/v1/webhooks  CreateWebhook; GET /api/v1/webhooks/logs  ListWebhookLogs; POST /api/v1/webhooks:test  TestWebhook;
+    GET /api/v1/webhooks/signature-key
+  reason: Full lifecycle of outbound webhook subscriptions including signature-key rotation, delivery
+    logs and test delivery — the frame contains an explicit capability for webhook and event subscription
+    management, which these operations plainly perform.
+  recovered_from: sweep-20260829T005356Z-edges.json
+- tag: ResourceAttributeService
+  spec_file: sift-stack-resourceattributeservice-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.75
+  evidence: '"Service to manage ABAC resource attributes (entity attributes)."; "Lists all resource-attributes
+    for a specific entity"'
+  reason: Manages ABAC attributes on resources/entities used for authorisation decisions — access control
+    administration, mapped to Identity & Access Management.
+  recovered_from: vertical-defense-aerospace-edges.json
+- tag: ExternalSyncService
+  spec_file: sift-stack-externalsyncservice-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.72
+  evidence: ExternalSyncService_SyncOrganization; GetIsOrgExternallyProvisioned; schemas v1ExternalSyncUserRef,
+    v1ExternalSyncGroupRef, v2UserGroup, v1ExternalSyncMembershipChange
+  reason: Operations synchronise users and group memberships into the organisation from an external identity
+    provider, with token issuance and run diffs — i.e. directory-driven user/group provisioning. That
+    is identity and access administration (joiners-movers-leavers), though it could equally be read as
+    tenant identity federation, hence moderate confidence.
+  recovered_from: vertical-defense-aerospace-edges.json
+- tag: UserService
+  spec_file: sift-stack-userservice-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.72
+  evidence: Service to programmatically interact with user objects. ... UserService_ListActiveUsers  ListActiveUsers;
+    UserService_UpdateUserOrganizationActive
+  reason: Read and activation-state management of user accounts within an organization — account lifecycle
+    administration, which sits under Identity & Access Management. Confidence moderated because the surface
+    is small and read-mostly rather than full IAM provisioning.
+  recovered_from: sweep-20260829T005356Z-edges.json
+- tag: UserGroupService
+  spec_file: sift-stack-usergroupservice-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.7
+  evidence: AddUserToUserGroup, RemoveUserFromUserGroup, UpdateUserUserGroups; schemas v2Role, UserGroupResource
+  reason: Operations manage groups, group membership and roles over resources — i.e. access-control administration,
+    which realises Identity & Access Management. It is platform IAM rather than any industry capability.
