@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Sift Run Service API
   version: '1.0'
-  description: Service to programmatically interact with [runs](/glossary#run).
+  description: Service to programmatically interact with runs.
 servers:
 - url: https://api.siftstack.com
   description: Production
@@ -12,7 +12,7 @@ security:
 - BearerAuth: []
 tags:
 - name: RunService
-  description: Service to programmatically interact with [runs](/glossary#run).
+  description: Service to programmatically interact with runs.
   externalDocs:
     description: Read more about what runs are.
     url: https://customer.support.siftstack.com/servicedesk/customer/portal/2/article/265454053
@@ -344,22 +344,30 @@ paths:
       - RunService
 components:
   schemas:
-    protobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
-      additionalProperties: {}
-      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
-    v2DeleteRunResponse:
-      type: object
-      description: The response of a call to `RunService_DeleteRun`.
-    v2CreateRunResponse:
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    v2UpdateRunResponse:
       type: object
       properties:
         run:
           $ref: '#/components/schemas/runsv2Run'
+      description: The response of a call to `RunService_UpdateRun` containing the updated run.
+      required:
+      - run
+    v2CreateAdhocRunResponse:
+      type: object
+      properties:
+        run:
+          $ref: '#/components/schemas/runsv2Run'
+      description: The response of a call to `RunService_CreateAdhocRun` containing the newly created adhoc run.
       required:
       - run
     v2GetRunResponse:
@@ -370,9 +378,17 @@ components:
       description: The response of a call to `RunService_GetRun` containing the requested run.
       required:
       - run
-    v2StopRunResponse:
+    v2DeleteRunResponse:
       type: object
-      description: The response of a call to `RunService_StopRun` to stop a run.
+      description: The response of a call to `RunService_DeleteRun`.
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
     v2ValidateRunFilterResponse:
       type: object
       properties:
@@ -382,45 +398,93 @@ components:
       description: The response of a call to `RunService_ValidateRunFilter`.
       required:
       - errorMessage
-    v2StopRunRequest:
+    v2CreateRunRequest:
       type: object
       properties:
-        runId:
+        name:
           type: string
-      description: The request for a call to `RunService_StopRun` to stop a run.
+          description: The name that will be assigned to the new run.
+        description:
+          type: string
+          description: A description about the new run.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags to associate with the new run.
+        startTime:
+          type: string
+          format: date-time
+          description: 'The time at which data ingestion begins for this new run. It must be before the `stop_time`, and it must
+
+            be provided if a `stop_time` is provided.
+
+            Important note: `start_time` will be automatically computed during data ingestion and will be set
+
+            based on the timestamp of the data for this run.'
+        stopTime:
+          type: string
+          format: date-time
+          description: 'The time at which data ingestion for this new run concludes.
+
+            Important note: `stop_time` will be automatically computed during data ingestion and will be
+
+            set based on the timestamp of the data for this run.'
+        organizationId:
+          type: string
+          description: An organization ID is only required if the user belongs to multiple organizations.
+        clientKey:
+          type: string
+          description: An arbitrary user-chosen key that uniquely identifies this run. Optional, though it is recommended to provide.
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          description: The metadata values associated with this run.
+        createDefaultReport:
+          type: boolean
+          description: 'Whether to create a default report for this run. This facilitates getting the report ID for live rules that will be automatically created for this run which can streamline programatically creating Campaigns.
+
+            Defaults to false if not specified (This default can be changed for your organization by Sift. Contact support to change this default behavior.).'
+      description: The request of a call to `RunService_CreateRuns` to create a new run.
       required:
-      - runId
-    v2UpdateRunRequest:
+      - name
+      - description
+    v2ListRunsResponse:
+      type: object
+      properties:
+        runs:
+          type: array
+          items:
+            $ref: '#/components/schemas/runsv2Run'
+        nextPageToken:
+          type: string
+      description: The response of a call to `RunService_ListRuns` containing requested runs.
+      required:
+      - runs
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
+    v2CreateRunResponse:
       type: object
       properties:
         run:
           $ref: '#/components/schemas/runsv2Run'
-        updateMask:
-          type: string
-          description: 'The list of fields to be updated. The fields available to be updated are `name`, `description`,
-
-            `start_time`, `stop_time`, `is_pinned`, `client_key`, `tags`,`is_archived`,  and `metadata`.
-
-            Important Note: When updating the `start_time`, please be aware that if a subsequent data ingestion
-
-            commences for this run, the `start_time` will be automatically overwritten and set to the timestamp
-
-            corresponding to the beginning of the latest run. Additionally, `client_key` can only be set once either in run creation or in update.
-
-            Any subsequent attempt to update `client_key` will result in an error.'
-      description: The request for a call to `RunService_UpdateRun` to update an existing run.
       required:
       - run
-      - updateMask
-    v2ValidateRunFilterRequest:
-      type: object
-      properties:
-        filter:
-          type: string
-          description: The CEL filter expression to validate.
-      description: The request for a call to `RunService_ValidateRunFilter`.
-      required:
-      - filter
     v1MetadataValue:
       type: object
       properties:
@@ -443,14 +507,71 @@ components:
           description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
       required:
       - key
-    v2UpdateRunResponse:
+    v2StopRunResponse:
+      type: object
+      description: The response of a call to `RunService_StopRun` to stop a run.
+    v2CreateAdhocRunRequest:
       type: object
       properties:
-        run:
-          $ref: '#/components/schemas/runsv2Run'
-      description: The response of a call to `RunService_UpdateRun` containing the updated run.
+        name:
+          type: string
+          description: The name that will be assigned to the new run.
+        description:
+          type: string
+          description: A description about the new run.
+        startTime:
+          type: string
+          format: date-time
+          title: The time at which data ingestion began for this new run. It must be before the `stop_time`
+        stopTime:
+          type: string
+          format: date-time
+          description: The time at which data ingestion concluded for this new run.
+        assetIds:
+          type: array
+          items:
+            type: string
+          description: A list of asset IDs to associate with the new run.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags to associate with the new run.
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          description: The metadata values associated with this run.
+        clientKey:
+          type: string
+          description: An arbitrary user-chosen key that uniquely identifies this run. Optional, though it is recommended to provide.
+      description: The request for a call to `RunService_CreateAdhocRun` to create an adhoc run.
       required:
-      - run
+      - name
+      - description
+      - startTime
+      - stopTime
+      - assetIds
+    v2StopRunRequest:
+      type: object
+      properties:
+        runId:
+          type: string
+      description: The request for a call to `RunService_StopRun` to stop a run.
+      required:
+      - runId
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
     runsv2Run:
       type: object
       properties:
@@ -525,6 +646,39 @@ components:
       - assetIds
       - isAdhoc
       - isArchived
+    v2ValidateRunFilterRequest:
+      type: object
+      properties:
+        filter:
+          type: string
+          description: The CEL filter expression to validate.
+      description: The request for a call to `RunService_ValidateRunFilter`.
+      required:
+      - filter
+    v2CreateAutomaticRunAssociationForAssetsResponse:
+      type: object
+    v2UpdateRunRequest:
+      type: object
+      properties:
+        run:
+          $ref: '#/components/schemas/runsv2Run'
+        updateMask:
+          type: string
+          description: 'The list of fields to be updated. The fields available to be updated are `name`, `description`,
+
+            `start_time`, `stop_time`, `is_pinned`, `client_key`, `tags`,`is_archived`,  and `metadata`.
+
+            Important Note: When updating the `start_time`, please be aware that if a subsequent data ingestion
+
+            commences for this run, the `start_time` will be automatically overwritten and set to the timestamp
+
+            corresponding to the beginning of the latest run. Additionally, `client_key` can only be set once either in run creation or in update.
+
+            Any subsequent attempt to update `client_key` will result in an error.'
+      description: The request for a call to `RunService_UpdateRun` to update an existing run.
+      required:
+      - run
+      - updateMask
     v1MetadataRelationValue:
       type: object
       properties:
@@ -535,160 +689,6 @@ components:
       required:
       - resourceType
       - resourceId
-    v2CreateAutomaticRunAssociationForAssetsResponse:
-      type: object
-    v2CreateRunRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name that will be assigned to the new run.
-        description:
-          type: string
-          description: A description about the new run.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags to associate with the new run.
-        startTime:
-          type: string
-          format: date-time
-          description: 'The time at which data ingestion begins for this new run. It must be before the `stop_time`, and it must
-
-            be provided if a `stop_time` is provided.
-
-            Important note: `start_time` will be automatically computed during data ingestion and will be set
-
-            based on the timestamp of the data for this run.'
-        stopTime:
-          type: string
-          format: date-time
-          description: 'The time at which data ingestion for this new run concludes.
-
-            Important note: `stop_time` will be automatically computed during data ingestion and will be
-
-            set based on the timestamp of the data for this run.'
-        organizationId:
-          type: string
-          description: An organization ID is only required if the user belongs to multiple organizations.
-        clientKey:
-          type: string
-          description: An arbitrary user-chosen key that uniquely identifies this run. Optional, though it is recommended to provide.
-        metadata:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1MetadataValue'
-          description: The metadata values associated with this run.
-        createDefaultReport:
-          type: boolean
-          description: 'Whether to create a default report for this run. This facilitates getting the report ID for live rules that will be automatically created for this run which can streamline programatically creating Campaigns.
-
-            Defaults to false if not specified (This default can be changed for your organization by Sift. Contact support to change this default behavior.).'
-      description: The request of a call to `RunService_CreateRuns` to create a new run.
-      required:
-      - name
-      - description
-    v1MetadataKeyType:
-      type: string
-      enum:
-      - METADATA_KEY_TYPE_UNSPECIFIED
-      - METADATA_KEY_TYPE_STRING
-      - METADATA_KEY_TYPE_NUMBER
-      - METADATA_KEY_TYPE_BOOLEAN
-      - METADATA_KEY_TYPE_RELATION
-      default: METADATA_KEY_TYPE_UNSPECIFIED
-      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
-    v2CreateAdhocRunRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name that will be assigned to the new run.
-        description:
-          type: string
-          description: A description about the new run.
-        startTime:
-          type: string
-          format: date-time
-          title: The time at which data ingestion began for this new run. It must be before the `stop_time`
-        stopTime:
-          type: string
-          format: date-time
-          description: The time at which data ingestion concluded for this new run.
-        assetIds:
-          type: array
-          items:
-            type: string
-          description: A list of asset IDs to associate with the new run.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags to associate with the new run.
-        metadata:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1MetadataValue'
-          description: The metadata values associated with this run.
-        clientKey:
-          type: string
-          description: An arbitrary user-chosen key that uniquely identifies this run. Optional, though it is recommended to provide.
-      description: The request for a call to `RunService_CreateAdhocRun` to create an adhoc run.
-      required:
-      - name
-      - description
-      - startTime
-      - stopTime
-      - assetIds
-    rpcStatus:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/protobufAny'
-    v1MetadataKey:
-      type: object
-      properties:
-        name:
-          type: string
-        type:
-          $ref: '#/components/schemas/v1MetadataKeyType'
-        archivedDate:
-          type: string
-          format: date-time
-        isArchived:
-          type: boolean
-          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
-      required:
-      - name
-      - type
-    v2ListRunsResponse:
-      type: object
-      properties:
-        runs:
-          type: array
-          items:
-            $ref: '#/components/schemas/runsv2Run'
-        nextPageToken:
-          type: string
-      description: The response of a call to `RunService_ListRuns` containing requested runs.
-      required:
-      - runs
-    v2CreateAdhocRunResponse:
-      type: object
-      properties:
-        run:
-          $ref: '#/components/schemas/runsv2Run'
-      description: The response of a call to `RunService_CreateAdhocRun` containing the newly created adhoc run.
-      required:
-      - run
   securitySchemes:
     BearerAuth:
       type: http

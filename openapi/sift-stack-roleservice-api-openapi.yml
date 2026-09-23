@@ -96,6 +96,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/protobufAny'
+    v2ListRolesResponse:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2Role'
+        nextPageToken:
+          type: string
     v2Role:
       type: object
       properties:
@@ -108,15 +117,6 @@ components:
         roleOrder:
           type: integer
           format: int32
-    v2ListRolesResponse:
-      type: object
-      properties:
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/v2Role'
-        nextPageToken:
-          type: string
     protobufAny:
       type: object
       properties:

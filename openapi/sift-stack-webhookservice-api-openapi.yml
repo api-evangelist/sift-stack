@@ -395,6 +395,52 @@ paths:
       - WebhookService
 components:
   schemas:
+    v1RotateWebhookSignatureKeyResponse:
+      type: object
+      properties:
+        signatureKey:
+          $ref: '#/components/schemas/v1WebhookSignatureKey'
+      description: 'The response for a call to `WebhookService_RotateWebhookSignatureKey`. The `active` field indicates whether
+
+        or not whether the key is currently active.'
+      required:
+      - signatureKey
+    v1ListWebhookLogsResponse:
+      type: object
+      properties:
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1WebhookLog'
+        nextPageToken:
+          type: string
+      description: The response of a call to `WebhookService_ListWebhookLogsResponse`.
+      required:
+      - logs
+      - nextPageToken
+    v1TestWebhookResponse:
+      type: object
+      properties:
+        httpResponseCode:
+          type: integer
+          format: int64
+        httpResponseBody:
+          type: string
+          format: byte
+      description: 'The response of a call to `WebhookService_TestWebhook`. The response code and body will come from the HTTP response
+
+        from the target URL.'
+      required:
+      - httpResponseCode
+      - httpResponseBody
+    v1CreateWebhookResponse:
+      type: object
+      properties:
+        webhook:
+          $ref: '#/components/schemas/v1Webhook'
+      description: The response of a call to `WebhookService_CreateWebhook`.
+      required:
+      - webhook
     v1CreateWebhookSignatureKeyResponse:
       type: object
       properties:
@@ -405,42 +451,6 @@ components:
         or not whether the key is currently active.'
       required:
       - signatureKey
-    protobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
-      additionalProperties: {}
-      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
-    v1CreateWebhookLogRequest:
-      type: object
-      properties:
-        webhookId:
-          type: string
-        eventId:
-          type: string
-        retryAttemptNumber:
-          type: integer
-          format: int64
-        status:
-          $ref: '#/components/schemas/v1WebhookLogStatus'
-        payload:
-          type: string
-        errorReason:
-          type: string
-        sentDate:
-          type: string
-          format: date-time
-      description: Request to create a single webhook log entry.
-      required:
-      - webhookId
-      - eventId
-      - retryAttemptNumber
-      - status
-      - payload
-      - errorReason
-      - sentDate
     v1WebhookSignatureKey:
       type: object
       properties:
@@ -465,28 +475,22 @@ components:
       - modifiedDate
       - createdByUserId
       - modifiedByUserId
-    v1CreateWebhookResponse:
+    v1GetWebhookResponse:
       type: object
       properties:
         webhook:
           $ref: '#/components/schemas/v1Webhook'
-      description: The response of a call to `WebhookService_CreateWebhook`.
+      description: The response of a call to `WebhookService_GetWebhook`.
       required:
       - webhook
-    v1UpdateWebhookRequest:
+    protobufAny:
       type: object
       properties:
-        webhook:
-          $ref: '#/components/schemas/v1Webhook'
-        updateMask:
+        '@type':
           type: string
-          description: 'The list of fields to be updated. The fields available to be updated are
-
-            ''target_url'', ''name'', ''event_type'', ''payload'', ''http_headers'', ''archived_date'', ''is_archived''.'
-      description: The request for a call to `WebhookService_UpdateWebhook` to update a webhook.
-      required:
-      - webhook
-      - updateMask
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
     v1ToggleWebhookSignatureKeyActivationResponse:
       type: object
       properties:
@@ -495,50 +499,69 @@ components:
       description: The response for a call to `WebhookService_ToggleWebhookSignatureKeyActivation`.
       required:
       - signatureKey
-    v1CreateWebhookRequest:
+    v1WebhookLog:
       type: object
       properties:
-        name:
+        webhookLogId:
           type: string
-        targetUrl:
+        webhookId:
           type: string
-        eventType:
-          $ref: '#/components/schemas/v1WebhookEventType'
+        eventId:
+          type: string
+        organizationId:
+          type: string
+        status:
+          $ref: '#/components/schemas/v1WebhookLogStatus'
         payload:
           type: string
-        httpHeaders:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1WebhookHttpHeader'
-      description: The request for a call to `WebhookService_CreateWebhook` to create a webhook.
+        retryAttemptNumber:
+          type: integer
+          format: int64
+        errorReason:
+          type: string
+        sentDate:
+          type: string
+          format: date-time
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
       required:
-      - name
-      - targetUrl
-      - eventType
-      - httpHeaders
-    v1ListWebhooksResponse:
+      - webhookLogId
+      - webhookId
+      - eventId
+      - organizationId
+      - status
+      - retryAttemptNumber
+      - sentDate
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+    v1GetWebhookSignatureKeyResponse:
       type: object
       properties:
-        webhooks:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1Webhook'
-        nextPageToken:
-          type: string
-      description: The response of a call to `WebhookService_ListWebhooks`.
+        signatureKey:
+          $ref: '#/components/schemas/v1WebhookSignatureKey'
+      description: 'The response for a call to `WebhookService_GetWebhookSignatureKey`. The `active` field indicates whether
+
+        or not whether the key is currently active.'
       required:
-      - webhooks
-      - nextPageToken
-    v1WebhookHttpHeader:
-      type: object
-      properties:
-        name:
-          type: string
-        value:
-          type: string
-      required:
-      - name
-      - value
+      - signatureKey
+    v1WebhookLogStatus:
+      type: string
+      enum:
+      - WEBHOOK_LOG_STATUS_UNSPECIFIED
+      - WEBHOOK_LOG_STATUS_SENT
+      - WEBHOOK_LOG_STATUS_FAILED
+      - WEBHOOK_LOG_STATUS_RETRYING
+      default: WEBHOOK_LOG_STATUS_UNSPECIFIED
     v1BatchCreateWebhookLogsRequest:
       type: object
       properties:
@@ -549,6 +572,12 @@ components:
       description: The request for a call to `WebhookService_BatchCreateWebhookLogs` to create a batch of webhook logs.
       required:
       - requests
+    v1WebhookEventType:
+      type: string
+      enum:
+      - WEBHOOK_EVENT_TYPE_UNSPECIFIED
+      - WEBHOOK_EVENT_TYPE_RULE_VIOLATION
+      default: WEBHOOK_EVENT_TYPE_UNSPECIFIED
     v1Webhook:
       type: object
       properties:
@@ -595,28 +624,113 @@ components:
       - modifiedByUserId
       - httpHeaders
       - isArchived
-    v1TestWebhookRequest:
+    v1WebhookHttpHeader:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+      required:
+      - name
+      - value
+    v1CreateWebhookLogRequest:
       type: object
       properties:
         webhookId:
           type: string
-        webhook:
-          $ref: '#/components/schemas/v1Webhook'
-        createRequest:
-          $ref: '#/components/schemas/v1CreateWebhookRequest'
-      description: 'The request for a call to `WebhookService_TestWebhook` to test an existing webhook
-
-        or a webhook create request.'
-    v1GetWebhookSignatureKeyResponse:
+        eventId:
+          type: string
+        retryAttemptNumber:
+          type: integer
+          format: int64
+        status:
+          $ref: '#/components/schemas/v1WebhookLogStatus'
+        payload:
+          type: string
+        errorReason:
+          type: string
+        sentDate:
+          type: string
+          format: date-time
+      description: Request to create a single webhook log entry.
+      required:
+      - webhookId
+      - eventId
+      - retryAttemptNumber
+      - status
+      - payload
+      - errorReason
+      - sentDate
+    v1ListWebhooksResponse:
       type: object
       properties:
-        signatureKey:
-          $ref: '#/components/schemas/v1WebhookSignatureKey'
-      description: 'The response for a call to `WebhookService_GetWebhookSignatureKey`. The `active` field indicates whether
-
-        or not whether the key is currently active.'
+        webhooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1Webhook'
+        nextPageToken:
+          type: string
+      description: The response of a call to `WebhookService_ListWebhooks`.
       required:
-      - signatureKey
+      - webhooks
+      - nextPageToken
+    v1CreateWebhookRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        targetUrl:
+          type: string
+        eventType:
+          $ref: '#/components/schemas/v1WebhookEventType'
+        payload:
+          type: string
+        httpHeaders:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1WebhookHttpHeader'
+      description: The request for a call to `WebhookService_CreateWebhook` to create a webhook.
+      required:
+      - name
+      - targetUrl
+      - eventType
+      - httpHeaders
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1RotateWebhookSignatureKeyRequest:
+      type: object
+      description: 'The request for a call to `WebhookService_RotateWebhookSignatureKey` replace the current webhook signature key
+
+        with a new one. The activation state of the new signature key will be inherited from the previous key. If no key
+
+        exists then this will return an error - see `WebhookService_CreateWebhookSignatureKey`.'
+    v1CreateWebhookSignatureKeyRequest:
+      type: object
+      description: The request for a call to `WebhookService_CreateWebhookSignatureKey` to create a webhook signature key.
+    v1ToggleWebhookSignatureKeyActivationRequest:
+      type: object
+      properties:
+        enable:
+          type: boolean
+      description: 'The request for a call to `WebhookService_ToggleWebhookSignatureKeyActivation` to enable or disable the current
+
+        webhook signature key. Set `enable` to `true` to activate the signature key, and `false` to deactivate.'
+      required:
+      - enable
+    v1BatchCreateWebhookLogsResponse:
+      type: object
+      description: The response of a call to `WebhookService_BatchCreateWebhookResponse`.
     v1UpdateWebhookResponse:
       type: object
       properties:
@@ -631,146 +745,32 @@ components:
         `archived_date` in the `webhook` object.'
       required:
       - webhook
-    v1TestWebhookResponse:
-      type: object
-      properties:
-        httpResponseCode:
-          type: integer
-          format: int64
-        httpResponseBody:
-          type: string
-          format: byte
-      description: 'The response of a call to `WebhookService_TestWebhook`. The response code and body will come from the HTTP response
-
-        from the target URL.'
-      required:
-      - httpResponseCode
-      - httpResponseBody
-    v1WebhookLog:
-      type: object
-      properties:
-        webhookLogId:
-          type: string
-        webhookId:
-          type: string
-        eventId:
-          type: string
-        organizationId:
-          type: string
-        status:
-          $ref: '#/components/schemas/v1WebhookLogStatus'
-        payload:
-          type: string
-        retryAttemptNumber:
-          type: integer
-          format: int64
-        errorReason:
-          type: string
-        sentDate:
-          type: string
-          format: date-time
-        createdDate:
-          type: string
-          format: date-time
-        modifiedDate:
-          type: string
-          format: date-time
-        createdByUserId:
-          type: string
-        modifiedByUserId:
-          type: string
-      required:
-      - webhookLogId
-      - webhookId
-      - eventId
-      - organizationId
-      - status
-      - retryAttemptNumber
-      - sentDate
-      - createdDate
-      - modifiedDate
-      - createdByUserId
-      - modifiedByUserId
-    v1CreateWebhookSignatureKeyRequest:
-      type: object
-      description: The request for a call to `WebhookService_CreateWebhookSignatureKey` to create a webhook signature key.
-    v1WebhookLogStatus:
-      type: string
-      enum:
-      - WEBHOOK_LOG_STATUS_UNSPECIFIED
-      - WEBHOOK_LOG_STATUS_SENT
-      - WEBHOOK_LOG_STATUS_FAILED
-      - WEBHOOK_LOG_STATUS_RETRYING
-      default: WEBHOOK_LOG_STATUS_UNSPECIFIED
-    v1ListWebhookLogsResponse:
-      type: object
-      properties:
-        logs:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1WebhookLog'
-        nextPageToken:
-          type: string
-      description: The response of a call to `WebhookService_ListWebhookLogsResponse`.
-      required:
-      - logs
-      - nextPageToken
-    v1RotateWebhookSignatureKeyResponse:
-      type: object
-      properties:
-        signatureKey:
-          $ref: '#/components/schemas/v1WebhookSignatureKey'
-      description: 'The response for a call to `WebhookService_RotateWebhookSignatureKey`. The `active` field indicates whether
-
-        or not whether the key is currently active.'
-      required:
-      - signatureKey
-    v1GetWebhookResponse:
+    v1UpdateWebhookRequest:
       type: object
       properties:
         webhook:
           $ref: '#/components/schemas/v1Webhook'
-      description: The response of a call to `WebhookService_GetWebhook`.
+        updateMask:
+          type: string
+          description: 'The list of fields to be updated. The fields available to be updated are
+
+            ''target_url'', ''name'', ''event_type'', ''payload'', ''http_headers'', ''archived_date'', ''is_archived''.'
+      description: The request for a call to `WebhookService_UpdateWebhook` to update a webhook.
       required:
       - webhook
-    rpcStatus:
+      - updateMask
+    v1TestWebhookRequest:
       type: object
       properties:
-        code:
-          type: integer
-          format: int32
-        message:
+        webhookId:
           type: string
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/protobufAny'
-    v1BatchCreateWebhookLogsResponse:
-      type: object
-      description: The response of a call to `WebhookService_BatchCreateWebhookResponse`.
-    v1WebhookEventType:
-      type: string
-      enum:
-      - WEBHOOK_EVENT_TYPE_UNSPECIFIED
-      - WEBHOOK_EVENT_TYPE_RULE_VIOLATION
-      default: WEBHOOK_EVENT_TYPE_UNSPECIFIED
-    v1RotateWebhookSignatureKeyRequest:
-      type: object
-      description: 'The request for a call to `WebhookService_RotateWebhookSignatureKey` replace the current webhook signature key
+        webhook:
+          $ref: '#/components/schemas/v1Webhook'
+        createRequest:
+          $ref: '#/components/schemas/v1CreateWebhookRequest'
+      description: 'The request for a call to `WebhookService_TestWebhook` to test an existing webhook
 
-        with a new one. The activation state of the new signature key will be inherited from the previous key. If no key
-
-        exists then this will return an error - see `WebhookService_CreateWebhookSignatureKey`.'
-    v1ToggleWebhookSignatureKeyActivationRequest:
-      type: object
-      properties:
-        enable:
-          type: boolean
-      description: 'The request for a call to `WebhookService_ToggleWebhookSignatureKeyActivation` to enable or disable the current
-
-        webhook signature key. Set `enable` to `true` to activate the signature key, and `false` to deactivate.'
-      required:
-      - enable
+        or a webhook create request.'
   securitySchemes:
     BearerAuth:
       type: http

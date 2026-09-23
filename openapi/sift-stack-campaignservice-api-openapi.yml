@@ -365,48 +365,48 @@ paths:
       - CampaignService
 components:
   schemas:
-    protobufAny:
+    v1NamedResources:
       type: object
       properties:
-        '@type':
-          type: string
-          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
-      additionalProperties: {}
-      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
-    v1UpdateCampaignResponse:
+        ids:
+          $ref: '#/components/schemas/v1Ids'
+        names:
+          $ref: '#/components/schemas/v1Names'
+    v1Ids:
       type: object
       properties:
-        campaign:
-          $ref: '#/components/schemas/v1Campaign'
-      description: The response of a call to `CampaignService_UpdateCampaign`.
-      required:
-      - campaign
-    v1CreateCampaignResponse:
-      type: object
-      properties:
-        campaign:
-          $ref: '#/components/schemas/v1Campaign'
-      description: The response of a call to `CampaignService_CreateCampaign` to create a campaign.
-      required:
-      - campaign
-    v1CampaignReports:
-      type: object
-      properties:
-        reports:
+        ids:
           type: array
           items:
-            $ref: '#/components/schemas/v1CampaignReport'
-      description: Wrapper for repeated CampaignReport used in map values (proto3 maps cannot directly contain repeated fields).
-    v1CreateCampaignFrom:
+            type: string
+      required:
+      - ids
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    v1ClientKeys:
       type: object
       properties:
-        reports:
-          $ref: '#/components/schemas/v1ResourceIdentifiers'
-        runs:
-          $ref: '#/components/schemas/v1ResourceIdentifiers'
-        otherCampaign:
-          $ref: '#/components/schemas/v1ResourceIdentifier'
-      description: Campaigns can be created from a few different sources.
+        clientKeys:
+          type: array
+          items:
+            type: string
+      required:
+      - clientKeys
+    v1AnnotationLinkedChannelsChannel:
+      type: object
+      properties:
+        channelId:
+          type: string
+      required:
+      - channelId
     v1GetCampaignReportSummariesResponse:
       type: object
       properties:
@@ -417,6 +417,112 @@ components:
           description: 'Keyed by campaign_id. Each value contains the full list of CampaignReport
 
             entries for that campaign with summary fields (num_*) populated.'
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1CreateCampaignResponse:
+      type: object
+      properties:
+        campaign:
+          $ref: '#/components/schemas/v1Campaign'
+      description: The response of a call to `CampaignService_CreateCampaign` to create a campaign.
+      required:
+      - campaign
+    v1ListCampaignAnnotationsResponse:
+      type: object
+      properties:
+        annotations:
+          type: array
+          items:
+            $ref: '#/components/schemas/annotationsv1Annotation'
+        nextPageToken:
+          type: string
+    v1CampaignReport:
+      type: object
+      properties:
+        reportId:
+          type: string
+          description: Direct reference to the report. Set this on the client to tell the backend which report you're referring to.
+        reportName:
+          type: string
+          readOnly: true
+        numAnnotations:
+          type: integer
+          format: int64
+          description: How many annotations exist under the report's various rules.
+          readOnly: true
+        numPassedRules:
+          type: integer
+          format: int64
+          description: How many rules from this report were never triggered and generated NO annotations.
+          readOnly: true
+        numAcceptedRules:
+          type: integer
+          format: int64
+          description: How many rules have annotations which are ALL marked as accepted.
+          readOnly: true
+        numFailedRules:
+          type: integer
+          format: int64
+          description: How many rules have ANY annotations which are marked as failed.
+          readOnly: true
+        numOpenRules:
+          type: integer
+          format: int64
+          description: How many rules have annotations of which SOME are marked as open and NONE are marked as failed.
+          readOnly: true
+      description: A top-level summary of the report's rules is provided here so clients needn't aggregate this information themselves.
+      required:
+      - reportId
+    v1CreateCampaignRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          title: The descriptive display name of the created campaign
+        description:
+          type: string
+          title: A custom description for the campaign
+        tags:
+          $ref: '#/components/schemas/v1NamedResources'
+        organizationId:
+          type: string
+          title: '`organization_id` is only required if your user belongs to multiple organizations'
+        clientKey:
+          type: string
+          description: User-specified unique identifier.
+        createFrom:
+          $ref: '#/components/schemas/v1CreateCampaignFrom'
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          title: User-defined metadata for this campaign
+      description: The request of a call to `CampaignService_CreateCampaign` to create a campaign.
+      required:
+      - name
+    v1Names:
+      type: object
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+      required:
+      - names
+    v1AnnotationState:
+      type: string
+      enum:
+      - ANNOTATION_STATE_UNSPECIFIED
+      - ANNOTATION_STATE_OPEN
+      - ANNOTATION_STATE_FLAGGED
+      - ANNOTATION_STATE_RESOLVED
+      default: ANNOTATION_STATE_UNSPECIFIED
     v1GetCampaignResponse:
       type: object
       properties:
@@ -425,28 +531,79 @@ components:
       description: The response of a call to `CampaignService_GetCampaign` to retrieve a campaign.
       required:
       - campaign
-    v1MetadataValue:
+    v1ResourceIdentifiers:
       type: object
       properties:
-        key:
-          $ref: '#/components/schemas/v1MetadataKey'
-        stringValue:
+        ids:
+          $ref: '#/components/schemas/v1Ids'
+        clientKeys:
+          $ref: '#/components/schemas/v1ClientKeys'
+    v1ListCampaignsResponse:
+      type: object
+      properties:
+        campaigns:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1Campaign'
+        nextPageToken:
           type: string
-        numberValue:
-          type: number
-          format: double
-        booleanValue:
-          type: boolean
-        relationValue:
-          $ref: '#/components/schemas/v1MetadataRelationValue'
+      description: The response of a call to `CampaignService_ListCampaignsResponse`.
+    v1CreateCampaignFrom:
+      type: object
+      properties:
+        reports:
+          $ref: '#/components/schemas/v1ResourceIdentifiers'
+        runs:
+          $ref: '#/components/schemas/v1ResourceIdentifiers'
+        otherCampaign:
+          $ref: '#/components/schemas/v1ResourceIdentifier'
+      description: Campaigns can be created from a few different sources.
+    v1User:
+      type: object
+      properties:
+        userId:
+          type: string
+        userName:
+          type: string
+        organizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1Organization'
+      required:
+      - userId
+      - userName
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
         archivedDate:
           type: string
           format: date-time
         isArchived:
           type: boolean
-          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
       required:
-      - key
+      - name
+      - type
+    v1UpdateCampaignRequest:
+      type: object
+      properties:
+        campaign:
+          $ref: '#/components/schemas/v1Campaign'
+        updateMask:
+          type: string
+          description: The list of fields to be updated. The fields available to be updated are `name`, `archived_date`, `is_archived`, `description`, `tags`, `reports`, and `metadata`.
+      description: 'The request for a call to `CampaignService_UpdateCampaign` to update a campaign. When updating
+
+        tags or rules, the update will perform a full replace. Additionally, when updating rules, only the rule ID or the rule client key
+
+        is required, but it is okay to provide both. If some rules contain only client keys and others only rule IDs, they will be consolidated.'
+      required:
+      - campaign
+      - updateMask
     v1AnnotationLinkedCalculatedChannel:
       type: object
       properties:
@@ -454,6 +611,18 @@ components:
           type: string
       required:
       - calculatedChannelVersionId
+    v1Organization:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        organizationName:
+          type: string
+        isAbacEnabled:
+          type: boolean
+      required:
+      - organizationId
+      - organizationName
     annotationsv1Annotation:
       type: object
       properties:
@@ -550,15 +719,36 @@ components:
       - tags
       - isArchived
       - batchedTriggers
-    v1Names:
+    v1MetadataValue:
       type: object
       properties:
-        names:
+        key:
+          $ref: '#/components/schemas/v1MetadataKey'
+        stringValue:
+          type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+        relationValue:
+          $ref: '#/components/schemas/v1MetadataRelationValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
+      required:
+      - key
+    v1CampaignReports:
+      type: object
+      properties:
+        reports:
           type: array
           items:
-            type: string
-      required:
-      - names
+            $ref: '#/components/schemas/v1CampaignReport'
+      description: Wrapper for repeated CampaignReport used in map values (proto3 maps cannot directly contain repeated fields).
     v1AnnotationLinkedChannelsBitFieldElement:
       type: object
       properties:
@@ -569,59 +759,18 @@ components:
       required:
       - channelId
       - bitFieldName
-    v1ListCampaignsResponse:
+    rpcStatus:
       type: object
       properties:
-        campaigns:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
           type: array
           items:
-            $ref: '#/components/schemas/v1Campaign'
-        nextPageToken:
-          type: string
-      description: The response of a call to `CampaignService_ListCampaignsResponse`.
-    v1GetCampaignReportSummariesRequest:
-      type: object
-      properties:
-        campaignIds:
-          type: array
-          items:
-            type: string
-        organizationId:
-          type: string
-          description: This field is only required if your user belongs to multiple organizations.
-      required:
-      - campaignIds
-    v1AnnotationLinkedChannelsChannel:
-      type: object
-      properties:
-        channelId:
-          type: string
-      required:
-      - channelId
-    v1AnnotationState:
-      type: string
-      enum:
-      - ANNOTATION_STATE_UNSPECIFIED
-      - ANNOTATION_STATE_OPEN
-      - ANNOTATION_STATE_FLAGGED
-      - ANNOTATION_STATE_RESOLVED
-      default: ANNOTATION_STATE_UNSPECIFIED
-    v1AnnotationType:
-      type: string
-      enum:
-      - ANNOTATION_TYPE_UNSPECIFIED
-      - ANNOTATION_TYPE_DATA_REVIEW
-      - ANNOTATION_TYPE_PHASE
-      default: ANNOTATION_TYPE_UNSPECIFIED
-    v1ClientKeys:
-      type: object
-      properties:
-        clientKeys:
-          type: array
-          items:
-            type: string
-      required:
-      - clientKeys
+            $ref: '#/components/schemas/protobufAny'
     v1Campaign:
       type: object
       properties:
@@ -687,33 +836,13 @@ components:
       - campaignId
       - name
       - isArchived
-    v1CreateCampaignRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          title: The descriptive display name of the created campaign
-        description:
-          type: string
-          title: A custom description for the campaign
-        tags:
-          $ref: '#/components/schemas/v1NamedResources'
-        organizationId:
-          type: string
-          title: '`organization_id` is only required if your user belongs to multiple organizations'
-        clientKey:
-          type: string
-          description: User-specified unique identifier.
-        createFrom:
-          $ref: '#/components/schemas/v1CreateCampaignFrom'
-        metadata:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1MetadataValue'
-          title: User-defined metadata for this campaign
-      description: The request of a call to `CampaignService_CreateCampaign` to create a campaign.
-      required:
-      - name
+    v1AnnotationType:
+      type: string
+      enum:
+      - ANNOTATION_TYPE_UNSPECIFIED
+      - ANNOTATION_TYPE_DATA_REVIEW
+      - ANNOTATION_TYPE_PHASE
+      default: ANNOTATION_TYPE_UNSPECIFIED
     v1MetadataRelationValue:
       type: object
       properties:
@@ -724,111 +853,6 @@ components:
       required:
       - resourceType
       - resourceId
-    v1MetadataKeyType:
-      type: string
-      enum:
-      - METADATA_KEY_TYPE_UNSPECIFIED
-      - METADATA_KEY_TYPE_STRING
-      - METADATA_KEY_TYPE_NUMBER
-      - METADATA_KEY_TYPE_BOOLEAN
-      - METADATA_KEY_TYPE_RELATION
-      default: METADATA_KEY_TYPE_UNSPECIFIED
-      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
-    v1CampaignReport:
-      type: object
-      properties:
-        reportId:
-          type: string
-          description: Direct reference to the report. Set this on the client to tell the backend which report you're referring to.
-        reportName:
-          type: string
-          readOnly: true
-        numAnnotations:
-          type: integer
-          format: int64
-          description: How many annotations exist under the report's various rules.
-          readOnly: true
-        numPassedRules:
-          type: integer
-          format: int64
-          description: How many rules from this report were never triggered and generated NO annotations.
-          readOnly: true
-        numAcceptedRules:
-          type: integer
-          format: int64
-          description: How many rules have annotations which are ALL marked as accepted.
-          readOnly: true
-        numFailedRules:
-          type: integer
-          format: int64
-          description: How many rules have ANY annotations which are marked as failed.
-          readOnly: true
-        numOpenRules:
-          type: integer
-          format: int64
-          description: How many rules have annotations of which SOME are marked as open and NONE are marked as failed.
-          readOnly: true
-      description: A top-level summary of the report's rules is provided here so clients needn't aggregate this information themselves.
-      required:
-      - reportId
-    v1UpdateCampaignRequest:
-      type: object
-      properties:
-        campaign:
-          $ref: '#/components/schemas/v1Campaign'
-        updateMask:
-          type: string
-          description: The list of fields to be updated. The fields available to be updated are `name`, `archived_date`, `is_archived`, `description`, `tags`, `reports`, and `metadata`.
-      description: 'The request for a call to `CampaignService_UpdateCampaign` to update a campaign. When updating
-
-        tags or rules, the update will perform a full replace. Additionally, when updating rules, only the rule ID or the rule client key
-
-        is required, but it is okay to provide both. If some rules contain only client keys and others only rule IDs, they will be consolidated.'
-      required:
-      - campaign
-      - updateMask
-    v1MetadataKey:
-      type: object
-      properties:
-        name:
-          type: string
-        type:
-          $ref: '#/components/schemas/v1MetadataKeyType'
-        archivedDate:
-          type: string
-          format: date-time
-        isArchived:
-          type: boolean
-          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
-      required:
-      - name
-      - type
-    v1Organization:
-      type: object
-      properties:
-        organizationId:
-          type: string
-        organizationName:
-          type: string
-        isAbacEnabled:
-          type: boolean
-      required:
-      - organizationId
-      - organizationName
-    v1User:
-      type: object
-      properties:
-        userId:
-          type: string
-        userName:
-          type: string
-        organizations:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1Organization'
-      required:
-      - userId
-      - userName
     v1TagRef:
       type: object
       properties:
@@ -841,57 +865,26 @@ components:
         When this message is used for a request, you can use either name or tag_id to refer to a tag.
 
         When this message is returned in a response, both of the fields will be populated and valid.'
-    rpcStatus:
+    v1UpdateCampaignResponse:
       type: object
       properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/protobufAny'
-    v1NamedResources:
+        campaign:
+          $ref: '#/components/schemas/v1Campaign'
+      description: The response of a call to `CampaignService_UpdateCampaign`.
+      required:
+      - campaign
+    v1GetCampaignReportSummariesRequest:
       type: object
       properties:
-        ids:
-          $ref: '#/components/schemas/v1Ids'
-        names:
-          $ref: '#/components/schemas/v1Names'
-    v1Ids:
-      type: object
-      properties:
-        ids:
+        campaignIds:
           type: array
           items:
             type: string
+        organizationId:
+          type: string
+          description: This field is only required if your user belongs to multiple organizations.
       required:
-      - ids
-    v1ResourceIdentifier:
-      type: object
-      properties:
-        id:
-          type: string
-        clientKey:
-          type: string
-    v1ListCampaignAnnotationsResponse:
-      type: object
-      properties:
-        annotations:
-          type: array
-          items:
-            $ref: '#/components/schemas/annotationsv1Annotation'
-        nextPageToken:
-          type: string
-    v1ResourceIdentifiers:
-      type: object
-      properties:
-        ids:
-          $ref: '#/components/schemas/v1Ids'
-        clientKeys:
-          $ref: '#/components/schemas/v1ClientKeys'
+      - campaignIds
     v1AnnotationLinkedChannel:
       type: object
       properties:
@@ -901,6 +894,13 @@ components:
           $ref: '#/components/schemas/v1AnnotationLinkedChannelsBitFieldElement'
         calculatedChannel:
           $ref: '#/components/schemas/v1AnnotationLinkedCalculatedChannel'
+    v1ResourceIdentifier:
+      type: object
+      properties:
+        id:
+          type: string
+        clientKey:
+          type: string
   securitySchemes:
     BearerAuth:
       type: http
