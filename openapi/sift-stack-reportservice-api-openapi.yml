@@ -417,89 +417,6 @@ paths:
       - ReportService
 components:
   schemas:
-    v1ListReportsResponse:
-      type: object
-      properties:
-        reports:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1Report'
-        nextPageToken:
-          type: string
-      description: The response of a call to `ReportService_ListReportsResponse`.
-    v1UpdateReportResponse:
-      type: object
-      title: no response fields
-    v1TimestampAlignment:
-      type: object
-      properties:
-        timestamp:
-          type: string
-          format: date-time
-      required:
-      - timestamp
-    v1ReportRuleStatusDetailsLive:
-      type: object
-    v1CreateReportFromReportTemplateRequest:
-      type: object
-      properties:
-        reportTemplateId:
-          type: string
-      description: 'Deprecated - use RuleEvaluationService instead.
-
-        Report rule lines use each template rule''s `display_order` from `ReportTemplateRule` at creation time.'
-      required:
-      - reportTemplateId
-    v1MetadataKeyType:
-      type: string
-      enum:
-      - METADATA_KEY_TYPE_UNSPECIFIED
-      - METADATA_KEY_TYPE_STRING
-      - METADATA_KEY_TYPE_NUMBER
-      - METADATA_KEY_TYPE_BOOLEAN
-      - METADATA_KEY_TYPE_RELATION
-      default: METADATA_KEY_TYPE_UNSPECIFIED
-      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
-    v1RunAlignment:
-      type: object
-      properties:
-        bound:
-          $ref: '#/components/schemas/v1TimeRangeBound'
-      required:
-      - bound
-    v1AnnotationAlignment:
-      type: object
-      properties:
-        annotationId:
-          type: string
-        bound:
-          $ref: '#/components/schemas/v1TimeRangeBound'
-      required:
-      - annotationId
-      - bound
-    v1GetReportResponse:
-      type: object
-      properties:
-        report:
-          $ref: '#/components/schemas/v1Report'
-      description: The request of a call to `ReportService_GetReport` to retrieve a report template.
-      required:
-      - report
-    v1TimeRangeBound:
-      type: string
-      enum:
-      - TIME_RANGE_BOUND_UNSPECIFIED
-      - TIME_RANGE_BOUND_START
-      - TIME_RANGE_BOUND_END
-      default: TIME_RANGE_BOUND_UNSPECIFIED
-    protobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
-      additionalProperties: {}
-      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
     v1ReportRuleStatus:
       type: string
       enum:
@@ -511,137 +428,6 @@ components:
       - REPORT_RULE_STATUS_CANCELED
       - REPORT_RULE_STATUS_ERROR
       default: REPORT_RULE_STATUS_UNSPECIFIED
-    v1ReportCumulativeRuleSummary:
-      type: object
-      properties:
-        numAnnotationsOpen:
-          type: integer
-          format: int64
-          description: Total number of open (unresolved) annotations across all rules.
-        numAnnotationsFailed:
-          type: integer
-          format: int64
-          description: Total number of failed (flagged) annotations across all rules.
-        numAnnotationsPassed:
-          type: integer
-          format: int64
-          description: Total number of passed (resolved) annotations across all rules.
-        numAnnotationsTotal:
-          type: integer
-          format: int64
-          description: Total number of annotations across all rules (open + failed + passed).
-        numRulesCreated:
-          type: integer
-          format: int64
-          description: Number of rule versions in CREATED status.
-        numRulesLive:
-          type: integer
-          format: int64
-          description: Number of rule versions currently running (LIVE status).
-        numRulesFinished:
-          type: integer
-          format: int64
-          description: Number of rule versions that finished successfully.
-        numRulesFailed:
-          type: integer
-          format: int64
-          description: Number of rule versions that failed during execution.
-        numRulesCanceled:
-          type: integer
-          format: int64
-          description: Number of rule versions that were canceled.
-        numRulesError:
-          type: integer
-          format: int64
-          description: Number of rule versions that encountered an error.
-        numRulesTotal:
-          type: integer
-          format: int64
-          description: Total number of rule versions across all statuses.
-        numOfRulesWithoutAnnotations:
-          type: integer
-          format: int64
-          description: Number of finished rule versions that produced no annotations.
-      description: 'Aggregated annotation and rule-status counts across all rules in a report.
-
-        Annotation counts (num_annotations_*) reflect the total number
-
-        of annotations in each state summed over every rule version in the report.
-
-        Rule counts (num_rules_*) reflect how many rule versions are in each
-
-        execution status.'
-      required:
-      - numAnnotationsOpen
-      - numAnnotationsFailed
-      - numAnnotationsPassed
-      - numAnnotationsTotal
-      - numRulesCreated
-      - numRulesLive
-      - numRulesFinished
-      - numRulesFailed
-      - numRulesCanceled
-      - numRulesError
-      - numRulesTotal
-      - numOfRulesWithoutAnnotations
-    v1ReportRuleStatusDetailsFinished:
-      type: object
-      properties:
-        stdout:
-          type: string
-        stderr:
-          type: string
-    v1CreateReportRequestRuleIds:
-      type: object
-      properties:
-        ruleIds:
-          type: array
-          items:
-            type: string
-      description: 'Deprecated - use RuleEvaluationService instead.
-
-        The order of `rule_ids` is the report rule order: first ID is `display_order` 0, second is 1, etc., on the created report.'
-      required:
-      - ruleIds
-    v1RerunReportResponse:
-      type: object
-      properties:
-        jobId:
-          type: string
-        reportId:
-          type: string
-      required:
-      - jobId
-      - reportId
-    v1ResolvedAlignmentPoint:
-      type: object
-      properties:
-        timestamp:
-          type: string
-          format: date-time
-        run:
-          $ref: '#/components/schemas/v1RunAlignment'
-        annotation:
-          $ref: '#/components/schemas/v1AnnotationAlignment'
-        timestampConfig:
-          $ref: '#/components/schemas/v1TimestampAlignment'
-    v1ReportRuleStatusDetailsCreated:
-      type: object
-    v1UpdateReportRequest:
-      type: object
-      properties:
-        report:
-          $ref: '#/components/schemas/v1Report'
-        updateMask:
-          type: string
-          description: 'The list of fields to be updated. The fields available to be updated are `name`, `description`, `archived_date`,
-
-            `is_archived`, and `metadata`. An empty `name` is ignored and the existing name is preserved. Including
-
-            `description` in the mask with the field unset clears the description.'
-      required:
-      - report
-      - updateMask
     v1MetadataKey:
       type: object
       properties:
@@ -658,21 +444,72 @@ components:
       required:
       - name
       - type
-    v1ReportRuleStatusDetails:
+    v1ReportRuleSummary:
       type: object
       properties:
-        created:
-          $ref: '#/components/schemas/v1ReportRuleStatusDetailsCreated'
-        live:
-          $ref: '#/components/schemas/v1ReportRuleStatusDetailsLive'
-        finished:
-          $ref: '#/components/schemas/v1ReportRuleStatusDetailsFinished'
-        failed:
-          $ref: '#/components/schemas/v1ReportRuleStatusDetailsFailed'
-        canceled:
-          $ref: '#/components/schemas/v1ReportRuleStatusDetailsCanceled'
-        error:
-          $ref: '#/components/schemas/v1ReportRuleStatusDetailsError'
+        ruleId:
+          type: string
+        ruleClientKey:
+          type: string
+        ruleVersionId:
+          type: string
+        ruleVersionNumber:
+          type: integer
+          format: int64
+        reportRuleVersionId:
+          type: string
+        numOpen:
+          type: integer
+          format: int64
+        numFailed:
+          type: integer
+          format: int64
+        numPassed:
+          type: integer
+          format: int64
+        status:
+          $ref: '#/components/schemas/v1ReportRuleStatus'
+        statusDetails:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetails'
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        assetId:
+          type: string
+        deletedDate:
+          type: string
+          format: date-time
+        resolvedFamilyStats:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ResolvedFamilyStat'
+        resolvedAlignmentConfigs:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ResolvedAlignmentEntry'
+        displayOrder:
+          type: integer
+          format: int64
+          description: 'Zero-based position of this rule line on the report. Copied from the report template rule''s `display_order`, or from the
+
+            position of `rule_id` in `CreateReportRequestRuleIds.rule_ids` when creating from explicit rule IDs. Lower values run first.'
+      required:
+      - ruleId
+      - ruleVersionId
+      - ruleVersionNumber
+      - reportRuleVersionId
+      - numOpen
+      - numFailed
+      - numPassed
+      - status
+      - statusDetails
+      - createdDate
+      - modifiedDate
+      - assetId
+      - displayOrder
     v1CreateReportRequestRuleVersionIds:
       type: object
       properties:
@@ -683,6 +520,54 @@ components:
       description: Deprecated - use RuleEvaluationService instead.
       required:
       - ruleVersionIds
+    v1RerunReportResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        reportId:
+          type: string
+      required:
+      - jobId
+      - reportId
+    v1MetadataKeyType:
+      type: string
+      enum:
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
+    v1UpdateReportResponse:
+      type: object
+      title: no response fields
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1TimeRangeBound:
+      type: string
+      enum:
+      - TIME_RANGE_BOUND_UNSPECIFIED
+      - TIME_RANGE_BOUND_START
+      - TIME_RANGE_BOUND_END
+      default: TIME_RANGE_BOUND_UNSPECIFIED
+    v1TimestampAlignment:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+      required:
+      - timestamp
+    v1ReportRuleStatusDetailsLive:
+      type: object
     v1ReportType:
       type: string
       enum:
@@ -695,6 +580,166 @@ components:
         `reports` surface. Rule-evaluation reports are tied to a run; canvas
 
         reports are tied to a published canvas_execution.'
+    v1CreateReportFromRulesRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        tagNames:
+          type: array
+          items:
+            type: string
+        ruleIds:
+          $ref: '#/components/schemas/v1CreateReportRequestRuleIds'
+        ruleClientKeys:
+          $ref: '#/components/schemas/v1CreateReportRequestClientKeys'
+        ruleVersionIds:
+          $ref: '#/components/schemas/v1CreateReportRequestRuleVersionIds'
+      description: 'Deprecated - use RuleEvaluationService instead.
+
+        How rules are ordered on the created report depends on `rule_identifiers`: list order for `rule_ids`, or server resolution order for `rule_client_keys`.'
+      required:
+      - name
+      - description
+      - tagNames
+    v1ReportRuleStatusDetailsError:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+        exitCode:
+          type: integer
+          format: int32
+        stdout:
+          type: string
+        stderr:
+          type: string
+      required:
+      - errorMessage
+    v1ListReportMetadataValuesResponse:
+      type: object
+      properties:
+        metadataValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        nextPageToken:
+          type: string
+      description: The response of a call to `ReportService_ListReportMetadataValues`.
+    v1CreateReportRequestRuleIds:
+      type: object
+      properties:
+        ruleIds:
+          type: array
+          items:
+            type: string
+      description: 'Deprecated - use RuleEvaluationService instead.
+
+        The order of `rule_ids` is the report rule order: first ID is `display_order` 0, second is 1, etc., on the created report.'
+      required:
+      - ruleIds
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v1UpdateReportRequest:
+      type: object
+      properties:
+        report:
+          $ref: '#/components/schemas/v1Report'
+        updateMask:
+          type: string
+          description: 'The list of fields to be updated. The fields available to be updated are `name`, `description`, `archived_date`,
+
+            `is_archived`, and `metadata`. An empty `name` is ignored and the existing name is preserved. Including
+
+            `description` in the mask with the field unset clears the description.'
+      required:
+      - report
+      - updateMask
+    v1ResolvedAlignmentPoint:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        run:
+          $ref: '#/components/schemas/v1RunAlignment'
+        annotation:
+          $ref: '#/components/schemas/v1AnnotationAlignment'
+        timestampConfig:
+          $ref: '#/components/schemas/v1TimestampAlignment'
+    v1RunAlignment:
+      type: object
+      properties:
+        bound:
+          $ref: '#/components/schemas/v1TimeRangeBound'
+      required:
+      - bound
+    v1ReportRuleStatusDetailsFinished:
+      type: object
+      properties:
+        stdout:
+          type: string
+        stderr:
+          type: string
+    v1CreateReportResponse:
+      type: object
+      properties:
+        report:
+          $ref: '#/components/schemas/v1Report'
+      description: Deprecated - use RuleEvaluationService instead.
+      required:
+      - report
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v1CancelReportResponse:
+      type: object
+      title: no response fields
+    v1ResolvedFamilyStat:
+      type: object
+      properties:
+        reference:
+          type: string
+        familyId:
+          type: string
+        familyVersionId:
+          type: string
+        familyStatExpressionId:
+          type: string
+        familyStatRangeId:
+          type: string
+      required:
+      - reference
+      - familyId
+      - familyVersionId
+      - familyStatExpressionId
+      - familyStatRangeId
+    v1ReportTag:
+      type: object
+      properties:
+        tagName:
+          type: string
+      required:
+      - tagName
     v1Report:
       type: object
       properties:
@@ -795,16 +840,6 @@ components:
       - tags
       - metadata
       - reportType
-    v1ListReportsWithCumulativeSummaryResponse:
-      type: object
-      properties:
-        reports:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1ReportWithCumulativeSummary'
-        nextPageToken:
-          type: string
-      description: The response of a call to `ReportService_ListReportsWithCumulativeSummaryResponse`.
     v1ResolvedAlignmentEntry:
       type: object
       properties:
@@ -818,127 +853,130 @@ components:
           $ref: '#/components/schemas/v1ResolvedAlignmentPoint'
         endTime:
           $ref: '#/components/schemas/v1ResolvedAlignmentPoint'
-    v1ReportRuleStatusDetailsError:
+    v1ListReportsResponse:
       type: object
       properties:
-        errorMessage:
-          type: string
-        exitCode:
-          type: integer
-          format: int32
-        stdout:
-          type: string
-        stderr:
-          type: string
-      required:
-      - errorMessage
-    v1ListReportRuleSummariesResponse:
-      type: object
-      properties:
-        reportRuleSummaries:
+        reports:
           type: array
           items:
-            $ref: '#/components/schemas/v1ReportRuleSummary'
+            $ref: '#/components/schemas/v1Report'
         nextPageToken:
           type: string
-      description: The response of a call to `ReportService_ListReportRuleSummaries`.
+      description: The response of a call to `ReportService_ListReportsResponse`.
+    v1CanvasCellExecutionStatus:
+      type: string
+      enum:
+      - CANVAS_CELL_EXECUTION_STATUS_UNSPECIFIED
+      - CANVAS_CELL_EXECUTION_STATUS_IN_PROGRESS
+      - CANVAS_CELL_EXECUTION_STATUS_AUTO_PASSED
+      - CANVAS_CELL_EXECUTION_STATUS_AUTO_FAILED
+      - CANVAS_CELL_EXECUTION_STATUS_MANUAL_PASSED
+      - CANVAS_CELL_EXECUTION_STATUS_MANUAL_FAILED
+      - CANVAS_CELL_EXECUTION_STATUS_ERROR
+      - CANVAS_CELL_EXECUTION_STATUS_SKIPPED
+      - CANVAS_CELL_EXECUTION_STATUS_OPEN
+      - CANVAS_CELL_EXECUTION_STATUS_MANUALLY_CANCELLED
+      default: CANVAS_CELL_EXECUTION_STATUS_UNSPECIFIED
+      description: 'Status of a single canvas cell execution. Also used as the status of the
+
+        parent CanvasExecution: the parent rolls up its cells'' statuses into a
+
+        single value (e.g. any AUTO_FAILED cell yields an AUTO_FAILED execution).'
+    v1AnnotationAlignment:
+      type: object
+      properties:
+        annotationId:
+          type: string
+        bound:
+          $ref: '#/components/schemas/v1TimeRangeBound'
+      required:
+      - annotationId
+      - bound
     v1ReportRuleStatusDetailsCanceled:
       type: object
-    v1ResolvedFamilyStat:
+    v1ReportCumulativeRuleSummary:
       type: object
       properties:
-        reference:
-          type: string
-        familyId:
-          type: string
-        familyVersionId:
-          type: string
-        familyStatExpressionId:
-          type: string
-        familyStatRangeId:
-          type: string
-      required:
-      - reference
-      - familyId
-      - familyVersionId
-      - familyStatExpressionId
-      - familyStatRangeId
-    v1ReportRuleSummary:
-      type: object
-      properties:
-        ruleId:
-          type: string
-        ruleClientKey:
-          type: string
-        ruleVersionId:
-          type: string
-        ruleVersionNumber:
+        numAnnotationsOpen:
           type: integer
           format: int64
-        reportRuleVersionId:
-          type: string
-        numOpen:
+          description: Total number of open (unresolved) annotations across all rules.
+        numAnnotationsFailed:
           type: integer
           format: int64
-        numFailed:
+          description: Total number of failed (flagged) annotations across all rules.
+        numAnnotationsPassed:
           type: integer
           format: int64
-        numPassed:
+          description: Total number of passed (resolved) annotations across all rules.
+        numAnnotationsTotal:
           type: integer
           format: int64
-        status:
-          $ref: '#/components/schemas/v1ReportRuleStatus'
-        statusDetails:
-          $ref: '#/components/schemas/v1ReportRuleStatusDetails'
-        createdDate:
-          type: string
-          format: date-time
-        modifiedDate:
-          type: string
-          format: date-time
-        assetId:
-          type: string
-        deletedDate:
-          type: string
-          format: date-time
-        resolvedFamilyStats:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1ResolvedFamilyStat'
-        resolvedAlignmentConfigs:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1ResolvedAlignmentEntry'
-        displayOrder:
+          description: Total number of annotations across all rules (open + failed + passed).
+        numRulesCreated:
           type: integer
           format: int64
-          description: 'Zero-based position of this rule line on the report. Copied from the report template rule''s `display_order`, or from the
+          description: Number of rule versions in CREATED status.
+        numRulesLive:
+          type: integer
+          format: int64
+          description: Number of rule versions currently running (LIVE status).
+        numRulesFinished:
+          type: integer
+          format: int64
+          description: Number of rule versions that finished successfully.
+        numRulesFailed:
+          type: integer
+          format: int64
+          description: Number of rule versions that failed during execution.
+        numRulesCanceled:
+          type: integer
+          format: int64
+          description: Number of rule versions that were canceled.
+        numRulesError:
+          type: integer
+          format: int64
+          description: Number of rule versions that encountered an error.
+        numRulesTotal:
+          type: integer
+          format: int64
+          description: Total number of rule versions across all statuses.
+        numOfRulesWithoutAnnotations:
+          type: integer
+          format: int64
+          description: Number of finished rule versions that produced no annotations.
+      description: 'Aggregated annotation and rule-status counts across all rules in a report.
 
-            position of `rule_id` in `CreateReportRequestRuleIds.rule_ids` when creating from explicit rule IDs. Lower values run first.'
+        Annotation counts (num_annotations_*) reflect the total number
+
+        of annotations in each state summed over every rule version in the report.
+
+        Rule counts (num_rules_*) reflect how many rule versions are in each
+
+        execution status.'
       required:
-      - ruleId
-      - ruleVersionId
-      - ruleVersionNumber
-      - reportRuleVersionId
-      - numOpen
-      - numFailed
-      - numPassed
-      - status
-      - statusDetails
-      - createdDate
-      - modifiedDate
-      - assetId
-      - displayOrder
-    v1ListReportMetadataValuesResponse:
+      - numAnnotationsOpen
+      - numAnnotationsFailed
+      - numAnnotationsPassed
+      - numAnnotationsTotal
+      - numRulesCreated
+      - numRulesLive
+      - numRulesFinished
+      - numRulesFailed
+      - numRulesCanceled
+      - numRulesError
+      - numRulesTotal
+      - numOfRulesWithoutAnnotations
+    v1CreateReportFromReportTemplateRequest:
       type: object
       properties:
-        metadataValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1MetadataValue'
-        nextPageToken:
+        reportTemplateId:
           type: string
-      description: The response of a call to `ReportService_ListReportMetadataValues`.
+      description: 'Deprecated - use RuleEvaluationService instead.
+
+        Report rule lines use each template rule''s `display_order` from `ReportTemplateRule` at creation time.'
+      required:
+      - reportTemplateId
     v1CreateReportRequest:
       type: object
       properties:
@@ -962,6 +1000,28 @@ components:
       - organizationId
       - runId
       - name
+    v1ListReportsWithCumulativeSummaryResponse:
+      type: object
+      properties:
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ReportWithCumulativeSummary'
+        nextPageToken:
+          type: string
+      description: The response of a call to `ReportService_ListReportsWithCumulativeSummaryResponse`.
+    v1CreateReportRequestClientKeys:
+      type: object
+      properties:
+        ruleClientKeys:
+          type: array
+          items:
+            type: string
+      description: 'Deprecated - use RuleEvaluationService instead.
+
+        Rule order on the created report follows the order in which the server resolves these keys to rules (not client-defined).'
+      required:
+      - ruleClientKeys
     v1MetadataValue:
       type: object
       properties:
@@ -984,59 +1044,29 @@ components:
           description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
       required:
       - key
-    v1ReportTag:
+    v1ReportRuleStatusDetails:
       type: object
       properties:
-        tagName:
-          type: string
+        created:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetailsCreated'
+        live:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetailsLive'
+        finished:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetailsFinished'
+        failed:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetailsFailed'
+        canceled:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetailsCanceled'
+        error:
+          $ref: '#/components/schemas/v1ReportRuleStatusDetailsError'
+    v1GetReportResponse:
+      type: object
+      properties:
+        report:
+          $ref: '#/components/schemas/v1Report'
+      description: The request of a call to `ReportService_GetReport` to retrieve a report template.
       required:
-      - tagName
-    v1CancelReportResponse:
-      type: object
-      title: no response fields
-    v1CanvasCellExecutionStatus:
-      type: string
-      enum:
-      - CANVAS_CELL_EXECUTION_STATUS_UNSPECIFIED
-      - CANVAS_CELL_EXECUTION_STATUS_IN_PROGRESS
-      - CANVAS_CELL_EXECUTION_STATUS_AUTO_PASSED
-      - CANVAS_CELL_EXECUTION_STATUS_AUTO_FAILED
-      - CANVAS_CELL_EXECUTION_STATUS_MANUAL_PASSED
-      - CANVAS_CELL_EXECUTION_STATUS_MANUAL_FAILED
-      - CANVAS_CELL_EXECUTION_STATUS_ERROR
-      - CANVAS_CELL_EXECUTION_STATUS_SKIPPED
-      - CANVAS_CELL_EXECUTION_STATUS_OPEN
-      - CANVAS_CELL_EXECUTION_STATUS_MANUALLY_CANCELLED
-      default: CANVAS_CELL_EXECUTION_STATUS_UNSPECIFIED
-      description: 'Status of a single canvas cell execution. Also used as the status of the
-
-        parent CanvasExecution: the parent rolls up its cells'' statuses into a
-
-        single value (e.g. any AUTO_FAILED cell yields an AUTO_FAILED execution).'
-    rpcStatus:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/protobufAny'
-    v1CreateReportRequestClientKeys:
-      type: object
-      properties:
-        ruleClientKeys:
-          type: array
-          items:
-            type: string
-      description: 'Deprecated - use RuleEvaluationService instead.
-
-        Rule order on the created report follows the order in which the server resolves these keys to rules (not client-defined).'
-      required:
-      - ruleClientKeys
+      - report
     v1ReportRuleStatusDetailsFailed:
       type: object
       properties:
@@ -1051,6 +1081,18 @@ components:
           type: string
       required:
       - errorMessage
+    v1ReportRuleStatusDetailsCreated:
+      type: object
+    v1ListReportRuleSummariesResponse:
+      type: object
+      properties:
+        reportRuleSummaries:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1ReportRuleSummary'
+        nextPageToken:
+          type: string
+      description: The response of a call to `ReportService_ListReportRuleSummaries`.
     v1ReportWithCumulativeSummary:
       type: object
       properties:
@@ -1154,48 +1196,6 @@ components:
       - cumulativeSummary
       - tags
       - reportType
-    v1MetadataRelationValue:
-      type: object
-      properties:
-        resourceType:
-          type: string
-        resourceId:
-          type: string
-      required:
-      - resourceType
-      - resourceId
-    v1CreateReportResponse:
-      type: object
-      properties:
-        report:
-          $ref: '#/components/schemas/v1Report'
-      description: Deprecated - use RuleEvaluationService instead.
-      required:
-      - report
-    v1CreateReportFromRulesRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        tagNames:
-          type: array
-          items:
-            type: string
-        ruleIds:
-          $ref: '#/components/schemas/v1CreateReportRequestRuleIds'
-        ruleClientKeys:
-          $ref: '#/components/schemas/v1CreateReportRequestClientKeys'
-        ruleVersionIds:
-          $ref: '#/components/schemas/v1CreateReportRequestRuleVersionIds'
-      description: 'Deprecated - use RuleEvaluationService instead.
-
-        How rules are ordered on the created report depends on `rule_identifiers`: list order for `rule_ids`, or server resolution order for `rule_client_keys`.'
-      required:
-      - name
-      - description
-      - tagNames
   securitySchemes:
     BearerAuth:
       type: http

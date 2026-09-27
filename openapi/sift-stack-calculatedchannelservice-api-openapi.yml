@@ -614,40 +614,84 @@ paths:
       - CalculatedChannelService
 components:
   schemas:
-    v1ConditionComparator:
-      type: string
-      enum:
-      - CONDITION_COMPARATOR_UNSPECIFIED
-      - LESS_THAN
-      - LESS_THAN_OR_EQUAL
-      - GREATER_THAN
-      - GREATER_THAN_OR_EQUAL
-      - EQUAL
-      - NOT_EQUAL
-      default: CONDITION_COMPARATOR_UNSPECIFIED
-    v2CalculatedChannelAssetConfiguration:
+    v1RuleConditionExpression:
       type: object
       properties:
-        allAssets:
+        singleChannelComparison:
+          $ref: '#/components/schemas/v1SingleChannelComparisonExpression'
+        calculatedChannel:
+          $ref: '#/components/schemas/siftrulesv1CalculatedChannelConfig'
+    v2GetCalculatedChannelResponse:
+      type: object
+      properties:
+        calculatedChannel:
+          $ref: '#/components/schemas/v2CalculatedChannel'
+      required:
+      - calculatedChannel
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
           type: boolean
-        selection:
-          $ref: '#/components/schemas/CalculatedChannelAssetConfigurationAssetSelection'
-    v1NamedResources:
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
+    v2BatchResolveCalculatedChannelsResponse:
       type: object
       properties:
-        ids:
-          $ref: '#/components/schemas/v1Ids'
-        names:
-          $ref: '#/components/schemas/v1Names'
-    v1Ids:
-      type: object
-      properties:
-        ids:
+        responses:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/v2ResolveCalculatedChannelResponse'
+          description: All calculated channels that attempted resolution.
+      description: The response of a call to `CalculatedChannelService_BatchResolveCalculatedChannels`.
       required:
-      - ids
+      - responses
+    v2CreateCalculatedChannelResponse:
+      type: object
+      properties:
+        calculatedChannel:
+          $ref: '#/components/schemas/v2CalculatedChannel'
+        inapplicableAssets:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannelValidationResult'
+      required:
+      - calculatedChannel
+      - inapplicableAssets
+    siftrulesv1CalculatedChannelConfig:
+      type: object
+      properties:
+        channelReferences:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/rulesv1ChannelReference'
+        expression:
+          type: string
+        functionDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionDependency'
+          description: This will be ignored in requests and will be generated automatically.
+        calculatedChannelDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/typev1CalculatedChannelDependency'
+          description: 'This will be ignored in requests and will be generated automatically.
+
+            Tracks which calculated channel versions this rule depends on.'
+          readOnly: true
+      required:
+      - channelReferences
+      - expression
     v1MetadataKeyType:
       type: string
       enum:
@@ -658,77 +702,7 @@ components:
       - METADATA_KEY_TYPE_RELATION
       default: METADATA_KEY_TYPE_UNSPECIFIED
       description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
-    v2UpdateCalculatedChannelResponse:
-      type: object
-      properties:
-        calculatedChannel:
-          $ref: '#/components/schemas/v2CalculatedChannel'
-        inapplicableAssets:
-          type: array
-          items:
-            $ref: '#/components/schemas/v2CalculatedChannelValidationResult'
-      description: The response of a call to `CalculatedChannelService_UpdateCalculatedChannel`.
-      required:
-      - calculatedChannel
-      - inapplicableAssets
-    v1ChannelDataType:
-      type: string
-      enum:
-      - CHANNEL_DATA_TYPE_UNSPECIFIED
-      - CHANNEL_DATA_TYPE_DOUBLE
-      - CHANNEL_DATA_TYPE_STRING
-      - CHANNEL_DATA_TYPE_ENUM
-      - CHANNEL_DATA_TYPE_BIT_FIELD
-      - CHANNEL_DATA_TYPE_BOOL
-      - CHANNEL_DATA_TYPE_FLOAT
-      - CHANNEL_DATA_TYPE_INT_32
-      - CHANNEL_DATA_TYPE_UINT_32
-      - CHANNEL_DATA_TYPE_INT_64
-      - CHANNEL_DATA_TYPE_UINT_64
-      - CHANNEL_DATA_TYPE_BYTES
-      default: CHANNEL_DATA_TYPE_UNSPECIFIED
-    v2GetCalculatedChannelVersionsResponse:
-      type: object
-      properties:
-        calculatedChannels:
-          type: array
-          items:
-            $ref: '#/components/schemas/v2CalculatedChannel'
-      description: The response of a call to `CalculatedChannelService_GetCalculatedChannelVersions`.
-      required:
-      - calculatedChannels
-    v2CalculatedChannelConfiguration:
-      type: object
-      properties:
-        assetConfiguration:
-          $ref: '#/components/schemas/v2CalculatedChannelAssetConfiguration'
-        queryConfiguration:
-          $ref: '#/components/schemas/v2CalculatedChannelQueryConfiguration'
-      required:
-      - assetConfiguration
-      - queryConfiguration
-    v1ContextualChannels:
-      type: object
-      properties:
-        channels:
-          type: array
-          items:
-            $ref: '#/components/schemas/rulesv1ChannelReference'
-      required:
-      - channels
-    v1ExpressionChannelReference:
-      type: object
-      properties:
-        channelReference:
-          type: string
-        channelId:
-          type: string
-        calculatedChannel:
-          $ref: '#/components/schemas/v1ExpressionRequest'
-      required:
-      - channelReference
-      - channelId
-    v1RuleAssetConfiguration:
+    CalculatedChannelAssetConfigurationAssetSelection:
       type: object
       properties:
         assetIds:
@@ -739,26 +713,32 @@ components:
           type: array
           items:
             type: string
-    v2ResolveCalculatedChannelResponse:
+      required:
+      - assetIds
+      - tagIds
+    v2CreateCalculatedChannelRequest:
       type: object
       properties:
-        calculatedChannelId:
+        name:
           type: string
-          description: If provided in the request, the calculated channel resolved.
-        resolved:
+        description:
+          type: string
+        userNotes:
+          type: string
+        units:
+          type: string
+        clientKey:
+          type: string
+        calculatedChannelConfiguration:
+          $ref: '#/components/schemas/v2CalculatedChannelConfiguration'
+        metadata:
           type: array
           items:
-            $ref: '#/components/schemas/v2ResolvedCalculatedChannel'
-          description: All resolved calculated channels.
-        unresolved:
-          type: array
-          items:
-            $ref: '#/components/schemas/v2UnresolvedCalculatedChannel'
-          description: All assets with any issues in resolution.
-      description: The response of a call to `CalculatedChannelService_ResolveCalculatedChannel`.
+            $ref: '#/components/schemas/v1MetadataValue'
       required:
-      - resolved
-      - unresolved
+      - name
+      - calculatedChannelConfiguration
+      - metadata
     v1ExpressionRequest:
       type: object
       properties:
@@ -781,6 +761,21 @@ components:
             $ref: '#/components/schemas/v1FunctionDependency'
       required:
       - expression
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1AnnotationType:
+      type: string
+      enum:
+      - ANNOTATION_TYPE_UNSPECIFIED
+      - ANNOTATION_TYPE_DATA_REVIEW
+      - ANNOTATION_TYPE_PHASE
+      default: ANNOTATION_TYPE_UNSPECIFIED
     v1FunctionDependency:
       type: object
       properties:
@@ -788,17 +783,39 @@ components:
           type: string
       required:
       - userDefinedFunctionVersionId
-    v2BatchResolveCalculatedChannelsRequest:
+    v1ExpressionChannelReference:
       type: object
       properties:
-        requests:
-          type: array
-          items:
-            $ref: '#/components/schemas/v2ResolveCalculatedChannelRequest'
-          description: All calculated channels to resolve.
-      description: The request of a call to `CalculatedChannelService_BatchResolveCalculatedChannels`.
+        channelReference:
+          type: string
+        channelId:
+          type: string
+        calculatedChannel:
+          $ref: '#/components/schemas/v1ExpressionRequest'
       required:
-      - requests
+      - channelReference
+      - channelId
+    v1NamedResources:
+      type: object
+      properties:
+        ids:
+          $ref: '#/components/schemas/v1Ids'
+        names:
+          $ref: '#/components/schemas/v1Names'
+    v2CalculatedChannelAbstractChannelReference:
+      type: object
+      properties:
+        channelReference:
+          type: string
+        channelIdentifier:
+          type: string
+          title: must use either a channel_identifier or a calculated_channel_reference, not both
+        calculatedChannelVersionId:
+          type: string
+        calculatedChannel:
+          $ref: '#/components/schemas/v1ExpressionRequest'
+      required:
+      - channelReference
     v1AnnotationActionConfiguration:
       type: object
       properties:
@@ -816,64 +833,53 @@ components:
             $ref: '#/components/schemas/v1MetadataValue'
       required:
       - tagIds
-    protobufAny:
+    v2ResolvedCalculatedChannel:
       type: object
       properties:
-        '@type':
+        assetName:
           type: string
-          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
-      additionalProperties: {}
-      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
-    typev1CalculatedChannelDependency:
-      type: object
-      properties:
-        calculatedChannelVersionId:
+          description: The name of the specific asset that was resolved.
+        expressionRequest:
+          $ref: '#/components/schemas/v1ExpressionRequest'
+        outputDataType:
+          $ref: '#/components/schemas/v1ChannelDataType'
+        assetId:
           type: string
-      description: A dependency on another calculated channel.
+      description: A specific calculated channel including the asset and exact channels to query.
       required:
-      - calculatedChannelVersionId
-    calculated_channelsv2CalculatedChannelDependency:
+      - assetName
+      - expressionRequest
+      - outputDataType
+      - assetId
+    v1ResourceIdentifier:
       type: object
       properties:
-        calculatedChannelVersionId:
+        id:
           type: string
-      description: A dependency on another calculated channel.
-      required:
-      - calculatedChannelVersionId
-    v2GetCalculatedChannelDependentsResponse:
-      type: object
-      properties:
-        calculatedChannels:
-          type: array
-          items:
-            $ref: '#/components/schemas/v2CalculatedChannel'
-        rules:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1Rule'
-      description: The response of a call to `CalculatedChannelService_GetCalculatedChannelDependents`.
-      required:
-      - calculatedChannels
-      - rules
-    v2ListCalculatedChannelVersionsResponse:
-      type: object
-      properties:
-        calculatedChannelVersions:
-          type: array
-          items:
-            $ref: '#/components/schemas/v2CalculatedChannel'
-        nextPageToken:
+        clientKey:
           type: string
-      description: The response of a call to `CalculatedChannelService_ListCalculatedChannelVersions`.
-      required:
-      - calculatedChannelVersions
-    v1RuleConditionExpression:
+    v1SingleChannelComparisonExpression:
       type: object
       properties:
-        singleChannelComparison:
-          $ref: '#/components/schemas/v1SingleChannelComparisonExpression'
-        calculatedChannel:
-          $ref: '#/components/schemas/siftrulesv1CalculatedChannelConfig'
+        channelComponent:
+          type: string
+          title: Deprecated - use channel_name instead. If provided, channel_component will be joined with the name as `channel_component.channel_name`
+        channelName:
+          type: string
+        comparator:
+          $ref: '#/components/schemas/v1ConditionComparator'
+        double:
+          type: number
+          format: double
+        string:
+          type: string
+        lastValue:
+          $ref: '#/components/schemas/v1LastValueThreshold'
+      description: Deprecated - use CalculatedChannelConfig.
+      required:
+      - channelComponent
+      - channelName
+      - comparator
     v1Names:
       type: object
       properties:
@@ -883,6 +889,114 @@ components:
             type: string
       required:
       - names
+    v2CalculatedChannelAssetConfiguration:
+      type: object
+      properties:
+        allAssets:
+          type: boolean
+        selection:
+          $ref: '#/components/schemas/CalculatedChannelAssetConfigurationAssetSelection'
+    v2CalculatedChannelQueryConfiguration:
+      type: object
+      properties:
+        sel:
+          $ref: '#/components/schemas/CalculatedChannelQueryConfigurationSel'
+    typev1CalculatedChannelDependency:
+      type: object
+      properties:
+        calculatedChannelVersionId:
+          type: string
+      description: A dependency on another calculated channel.
+      required:
+      - calculatedChannelVersionId
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    v2CalculatedChannelValidationResult:
+      type: object
+      properties:
+        assetId:
+          type: string
+        assetName:
+          type: string
+          title: Only included if asset was named in the request
+        tagNames:
+          type: array
+          items:
+            type: string
+          title: Includes all tags that have this asset
+        missingChannels:
+          type: array
+          items:
+            type: string
+          title: Names of the channels that asset does not have
+      required:
+      - assetId
+      - tagNames
+      - missingChannels
+    v2CalculatedChannelConfiguration:
+      type: object
+      properties:
+        assetConfiguration:
+          $ref: '#/components/schemas/v2CalculatedChannelAssetConfiguration'
+        queryConfiguration:
+          $ref: '#/components/schemas/v2CalculatedChannelQueryConfiguration'
+      required:
+      - assetConfiguration
+      - queryConfiguration
+    v2ResolveCalculatedChannelRequest:
+      type: object
+      properties:
+        identifier:
+          $ref: '#/components/schemas/v1ResourceIdentifier'
+        calculatedChannelConfiguration:
+          $ref: '#/components/schemas/v2CalculatedChannelConfiguration'
+        organizationId:
+          type: string
+          description: This field is only required if your user belongs to multiple organizations.
+        assets:
+          $ref: '#/components/schemas/v1NamedResources'
+        run:
+          $ref: '#/components/schemas/v1ResourceIdentifier'
+      description: "The request for a call to `CalculatedChannelService_ResolveCalculatedChannel` to get the all possible calculated channels.\n1) If the calculated channel has a selection of assets and tags then those assets will be used as a base and then filtered down by the given assets and assets from the run.\n2) If the calculated channel is enabled for all assets then:\n  a) If the request has run and assets from the run will be used as a base and then filtered down by the given assets.\n  b) If the request has run and no assets then those assets will be used.\n  c) If the request has only assets then those assets will be used.\nThe `organization_id` argument is only required if using `client_key` and the user belongs to multiple organizations."
+    v2ListResolvedCalculatedChannelsResponse:
+      type: object
+      properties:
+        calculatedChannelResolutions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannelResolution'
+        nextPageToken:
+          type: string
+      required:
+      - calculatedChannelResolutions
+    v1ActionKind:
+      type: string
+      enum:
+      - ACTION_KIND_UNSPECIFIED
+      - NOTIFICATION
+      - ANNOTATION
+      - WEBHOOK
+      default: ACTION_KIND_UNSPECIFIED
+    v2GetCalculatedChannelVersionsResponse:
+      type: object
+      properties:
+        calculatedChannels:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannel'
+      description: The response of a call to `CalculatedChannelService_GetCalculatedChannelVersions`.
+      required:
+      - calculatedChannels
     v1RuleAction:
       type: object
       properties:
@@ -916,33 +1030,310 @@ components:
       - createdByUserId
       - modifiedByUserId
       - ruleActionVersionId
-    v2CalculatedChannelResolution:
+    v1RuleVersion:
+      type: object
+      properties:
+        ruleId:
+          type: string
+        ruleVersionId:
+          type: string
+        version:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        versionNotes:
+          type: string
+        generatedChangeMessage:
+          type: string
+        deletedDate:
+          type: string
+          format: date-time
+        archivedDate:
+          type: string
+          format: date-time
+          title: archived_date indicates when the rule version was archived
+        isArchived:
+          type: boolean
+          title: is_archived is inferred from when archived_date is not null
+      required:
+      - ruleId
+      - ruleVersionId
+      - version
+      - createdDate
+      - createdByUserId
+      - versionNotes
+      - generatedChangeMessage
+      - isArchived
+    v2BatchResolveCalculatedChannelsRequest:
+      type: object
+      properties:
+        requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2ResolveCalculatedChannelRequest'
+          description: All calculated channels to resolve.
+      description: The request of a call to `CalculatedChannelService_BatchResolveCalculatedChannels`.
+      required:
+      - requests
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v2GetCalculatedChannelDependentsResponse:
+      type: object
+      properties:
+        calculatedChannels:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannel'
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1Rule'
+      description: The response of a call to `CalculatedChannelService_GetCalculatedChannelDependents`.
+      required:
+      - calculatedChannels
+      - rules
+    v1RuleCondition:
+      type: object
+      properties:
+        ruleConditionId:
+          type: string
+        ruleId:
+          type: string
+        expression:
+          $ref: '#/components/schemas/v1RuleConditionExpression'
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1RuleAction'
+        ruleConditionVersionId:
+          type: string
+      required:
+      - ruleConditionId
+      - ruleId
+      - expression
+      - createdDate
+      - modifiedDate
+      - createdByUserId
+      - modifiedByUserId
+      - actions
+      - ruleConditionVersionId
+    v2ListCalculatedChannelsResponse:
+      type: object
+      properties:
+        calculatedChannels:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannel'
+        nextPageToken:
+          type: string
+      description: The response of a call to `CalculatedChannelService_ListCalculatedChannels`.
+      required:
+      - calculatedChannels
+    v2CalculatedChannel:
+      type: object
+      properties:
+        calculatedChannelId:
+          type: string
+        organizationId:
+          type: string
+        clientKey:
+          type: string
+        archivedDate:
+          type: string
+          format: date-time
+        versionId:
+          type: string
+        version:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        changeMessage:
+          type: string
+        userNotes:
+          type: string
+        units:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        calculatedChannelConfiguration:
+          $ref: '#/components/schemas/v2CalculatedChannelConfiguration'
+        createdByUserId:
+          type: string
+        modifiedByUserId:
+          type: string
+        functionDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FunctionDependency'
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+        isArchived:
+          type: boolean
+          description: Whether the calculated channel is archived. This is inferred from whether archived_date is set.
+        calculatedChannelDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/calculated_channelsv2CalculatedChannelDependency'
+          description: Calculated channels that this channel depends on.
+        folderIds:
+          type: array
+          items:
+            type: string
+          description: Ids of the folders this calculated channel belongs to.
+      required:
+      - calculatedChannelId
+      - organizationId
+      - versionId
+      - version
+      - name
+      - description
+      - changeMessage
+      - userNotes
+      - createdDate
+      - modifiedDate
+      - calculatedChannelConfiguration
+      - createdByUserId
+      - modifiedByUserId
+      - functionDependencies
+      - metadata
+      - isArchived
+      - calculatedChannelDependencies
+    v2UpdateCalculatedChannelResponse:
       type: object
       properties:
         calculatedChannel:
           $ref: '#/components/schemas/v2CalculatedChannel'
-        resolved:
+        inapplicableAssets:
           type: array
           items:
-            $ref: '#/components/schemas/v2ResolvedCalculatedChannel'
-          description: All resolved calculated channels.
-        unresolved:
-          type: array
-          items:
-            $ref: '#/components/schemas/v2UnresolvedCalculatedChannel'
-          description: All assets with any issues in resolution.
+            $ref: '#/components/schemas/v2CalculatedChannelValidationResult'
+      description: The response of a call to `CalculatedChannelService_UpdateCalculatedChannel`.
       required:
-      - resolved
-      - unresolved
-    v1RuleActionConfiguration:
+      - calculatedChannel
+      - inapplicableAssets
+    v1NotificationActionConfiguration:
       type: object
       properties:
-        notification:
-          $ref: '#/components/schemas/v1NotificationActionConfiguration'
-        annotation:
-          $ref: '#/components/schemas/v1AnnotationActionConfiguration'
-        webhook:
-          $ref: '#/components/schemas/v1WebhookActionConfiguration'
+        recipientUserIds:
+          type: array
+          items:
+            type: string
+      required:
+      - recipientUserIds
+    calculated_channelsv2CalculatedChannelDependency:
+      type: object
+      properties:
+        calculatedChannelVersionId:
+          type: string
+      description: A dependency on another calculated channel.
+      required:
+      - calculatedChannelVersionId
+    v1RuleAssetConfiguration:
+      type: object
+      properties:
+        assetIds:
+          type: array
+          items:
+            type: string
+        tagIds:
+          type: array
+          items:
+            type: string
+    v1LastValueThreshold:
+      type: object
+    CalculatedChannelQueryConfigurationSel:
+      type: object
+      properties:
+        expression:
+          type: string
+        expressionChannelReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2CalculatedChannelAbstractChannelReference'
+      description: Sift Expression Language.
+      required:
+      - expression
+      - expressionChannelReferences
+    v1ChannelDataType:
+      type: string
+      enum:
+      - CHANNEL_DATA_TYPE_UNSPECIFIED
+      - CHANNEL_DATA_TYPE_DOUBLE
+      - CHANNEL_DATA_TYPE_STRING
+      - CHANNEL_DATA_TYPE_ENUM
+      - CHANNEL_DATA_TYPE_BIT_FIELD
+      - CHANNEL_DATA_TYPE_BOOL
+      - CHANNEL_DATA_TYPE_FLOAT
+      - CHANNEL_DATA_TYPE_INT_32
+      - CHANNEL_DATA_TYPE_UINT_32
+      - CHANNEL_DATA_TYPE_INT_64
+      - CHANNEL_DATA_TYPE_UINT_64
+      - CHANNEL_DATA_TYPE_BYTES
+      default: CHANNEL_DATA_TYPE_UNSPECIFIED
+    v2UpdateCalculatedChannelRequest:
+      type: object
+      properties:
+        calculatedChannel:
+          $ref: '#/components/schemas/v2CalculatedChannel'
+        updateMask:
+          type: string
+          description: 'The list of fields to be updated. The fields available to be updated are `name`, `description`, `units`, `metadata`,
+
+            `query_configuration`, `archived_date`, `is_archived`, and `asset_configuration`.'
+        userNotes:
+          type: string
+          description: Optional user notes to describe changes.
+      description: 'The request for a call to `CalculatedChannelService_UpdateCalculatedChannel` to update a calculated channel. Updating a calculated
+
+        channel creates a new version of the calculated channel, leaving the previous untouched. If no update is deemed necessary, then the
+
+        the current version is returned. To archive calculated channel, specify `archived_date` in the `update mask` as well as a non-null
+
+        value for `archived_date` in the `calculated_channel` object. To unarchive a calculated channel, specify `archived_date` in the
+
+        `update mask` and a `null` value for `archived_date` in the `calculated_channel` object.'
+      required:
+      - calculatedChannel
+      - updateMask
+    v1Ids:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+      required:
+      - ids
     v1Rule:
       type: object
       properties:
@@ -1044,20 +1435,35 @@ components:
       - metadata
       - isArchived
       - currentVersionId
-    v2CreateCalculatedChannelResponse:
+    v2CalculatedChannelResolution:
       type: object
       properties:
         calculatedChannel:
           $ref: '#/components/schemas/v2CalculatedChannel'
-        inapplicableAssets:
+        resolved:
           type: array
           items:
-            $ref: '#/components/schemas/v2CalculatedChannelValidationResult'
+            $ref: '#/components/schemas/v2ResolvedCalculatedChannel'
+          description: All resolved calculated channels.
+        unresolved:
+          type: array
+          items:
+            $ref: '#/components/schemas/v2UnresolvedCalculatedChannel'
+          description: All assets with any issues in resolution.
       required:
-      - calculatedChannel
-      - inapplicableAssets
-    v1LastValueThreshold:
-      type: object
+      - resolved
+      - unresolved
+    v1ConditionComparator:
+      type: string
+      enum:
+      - CONDITION_COMPARATOR_UNSPECIFIED
+      - LESS_THAN
+      - LESS_THAN_OR_EQUAL
+      - GREATER_THAN
+      - GREATER_THAN_OR_EQUAL
+      - EQUAL
+      - NOT_EQUAL
+      default: CONDITION_COMPARATOR_UNSPECIFIED
     v1WebhookActionConfiguration:
       type: object
       properties:
@@ -1065,135 +1471,26 @@ components:
           type: string
       required:
       - webhookId
-    CalculatedChannelQueryConfigurationSel:
+    v2ResolveCalculatedChannelResponse:
       type: object
       properties:
-        expression:
+        calculatedChannelId:
           type: string
-        expressionChannelReferences:
+          description: If provided in the request, the calculated channel resolved.
+        resolved:
           type: array
           items:
-            $ref: '#/components/schemas/v2CalculatedChannelAbstractChannelReference'
-      description: Sift Expression Language.
-      required:
-      - expression
-      - expressionChannelReferences
-    v2BatchResolveCalculatedChannelsResponse:
-      type: object
-      properties:
-        responses:
+            $ref: '#/components/schemas/v2ResolvedCalculatedChannel'
+          description: All resolved calculated channels.
+        unresolved:
           type: array
           items:
-            $ref: '#/components/schemas/v2ResolveCalculatedChannelResponse'
-          description: All calculated channels that attempted resolution.
-      description: The response of a call to `CalculatedChannelService_BatchResolveCalculatedChannels`.
+            $ref: '#/components/schemas/v2UnresolvedCalculatedChannel'
+          description: All assets with any issues in resolution.
+      description: The response of a call to `CalculatedChannelService_ResolveCalculatedChannel`.
       required:
-      - responses
-    v1MetadataKey:
-      type: object
-      properties:
-        name:
-          type: string
-        type:
-          $ref: '#/components/schemas/v1MetadataKeyType'
-        archivedDate:
-          type: string
-          format: date-time
-        isArchived:
-          type: boolean
-          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
-      required:
-      - name
-      - type
-    v2CalculatedChannelValidationResult:
-      type: object
-      properties:
-        assetId:
-          type: string
-        assetName:
-          type: string
-          title: Only included if asset was named in the request
-        tagNames:
-          type: array
-          items:
-            type: string
-          title: Includes all tags that have this asset
-        missingChannels:
-          type: array
-          items:
-            type: string
-          title: Names of the channels that asset does not have
-      required:
-      - assetId
-      - tagNames
-      - missingChannels
-    siftrulesv1CalculatedChannelConfig:
-      type: object
-      properties:
-        channelReferences:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/rulesv1ChannelReference'
-        expression:
-          type: string
-        functionDependencies:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1FunctionDependency'
-          description: This will be ignored in requests and will be generated automatically.
-        calculatedChannelDependencies:
-          type: array
-          items:
-            $ref: '#/components/schemas/typev1CalculatedChannelDependency'
-          description: 'This will be ignored in requests and will be generated automatically.
-
-            Tracks which calculated channel versions this rule depends on.'
-          readOnly: true
-      required:
-      - channelReferences
-      - expression
-    v2UnresolvedCalculatedChannel:
-      type: object
-      properties:
-        assetName:
-          type: string
-          description: The name of the specific asset that was not resolved.
-        errorMessage:
-          type: string
-      description: Any failure in resolution.
-      required:
-      - assetName
-      - errorMessage
-    v1NotificationActionConfiguration:
-      type: object
-      properties:
-        recipientUserIds:
-          type: array
-          items:
-            type: string
-      required:
-      - recipientUserIds
-    rulesv1ChannelReference:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Required for native channel references. Must not be set when calculated_channel_version_id is provided.
-        component:
-          type: string
-          description: 'Deprecated - use name instead. If provided, name will be joined with the component as `component.name`.
-
-            Must not be set when calculated_channel_version_id is provided.'
-        calculatedChannelVersionId:
-          type: string
-          description: 'Reference to a calculated channel version. When set, the rule will use the calculated channel
-
-            instead of looking up a native channel by name. Must not be set when name is provided.'
-    v2CalculatedChannelQueryConfiguration:
-      type: object
-      properties:
-        sel:
-          $ref: '#/components/schemas/CalculatedChannelQueryConfigurationSel'
+      - resolved
+      - unresolved
     v1MetadataValue:
       type: object
       properties:
@@ -1216,361 +1513,64 @@ components:
           description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
       required:
       - key
-    v1RuleCondition:
+    v1RuleActionConfiguration:
       type: object
       properties:
-        ruleConditionId:
-          type: string
-        ruleId:
-          type: string
-        expression:
-          $ref: '#/components/schemas/v1RuleConditionExpression'
-        createdDate:
-          type: string
-          format: date-time
-        modifiedDate:
-          type: string
-          format: date-time
-        createdByUserId:
-          type: string
-        modifiedByUserId:
-          type: string
-        actions:
+        notification:
+          $ref: '#/components/schemas/v1NotificationActionConfiguration'
+        annotation:
+          $ref: '#/components/schemas/v1AnnotationActionConfiguration'
+        webhook:
+          $ref: '#/components/schemas/v1WebhookActionConfiguration'
+    v1ContextualChannels:
+      type: object
+      properties:
+        channels:
           type: array
           items:
-            $ref: '#/components/schemas/v1RuleAction'
-        ruleConditionVersionId:
-          type: string
+            $ref: '#/components/schemas/rulesv1ChannelReference'
       required:
-      - ruleConditionId
-      - ruleId
-      - expression
-      - createdDate
-      - modifiedDate
-      - createdByUserId
-      - modifiedByUserId
-      - actions
-      - ruleConditionVersionId
-    v2ListCalculatedChannelsResponse:
+      - channels
+    rulesv1ChannelReference:
       type: object
       properties:
-        calculatedChannels:
+        name:
+          type: string
+          description: Required for native channel references. Must not be set when calculated_channel_version_id is provided.
+        component:
+          type: string
+          description: 'Deprecated - use name instead. If provided, name will be joined with the component as `component.name`.
+
+            Must not be set when calculated_channel_version_id is provided.'
+        calculatedChannelVersionId:
+          type: string
+          description: 'Reference to a calculated channel version. When set, the rule will use the calculated channel
+
+            instead of looking up a native channel by name. Must not be set when name is provided.'
+    v2UnresolvedCalculatedChannel:
+      type: object
+      properties:
+        assetName:
+          type: string
+          description: The name of the specific asset that was not resolved.
+        errorMessage:
+          type: string
+      description: Any failure in resolution.
+      required:
+      - assetName
+      - errorMessage
+    v2ListCalculatedChannelVersionsResponse:
+      type: object
+      properties:
+        calculatedChannelVersions:
           type: array
           items:
             $ref: '#/components/schemas/v2CalculatedChannel'
         nextPageToken:
           type: string
-      description: The response of a call to `CalculatedChannelService_ListCalculatedChannels`.
+      description: The response of a call to `CalculatedChannelService_ListCalculatedChannelVersions`.
       required:
-      - calculatedChannels
-    v2CreateCalculatedChannelRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        userNotes:
-          type: string
-        units:
-          type: string
-        clientKey:
-          type: string
-        calculatedChannelConfiguration:
-          $ref: '#/components/schemas/v2CalculatedChannelConfiguration'
-        metadata:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1MetadataValue'
-      required:
-      - name
-      - calculatedChannelConfiguration
-      - metadata
-    rpcStatus:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/protobufAny'
-    v1ActionKind:
-      type: string
-      enum:
-      - ACTION_KIND_UNSPECIFIED
-      - NOTIFICATION
-      - ANNOTATION
-      - WEBHOOK
-      default: ACTION_KIND_UNSPECIFIED
-    v2UpdateCalculatedChannelRequest:
-      type: object
-      properties:
-        calculatedChannel:
-          $ref: '#/components/schemas/v2CalculatedChannel'
-        updateMask:
-          type: string
-          description: 'The list of fields to be updated. The fields available to be updated are `name`, `description`, `units`, `metadata`,
-
-            `query_configuration`, `archived_date`, `is_archived`, and `asset_configuration`.'
-        userNotes:
-          type: string
-          description: Optional user notes to describe changes.
-      description: 'The request for a call to `CalculatedChannelService_UpdateCalculatedChannel` to update a calculated channel. Updating a calculated
-
-        channel creates a new version of the calculated channel, leaving the previous untouched. If no update is deemed necessary, then the
-
-        the current version is returned. To archive calculated channel, specify `archived_date` in the `update mask` as well as a non-null
-
-        value for `archived_date` in the `calculated_channel` object. To unarchive a calculated channel, specify `archived_date` in the
-
-        `update mask` and a `null` value for `archived_date` in the `calculated_channel` object.'
-      required:
-      - calculatedChannel
-      - updateMask
-    v2CalculatedChannel:
-      type: object
-      properties:
-        calculatedChannelId:
-          type: string
-        organizationId:
-          type: string
-        clientKey:
-          type: string
-        archivedDate:
-          type: string
-          format: date-time
-        versionId:
-          type: string
-        version:
-          type: integer
-          format: int64
-        name:
-          type: string
-        description:
-          type: string
-        changeMessage:
-          type: string
-        userNotes:
-          type: string
-        units:
-          type: string
-        createdDate:
-          type: string
-          format: date-time
-        modifiedDate:
-          type: string
-          format: date-time
-        calculatedChannelConfiguration:
-          $ref: '#/components/schemas/v2CalculatedChannelConfiguration'
-        createdByUserId:
-          type: string
-        modifiedByUserId:
-          type: string
-        functionDependencies:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1FunctionDependency'
-        metadata:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1MetadataValue'
-        isArchived:
-          type: boolean
-          description: Whether the calculated channel is archived. This is inferred from whether archived_date is set.
-        calculatedChannelDependencies:
-          type: array
-          items:
-            $ref: '#/components/schemas/calculated_channelsv2CalculatedChannelDependency'
-          description: Calculated channels that this channel depends on.
-        folderIds:
-          type: array
-          items:
-            type: string
-          description: Ids of the folders this calculated channel belongs to.
-      required:
-      - calculatedChannelId
-      - organizationId
-      - versionId
-      - version
-      - name
-      - description
-      - changeMessage
-      - userNotes
-      - createdDate
-      - modifiedDate
-      - calculatedChannelConfiguration
-      - createdByUserId
-      - modifiedByUserId
-      - functionDependencies
-      - metadata
-      - isArchived
-      - calculatedChannelDependencies
-    v2ResolvedCalculatedChannel:
-      type: object
-      properties:
-        assetName:
-          type: string
-          description: The name of the specific asset that was resolved.
-        expressionRequest:
-          $ref: '#/components/schemas/v1ExpressionRequest'
-        outputDataType:
-          $ref: '#/components/schemas/v1ChannelDataType'
-        assetId:
-          type: string
-      description: A specific calculated channel including the asset and exact channels to query.
-      required:
-      - assetName
-      - expressionRequest
-      - outputDataType
-      - assetId
-    v1AnnotationType:
-      type: string
-      enum:
-      - ANNOTATION_TYPE_UNSPECIFIED
-      - ANNOTATION_TYPE_DATA_REVIEW
-      - ANNOTATION_TYPE_PHASE
-      default: ANNOTATION_TYPE_UNSPECIFIED
-    v2ResolveCalculatedChannelRequest:
-      type: object
-      properties:
-        identifier:
-          $ref: '#/components/schemas/v1ResourceIdentifier'
-        calculatedChannelConfiguration:
-          $ref: '#/components/schemas/v2CalculatedChannelConfiguration'
-        organizationId:
-          type: string
-          description: This field is only required if your user belongs to multiple organizations.
-        assets:
-          $ref: '#/components/schemas/v1NamedResources'
-        run:
-          $ref: '#/components/schemas/v1ResourceIdentifier'
-      description: "The request for a call to `CalculatedChannelService_ResolveCalculatedChannel` to get the all possible calculated channels.\n1) If the calculated channel has a selection of assets and tags then those assets will be used as a base and then filtered down by the given assets and assets from the run.\n2) If the calculated channel is enabled for all assets then:\n  a) If the request has run and assets from the run will be used as a base and then filtered down by the given assets.\n  b) If the request has run and no assets then those assets will be used.\n  c) If the request has only assets then those assets will be used.\nThe `organization_id` argument is only required if using `client_key` and the user belongs to multiple organizations."
-    v1MetadataRelationValue:
-      type: object
-      properties:
-        resourceType:
-          type: string
-        resourceId:
-          type: string
-      required:
-      - resourceType
-      - resourceId
-    v1RuleVersion:
-      type: object
-      properties:
-        ruleId:
-          type: string
-        ruleVersionId:
-          type: string
-        version:
-          type: string
-        createdDate:
-          type: string
-          format: date-time
-        createdByUserId:
-          type: string
-        versionNotes:
-          type: string
-        generatedChangeMessage:
-          type: string
-        deletedDate:
-          type: string
-          format: date-time
-        archivedDate:
-          type: string
-          format: date-time
-          title: archived_date indicates when the rule version was archived
-        isArchived:
-          type: boolean
-          title: is_archived is inferred from when archived_date is not null
-      required:
-      - ruleId
-      - ruleVersionId
-      - version
-      - createdDate
-      - createdByUserId
-      - versionNotes
-      - generatedChangeMessage
-      - isArchived
-    v2ListResolvedCalculatedChannelsResponse:
-      type: object
-      properties:
-        calculatedChannelResolutions:
-          type: array
-          items:
-            $ref: '#/components/schemas/v2CalculatedChannelResolution'
-        nextPageToken:
-          type: string
-      required:
-      - calculatedChannelResolutions
-    CalculatedChannelAssetConfigurationAssetSelection:
-      type: object
-      properties:
-        assetIds:
-          type: array
-          items:
-            type: string
-        tagIds:
-          type: array
-          items:
-            type: string
-      required:
-      - assetIds
-      - tagIds
-    v1SingleChannelComparisonExpression:
-      type: object
-      properties:
-        channelComponent:
-          type: string
-          title: Deprecated - use channel_name instead. If provided, channel_component will be joined with the name as `channel_component.channel_name`
-        channelName:
-          type: string
-        comparator:
-          $ref: '#/components/schemas/v1ConditionComparator'
-        double:
-          type: number
-          format: double
-        string:
-          type: string
-        lastValue:
-          $ref: '#/components/schemas/v1LastValueThreshold'
-      description: Deprecated - use CalculatedChannelConfig.
-      required:
-      - channelComponent
-      - channelName
-      - comparator
-    v1ResourceIdentifier:
-      type: object
-      properties:
-        id:
-          type: string
-        clientKey:
-          type: string
-    v2CalculatedChannelAbstractChannelReference:
-      type: object
-      properties:
-        channelReference:
-          type: string
-        channelIdentifier:
-          type: string
-          title: must use either a channel_identifier or a calculated_channel_reference, not both
-        calculatedChannelVersionId:
-          type: string
-        calculatedChannel:
-          $ref: '#/components/schemas/v1ExpressionRequest'
-      required:
-      - channelReference
-    v2GetCalculatedChannelResponse:
-      type: object
-      properties:
-        calculatedChannel:
-          $ref: '#/components/schemas/v2CalculatedChannel'
-      required:
-      - calculatedChannel
+      - calculatedChannelVersions
   securitySchemes:
     BearerAuth:
       type: http
