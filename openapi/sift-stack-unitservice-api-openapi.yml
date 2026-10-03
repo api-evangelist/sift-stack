@@ -115,16 +115,6 @@ paths:
       - UnitService
 components:
   schemas:
-    unitv2Unit:
-      type: object
-      properties:
-        unitId:
-          type: string
-        abbreviatedName:
-          type: string
-      required:
-      - unitId
-      - abbreviatedName
     v2ListUnitsResponse:
       type: object
       properties:
@@ -139,6 +129,23 @@ components:
             If this field is empty, there are no subsequent pages.'
       required:
       - units
+    v2CreateUnitResponse:
+      type: object
+      properties:
+        unit:
+          $ref: '#/components/schemas/unitv2Unit'
+      required:
+      - unit
+    unitv2Unit:
+      type: object
+      properties:
+        unitId:
+          type: string
+        abbreviatedName:
+          type: string
+      required:
+      - unitId
+      - abbreviatedName
     protobufAny:
       type: object
       properties:
@@ -159,13 +166,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/protobufAny'
-    v2CreateUnitResponse:
-      type: object
-      properties:
-        unit:
-          $ref: '#/components/schemas/unitv2Unit'
-      required:
-      - unit
   securitySchemes:
     BearerAuth:
       type: http

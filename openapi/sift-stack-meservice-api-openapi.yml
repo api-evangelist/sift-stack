@@ -34,6 +34,27 @@ paths:
       - MeService
 components:
   schemas:
+    v2PermissionResources:
+      type: object
+      properties:
+        permissionResources:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/v2Resources'
+      required:
+      - permissionResources
+    v1Organization:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        organizationName:
+          type: string
+        isAbacEnabled:
+          type: boolean
+      required:
+      - organizationId
+      - organizationName
     v2Resources:
       type: object
       properties:
@@ -70,24 +91,6 @@ components:
       - isAdmin
       - permissions
       - createdDate
-    v2PermissionResources:
-      type: object
-      properties:
-        permissionResources:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/v2Resources'
-      required:
-      - permissionResources
-    v2Permissions:
-      type: object
-      properties:
-        organizationPermissionResources:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/v2PermissionResources'
-      required:
-      - organizationPermissionResources
     protobufAny:
       type: object
       properties:
@@ -108,18 +111,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/protobufAny'
-    v1Organization:
+    v2Permissions:
       type: object
       properties:
-        organizationId:
-          type: string
-        organizationName:
-          type: string
-        isAbacEnabled:
-          type: boolean
+        organizationPermissionResources:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/v2PermissionResources'
       required:
-      - organizationId
-      - organizationName
+      - organizationPermissionResources
   securitySchemes:
     BearerAuth:
       type: http

@@ -84,18 +84,6 @@ paths:
       - RoleService
 components:
   schemas:
-    rpcStatus:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/protobufAny'
     protobufAny:
       type: object
       properties:
@@ -113,6 +101,18 @@ components:
             $ref: '#/components/schemas/v2Role'
         nextPageToken:
           type: string
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
     v2Role:
       type: object
       properties:

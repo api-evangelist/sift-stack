@@ -93,6 +93,46 @@ paths:
       - DocsService
 components:
   schemas:
+    v1ReadDocResponse:
+      type: object
+      properties:
+        path:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        totalLines:
+          type: integer
+          format: int32
+          description: Total line count of the page (independent of offset/limit).
+          readOnly: true
+        startLine:
+          type: integer
+          format: int32
+          description: 1-indexed line number of the first returned line.
+          readOnly: true
+        content:
+          type: string
+          description: 'Page markdown. Each line is prefixed with "{line_number}\t" so follow-up
+
+            reads can target specific ranges. MDX/JSX tags are stripped; fenced code
+
+            blocks are preserved.'
+          readOnly: true
+    v1SearchDocsResponse:
+      type: object
+      properties:
+        hits:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1DocHit'
+          readOnly: true
+        totalScanned:
+          type: integer
+          format: int32
+          description: Total number of doc pages scanned to produce these hits.
+          readOnly: true
     v1DocHit:
       type: object
       properties:
@@ -148,46 +188,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/protobufAny'
-    v1ReadDocResponse:
-      type: object
-      properties:
-        path:
-          type: string
-          readOnly: true
-        title:
-          type: string
-          readOnly: true
-        totalLines:
-          type: integer
-          format: int32
-          description: Total line count of the page (independent of offset/limit).
-          readOnly: true
-        startLine:
-          type: integer
-          format: int32
-          description: 1-indexed line number of the first returned line.
-          readOnly: true
-        content:
-          type: string
-          description: 'Page markdown. Each line is prefixed with "{line_number}\t" so follow-up
-
-            reads can target specific ranges. MDX/JSX tags are stripped; fenced code
-
-            blocks are preserved.'
-          readOnly: true
-    v1SearchDocsResponse:
-      type: object
-      properties:
-        hits:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1DocHit'
-          readOnly: true
-        totalScanned:
-          type: integer
-          format: int32
-          description: Total number of doc pages scanned to produce these hits.
-          readOnly: true
   securitySchemes:
     BearerAuth:
       type: http
