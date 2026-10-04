@@ -633,26 +633,222 @@ paths:
       - TestReportService
 components:
   schemas:
-    v1MetadataRelationValue:
+    v1CreateTestMeasurementResponse:
       type: object
       properties:
-        resourceType:
+        testMeasurement:
+          $ref: '#/components/schemas/v1TestMeasurement'
+      title: Response message for CreateTestMeasurement
+    v1CountTestStepsResponse:
+      type: object
+      properties:
+        count:
           type: string
-        resourceId:
+          format: int64
+          title: The total count of test steps matching the filter
+      title: Response message for CountTestSteps
+    v1MetadataValue:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/v1MetadataKey'
+        stringValue:
           type: string
+        numberValue:
+          type: number
+          format: double
+        booleanValue:
+          type: boolean
+        relationValue:
+          $ref: '#/components/schemas/v1MetadataRelationValue'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
       required:
-      - resourceType
-      - resourceId
-    v1DeleteTestMeasurementResponse:
+      - key
+    v1TestStatus:
+      type: string
+      enum:
+      - TEST_STATUS_UNSPECIFIED
+      - TEST_STATUS_DRAFT
+      - TEST_STATUS_PASSED
+      - TEST_STATUS_FAILED
+      - TEST_STATUS_ABORTED
+      - TEST_STATUS_ERROR
+      - TEST_STATUS_IN_PROGRESS
+      - TEST_STATUS_SKIPPED
+      default: TEST_STATUS_UNSPECIFIED
+      title: '- TEST_STATUS_DRAFT: Barebones test report created, waiting for file processing'
+    v1UpdateTestMeasurementResponse:
+      type: object
+      properties:
+        testMeasurement:
+          $ref: '#/components/schemas/v1TestMeasurement'
+      title: Response message for UpdateTestMeasurement
+    v1ImportTestReportRequest:
+      type: object
+      properties:
+        remoteFileId:
+          type: string
+          title: The remote file ID containing the XML test data
+      title: Request message for ImportTestReport
+      required:
+      - remoteFileId
+    v1CreateTestMeasurementsResponse:
+      type: object
+      properties:
+        measurementsCreatedCount:
+          type: integer
+          format: int32
+          title: The number of test measurements successfully created
+        measurementIds:
+          type: array
+          items:
+            type: string
+          title: The IDs of the created test measurements
+      title: Response message for CreateTestMeasurements
+      required:
+      - measurementsCreatedCount
+      - measurementIds
+    v1TestStep:
+      type: object
+      properties:
+        testStepId:
+          type: string
+          title: unique identifier for the step
+        testReportId:
+          type: string
+          title: pointer to overall test run
+        parentStepId:
+          type: string
+          title: pointer to parent step, if any
+        name:
+          type: string
+          title: Name of the test step for display
+        description:
+          type: string
+          title: Description of the test step from test controller
+        stepType:
+          $ref: '#/components/schemas/v1TestStepType'
+        stepPath:
+          type: string
+          title: Hierarchical path (e.g., "1", "1.1", "1.2.3")
+        status:
+          $ref: '#/components/schemas/v1TestStatus'
+        startTime:
+          type: string
+          format: date-time
+          title: Start time of the test step
+        endTime:
+          type: string
+          format: date-time
+          title: End time of the test step
+        errorInfo:
+          $ref: '#/components/schemas/v1ErrorInfo'
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          title: The metadata values associated with this test step
+      required:
+      - testStepId
+      - testReportId
+      - name
+      - stepType
+      - stepPath
+      - status
+      - startTime
+      - endTime
+    v1UpdateTestStepResponse:
+      type: object
+      properties:
+        testStep:
+          $ref: '#/components/schemas/v1TestStep'
+      title: Response message for UpdateTestStep
+    v1DeleteTestStepResponse:
       type: object
       description: Empty response indicating successful deletion
-      title: Response message for DeleteTestMeasurement
+      title: Response message for DeleteTestStep
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    unitv2Unit:
+      type: object
+      properties:
+        unitId:
+          type: string
+        abbreviatedName:
+          type: string
+      required:
+      - unitId
+      - abbreviatedName
+    v1GetTestReportResponse:
+      type: object
+      properties:
+        testReport:
+          $ref: '#/components/schemas/v1TestReport'
+      title: Response message for GetTestReport
+    v1ImportTestReportResponse:
+      type: object
+      properties:
+        testReport:
+          $ref: '#/components/schemas/v1TestReport'
+      title: Response message for ImportTestReport
+    v1MetadataKey:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1MetadataKeyType'
+        archivedDate:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
+      required:
+      - name
+      - type
     v1CreateTestReportResponse:
       type: object
       properties:
         testReport:
           $ref: '#/components/schemas/v1TestReport'
       title: Response message for CreateTestReport
+    v1UpdateTestReportResponse:
+      type: object
+      properties:
+        testReport:
+          $ref: '#/components/schemas/v1TestReport'
+      title: Response message for UpdateTestReport
+    v1UpdateTestMeasurementRequest:
+      type: object
+      properties:
+        testMeasurement:
+          $ref: '#/components/schemas/v1TestMeasurement'
+        updateMask:
+          type: string
+          description: 'The field mask specifying which fields to update. The fields available to be updated are
+
+            `name`, `measurement_type`, `numeric_value`, `string_value`, `boolean_value`, `unit`, `numeric_bounds`,
+
+            `string_bounds`, `passed`, `timestamp`, `description`, and `channel_names` and `metadata`. When `metadata` is in the
+
+            mask, the supplied list replaces all existing metadata for the measurement; sending
+
+            an empty or omitted list clears all metadata.'
+      title: Request message for UpdateTestMeasurement
+      required:
+      - testMeasurement
     v1UpdateTestStepRequest:
       type: object
       properties:
@@ -672,68 +868,6 @@ components:
       title: Request message for UpdateTestStep
       required:
       - testStep
-    v1ErrorInfo:
-      type: object
-      properties:
-        errorCode:
-          type: integer
-          format: int32
-        errorMessage:
-          type: string
-      required:
-      - errorCode
-      - errorMessage
-    protobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
-      additionalProperties: {}
-      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
-    v1DeleteTestStepResponse:
-      type: object
-      description: Empty response indicating successful deletion
-      title: Response message for DeleteTestStep
-    v1CreateTestMeasurementsRequest:
-      type: object
-      properties:
-        testMeasurements:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1TestMeasurement'
-          title: The test measurements to create
-      title: Request message for CreateTestMeasurements
-      required:
-      - testMeasurements
-    v1MetadataKey:
-      type: object
-      properties:
-        name:
-          type: string
-        type:
-          $ref: '#/components/schemas/v1MetadataKeyType'
-        archivedDate:
-          type: string
-          format: date-time
-        isArchived:
-          type: boolean
-          description: "Whether the metadata key is archived. This is inferred from whether archived_date is set.\n\nThe filter field type this key maps to, so a client can build a CEL filter\n against it (`metadata[\"<name>\"]`) and resolve its operators and functions\n from FilterGrammarService. Derived from `type`."
-      required:
-      - name
-      - type
-    v1ImportTestReportResponse:
-      type: object
-      properties:
-        testReport:
-          $ref: '#/components/schemas/v1TestReport'
-      title: Response message for ImportTestReport
-    v1UpdateTestReportResponse:
-      type: object
-      properties:
-        testReport:
-          $ref: '#/components/schemas/v1TestReport'
-      title: Response message for UpdateTestReport
     v1TestReport:
       type: object
       properties:
@@ -791,81 +925,43 @@ components:
       - testCase
       - startTime
       - endTime
-    v1ListTestReportsResponse:
+    v1ListTestMeasurementsResponse:
       type: object
       properties:
-        testReports:
+        testMeasurements:
           type: array
           items:
-            $ref: '#/components/schemas/v1TestReport'
-          title: The list of test reports
+            $ref: '#/components/schemas/v1TestMeasurement'
+          title: The list of test measurements
         nextPageToken:
           type: string
           title: The next page token for pagination
-      title: Response message for ListTestReports
-    v1TestMeasurementType:
+      title: Response message for ListTestMeasurements
+    v1DeleteTestReportResponse:
+      type: object
+      description: Empty response indicating successful deletion
+      title: Response message for DeleteTestReport
+    v1CreateTestMeasurementsRequest:
+      type: object
+      properties:
+        testMeasurements:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1TestMeasurement'
+          title: The test measurements to create
+      title: Request message for CreateTestMeasurements
+      required:
+      - testMeasurements
+    v1MetadataKeyType:
       type: string
       enum:
-      - TEST_MEASUREMENT_TYPE_UNSPECIFIED
-      - TEST_MEASUREMENT_TYPE_DOUBLE
-      - TEST_MEASUREMENT_TYPE_STRING
-      - TEST_MEASUREMENT_TYPE_BOOLEAN
-      - TEST_MEASUREMENT_TYPE_LIMIT
-      default: TEST_MEASUREMENT_TYPE_UNSPECIFIED
-    v1UpdateTestMeasurementResponse:
-      type: object
-      properties:
-        testMeasurement:
-          $ref: '#/components/schemas/v1TestMeasurement'
-      title: Response message for UpdateTestMeasurement
-    v1MetadataValue:
-      type: object
-      properties:
-        key:
-          $ref: '#/components/schemas/v1MetadataKey'
-        stringValue:
-          type: string
-        numberValue:
-          type: number
-          format: double
-        booleanValue:
-          type: boolean
-        relationValue:
-          $ref: '#/components/schemas/v1MetadataRelationValue'
-        archivedDate:
-          type: string
-          format: date-time
-        isArchived:
-          type: boolean
-          description: Whether the metadata value is archived. This is inferred from whether archived_date is set.
-      required:
-      - key
-    v1TestStepType:
-      type: string
-      enum:
-      - TEST_STEP_TYPE_UNSPECIFIED
-      - TEST_STEP_TYPE_SEQUENCE
-      - TEST_STEP_TYPE_GROUP
-      - TEST_STEP_TYPE_ACTION
-      - TEST_STEP_TYPE_FLOW_CONTROL
-      default: TEST_STEP_TYPE_UNSPECIFIED
-      title: "- TEST_STEP_TYPE_SEQUENCE: ResultSet/MainSequence - top-level test sequence\n - TEST_STEP_TYPE_GROUP: TestGroup - logical grouping of test steps\n - TEST_STEP_TYPE_ACTION: SessionAction - individual executable action\n - TEST_STEP_TYPE_FLOW_CONTROL: Flow control elements (While, If, etc.)"
-    unitv2Unit:
-      type: object
-      properties:
-        unitId:
-          type: string
-        abbreviatedName:
-          type: string
-      required:
-      - unitId
-      - abbreviatedName
-    v1CreateTestStepResponse:
-      type: object
-      properties:
-        testStep:
-          $ref: '#/components/schemas/v1TestStep'
-      title: Response message for CreateTestStep
+      - METADATA_KEY_TYPE_UNSPECIFIED
+      - METADATA_KEY_TYPE_STRING
+      - METADATA_KEY_TYPE_NUMBER
+      - METADATA_KEY_TYPE_BOOLEAN
+      - METADATA_KEY_TYPE_RELATION
+      default: METADATA_KEY_TYPE_UNSPECIFIED
+      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
     v1CreateTestMeasurementRequest:
       type: object
       properties:
@@ -882,187 +978,39 @@ components:
       title: Request message for CreateTestStep
       required:
       - testStep
-    v1StringBounds:
+    v1ListTestReportsResponse:
       type: object
       properties:
-        expectedValue:
-          type: string
-      required:
-      - expectedValue
-    v1MetadataKeyType:
-      type: string
-      enum:
-      - METADATA_KEY_TYPE_UNSPECIFIED
-      - METADATA_KEY_TYPE_STRING
-      - METADATA_KEY_TYPE_NUMBER
-      - METADATA_KEY_TYPE_BOOLEAN
-      - METADATA_KEY_TYPE_RELATION
-      default: METADATA_KEY_TYPE_UNSPECIFIED
-      description: "Metadata key type.\n\n - METADATA_KEY_TYPE_STRING: string\n - METADATA_KEY_TYPE_NUMBER: number\n - METADATA_KEY_TYPE_BOOLEAN: boolean\n - METADATA_KEY_TYPE_RELATION: relation — references another resource by UUID (e.g. folder membership)"
-    v1UpdateTestStepResponse:
-      type: object
-      properties:
-        testStep:
-          $ref: '#/components/schemas/v1TestStep'
-      title: Response message for UpdateTestStep
-    v1CountTestStepsResponse:
-      type: object
-      properties:
-        count:
-          type: string
-          format: int64
-          title: The total count of test steps matching the filter
-      title: Response message for CountTestSteps
-    v1DeleteTestReportResponse:
-      type: object
-      description: Empty response indicating successful deletion
-      title: Response message for DeleteTestReport
-    v1CreateTestReportRequest:
-      type: object
-      properties:
-        status:
-          $ref: '#/components/schemas/v1TestStatus'
-        name:
-          type: string
-          title: The name of the test run
-        testSystemName:
-          type: string
-          title: The name of the test system
-        testCase:
-          type: string
-          title: The test case that was run
-        startTime:
-          type: string
-          format: date-time
-          title: The start time of the test run
-        endTime:
-          type: string
-          format: date-time
-          title: The end time of the test run
-        metadata:
+        testReports:
           type: array
           items:
-            $ref: '#/components/schemas/v1MetadataValue'
-          title: The metadata values associated with this test run
-        serialNumber:
-          type: string
-          title: The serial number for the DUT
-        partNumber:
-          type: string
-          title: The part number for the DUT
-        systemOperator:
-          type: string
-          title: Unique identifier for user owner
-        runId:
-          type: string
-          title: The run ID for the test report
-      title: Request message for CreateTestReport
-      required:
-      - status
-      - name
-      - testSystemName
-      - testCase
-      - startTime
-      - endTime
-    v1CreateTestMeasurementResponse:
-      type: object
-      properties:
-        testMeasurement:
-          $ref: '#/components/schemas/v1TestMeasurement'
-      title: Response message for CreateTestMeasurement
-    v1ImportTestReportRequest:
-      type: object
-      properties:
-        remoteFileId:
-          type: string
-          title: The remote file ID containing the XML test data
-      title: Request message for ImportTestReport
-      required:
-      - remoteFileId
-    v1CountTestMeasurementsResponse:
-      type: object
-      properties:
-        count:
-          type: string
-          format: int64
-          title: The total count of test measurements matching the filter
-      title: Response message for CountTestMeasurements
-    v1ListTestMeasurementsResponse:
-      type: object
-      properties:
-        testMeasurements:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1TestMeasurement'
-          title: The list of test measurements
+            $ref: '#/components/schemas/v1TestReport'
+          title: The list of test reports
         nextPageToken:
           type: string
           title: The next page token for pagination
-      title: Response message for ListTestMeasurements
-    v1UpdateTestReportRequest:
+      title: Response message for ListTestReports
+    v1ListTestStepsResponse:
       type: object
       properties:
-        testReport:
-          $ref: '#/components/schemas/v1TestReport'
-        updateMask:
-          type: string
-          description: 'The field mask specifying which fields to update. The fields available to be updated are
-
-            `status`, `name`, `test_system_name`, `test_case`, `start_time`, `end_time`, `serial_number`,
-
-            `part_number`, `system_operator`, `run_id`, and `is_archived`.'
-      title: Request message for UpdateTestReport
-      required:
-      - testReport
-    v1TestStep:
-      type: object
-      properties:
-        testStepId:
-          type: string
-          title: unique identifier for the step
-        testReportId:
-          type: string
-          title: pointer to overall test run
-        parentStepId:
-          type: string
-          title: pointer to parent step, if any
-        name:
-          type: string
-          title: Name of the test step for display
-        description:
-          type: string
-          title: Description of the test step from test controller
-        stepType:
-          $ref: '#/components/schemas/v1TestStepType'
-        stepPath:
-          type: string
-          title: Hierarchical path (e.g., "1", "1.1", "1.2.3")
-        status:
-          $ref: '#/components/schemas/v1TestStatus'
-        startTime:
-          type: string
-          format: date-time
-          title: Start time of the test step
-        endTime:
-          type: string
-          format: date-time
-          title: End time of the test step
-        errorInfo:
-          $ref: '#/components/schemas/v1ErrorInfo'
-        metadata:
+        testSteps:
           type: array
           items:
-            $ref: '#/components/schemas/v1MetadataValue'
-          title: The metadata values associated with this test step
-      required:
-      - testStepId
-      - testReportId
-      - name
-      - stepType
-      - stepPath
-      - status
-      - startTime
-      - endTime
+            $ref: '#/components/schemas/v1TestStep'
+          title: The list of test steps
+        nextPageToken:
+          type: string
+          title: The next page token for pagination
+      title: Response message for ListTestSteps
+    v1NumericBounds:
+      type: object
+      properties:
+        min:
+          type: number
+          format: double
+        max:
+          type: number
+          format: double
     v1TestMeasurement:
       type: object
       properties:
@@ -1117,81 +1065,55 @@ components:
       - testReportId
       - passed
       - timestamp
-    v1CreateTestMeasurementsResponse:
+    v1DeleteTestMeasurementResponse:
       type: object
-      properties:
-        measurementsCreatedCount:
-          type: integer
-          format: int32
-          title: The number of test measurements successfully created
-        measurementIds:
-          type: array
-          items:
-            type: string
-          title: The IDs of the created test measurements
-      title: Response message for CreateTestMeasurements
-      required:
-      - measurementsCreatedCount
-      - measurementIds
-    v1UpdateTestMeasurementRequest:
-      type: object
-      properties:
-        testMeasurement:
-          $ref: '#/components/schemas/v1TestMeasurement'
-        updateMask:
-          type: string
-          description: 'The field mask specifying which fields to update. The fields available to be updated are
-
-            `name`, `measurement_type`, `numeric_value`, `string_value`, `boolean_value`, `unit`, `numeric_bounds`,
-
-            `string_bounds`, `passed`, `timestamp`, `description`, and `channel_names` and `metadata`. When `metadata` is in the
-
-            mask, the supplied list replaces all existing metadata for the measurement; sending
-
-            an empty or omitted list clears all metadata.'
-      title: Request message for UpdateTestMeasurement
-      required:
-      - testMeasurement
-    v1NumericBounds:
-      type: object
-      properties:
-        min:
-          type: number
-          format: double
-        max:
-          type: number
-          format: double
-    v1ListTestStepsResponse:
-      type: object
-      properties:
-        testSteps:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1TestStep'
-          title: The list of test steps
-        nextPageToken:
-          type: string
-          title: The next page token for pagination
-      title: Response message for ListTestSteps
-    v1GetTestReportResponse:
+      description: Empty response indicating successful deletion
+      title: Response message for DeleteTestMeasurement
+    v1UpdateTestReportRequest:
       type: object
       properties:
         testReport:
           $ref: '#/components/schemas/v1TestReport'
-      title: Response message for GetTestReport
-    v1TestStatus:
+        updateMask:
+          type: string
+          description: 'The field mask specifying which fields to update. The fields available to be updated are
+
+            `status`, `name`, `test_system_name`, `test_case`, `start_time`, `end_time`, `serial_number`,
+
+            `part_number`, `system_operator`, `run_id`, and `is_archived`.'
+      title: Request message for UpdateTestReport
+      required:
+      - testReport
+    v1MetadataRelationValue:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+      required:
+      - resourceType
+      - resourceId
+    v1TestMeasurementType:
       type: string
       enum:
-      - TEST_STATUS_UNSPECIFIED
-      - TEST_STATUS_DRAFT
-      - TEST_STATUS_PASSED
-      - TEST_STATUS_FAILED
-      - TEST_STATUS_ABORTED
-      - TEST_STATUS_ERROR
-      - TEST_STATUS_IN_PROGRESS
-      - TEST_STATUS_SKIPPED
-      default: TEST_STATUS_UNSPECIFIED
-      title: '- TEST_STATUS_DRAFT: Barebones test report created, waiting for file processing'
+      - TEST_MEASUREMENT_TYPE_UNSPECIFIED
+      - TEST_MEASUREMENT_TYPE_DOUBLE
+      - TEST_MEASUREMENT_TYPE_STRING
+      - TEST_MEASUREMENT_TYPE_BOOLEAN
+      - TEST_MEASUREMENT_TYPE_LIMIT
+      default: TEST_MEASUREMENT_TYPE_UNSPECIFIED
+    v1ErrorInfo:
+      type: object
+      properties:
+        errorCode:
+          type: integer
+          format: int32
+        errorMessage:
+          type: string
+      required:
+      - errorCode
+      - errorMessage
     rpcStatus:
       type: object
       properties:
@@ -1204,6 +1126,84 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/protobufAny'
+    v1CountTestMeasurementsResponse:
+      type: object
+      properties:
+        count:
+          type: string
+          format: int64
+          title: The total count of test measurements matching the filter
+      title: Response message for CountTestMeasurements
+    v1StringBounds:
+      type: object
+      properties:
+        expectedValue:
+          type: string
+      required:
+      - expectedValue
+    v1CreateTestReportRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/v1TestStatus'
+        name:
+          type: string
+          title: The name of the test run
+        testSystemName:
+          type: string
+          title: The name of the test system
+        testCase:
+          type: string
+          title: The test case that was run
+        startTime:
+          type: string
+          format: date-time
+          title: The start time of the test run
+        endTime:
+          type: string
+          format: date-time
+          title: The end time of the test run
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1MetadataValue'
+          title: The metadata values associated with this test run
+        serialNumber:
+          type: string
+          title: The serial number for the DUT
+        partNumber:
+          type: string
+          title: The part number for the DUT
+        systemOperator:
+          type: string
+          title: Unique identifier for user owner
+        runId:
+          type: string
+          title: The run ID for the test report
+      title: Request message for CreateTestReport
+      required:
+      - status
+      - name
+      - testSystemName
+      - testCase
+      - startTime
+      - endTime
+    v1CreateTestStepResponse:
+      type: object
+      properties:
+        testStep:
+          $ref: '#/components/schemas/v1TestStep'
+      title: Response message for CreateTestStep
+    v1TestStepType:
+      type: string
+      enum:
+      - TEST_STEP_TYPE_UNSPECIFIED
+      - TEST_STEP_TYPE_SEQUENCE
+      - TEST_STEP_TYPE_GROUP
+      - TEST_STEP_TYPE_ACTION
+      - TEST_STEP_TYPE_FLOW_CONTROL
+      default: TEST_STEP_TYPE_UNSPECIFIED
+      title: "- TEST_STEP_TYPE_SEQUENCE: ResultSet/MainSequence - top-level test sequence\n - TEST_STEP_TYPE_GROUP: TestGroup - logical grouping of test steps\n - TEST_STEP_TYPE_ACTION: SessionAction - individual executable action\n - TEST_STEP_TYPE_FLOW_CONTROL: Flow control elements (While, If, etc.)"
   securitySchemes:
     BearerAuth:
       type: http

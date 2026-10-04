@@ -852,32 +852,30 @@ paths:
       - PrincipalAttributeService
 components:
   schemas:
+    v1GetPrincipalAttributeEnumValueResponse:
+      type: object
+      properties:
+        principalAttributeEnumValue:
+          $ref: '#/components/schemas/v1PrincipalAttributeEnumValue'
+      required:
+      - principalAttributeEnumValue
     v1ArchivePrincipalAttributeValuesResponse:
       type: object
-    v1ArchivePrincipalAttributeKeysRequest:
+    v1CreatePrincipalAttributeEnumValueResponse:
       type: object
       properties:
-        principalAttributeKeyIds:
-          type: array
-          items:
-            type: string
-      description: ArchivePrincipalAttributeKeysRequest is used to batch archive principal attribute keys by id.
+        principalAttributeEnumValue:
+          $ref: '#/components/schemas/v1PrincipalAttributeEnumValue'
       required:
-      - principalAttributeKeyIds
-    v1ListPrincipalAttributeValuesResponse:
+      - principalAttributeEnumValue
+    v1GetPrincipalAttributeValueResponse:
       type: object
       properties:
-        principalAttributeValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1PrincipalAttributeValue'
-        nextPageToken:
-          type: string
-      description: ListPrincipalAttributeValuesResponse returns the list of principal attribute values from a ListPrincipalAttributeValues call.
+        principalAttributeValue:
+          $ref: '#/components/schemas/v1PrincipalAttributeValue'
+      description: GetPrincipalAttributeValueResponse returns a principal attribute value from a GetPrincipalAttributeValue call.
       required:
-      - principalAttributeValues
-    v1UnarchivePrincipalAttributeEnumValueResponse:
-      type: object
+      - principalAttributeValue
     v1BatchCreatePrincipalAttributeValueResponse:
       type: object
       properties:
@@ -888,6 +886,52 @@ components:
       description: BatchCreatePrincipalAttributeValueResponse returns the principal attribute values from a BatchCreatePrincipalAttributeValue call.
       required:
       - principalAttributeValues
+    v1BatchUnarchivePrincipalAttributeEnumValuesResponse:
+      type: object
+    v1PrincipalAttributeValueType:
+      type: string
+      enum:
+      - PRINCIPAL_ATTRIBUTE_VALUE_TYPE_UNSPECIFIED
+      - PRINCIPAL_ATTRIBUTE_VALUE_TYPE_ENUM
+      - PRINCIPAL_ATTRIBUTE_VALUE_TYPE_BOOLEAN
+      - PRINCIPAL_ATTRIBUTE_VALUE_TYPE_NUMBER
+      - PRINCIPAL_ATTRIBUTE_VALUE_TYPE_SET_OF_ENUM
+      default: PRINCIPAL_ATTRIBUTE_VALUE_TYPE_UNSPECIFIED
+      description: PrincipalAttributeValueType enumerates the supported value types for a principal attribute key.
+    v1ArchivePrincipalAttributeEnumValueResponse:
+      type: object
+      properties:
+        principalAttributeValuesMigrated:
+          type: integer
+          format: int32
+          description: 'Total number of principal attribute values migrated or archived by this operation.
+
+            When a replacement enum value is provided, this represents values migrated to the new value.
+
+            When no replacement is provided, this represents values that were archived.'
+    v1UpdatePrincipalAttributeKeyResponse:
+      type: object
+      properties:
+        principalAttributeKey:
+          $ref: '#/components/schemas/v1PrincipalAttributeKey'
+      description: UpdatePrincipalAttributeKeyResponse returns the principal attribute key from a UpdatePrincipalAttributeKey call.
+      required:
+      - principalAttributeKey
+    v1CheckPrincipalAttributeKeyArchiveImpactResponse:
+      type: object
+      properties:
+        activeUserPrincipalAttributeValueCount:
+          type: string
+          format: int64
+          description: 'Non-archived user principal-attribute value rows for this key that will be archived with the key
+
+            (same scope as ArchivePrincipalAttributeKeys; includes multiple rows per principal for SET_OF_ENUM).'
+        activeUserGroupPrincipalAttributeValueCount:
+          type: string
+          format: int64
+          description: 'Non-archived user_group_attribute_values rows for this key. They are not archived by ArchivePrincipalAttributeKeys,
+
+            but stop contributing to principal.groupAttributes once the key is archived (evaluation joins active keys only).'
     protobufAny:
       type: object
       properties:
@@ -896,6 +940,8 @@ components:
           description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
       additionalProperties: {}
       description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    v1UnarchivePrincipalAttributeKeysResponse:
+      type: object
     v1PrincipalAttributeEnumValue:
       type: object
       properties:
@@ -942,39 +988,6 @@ components:
       - createdByUserId
       - modifiedDate
       - modifiedByUserId
-    v1ListPrincipalAttributeKeysResponse:
-      type: object
-      properties:
-        principalAttributeKeys:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1PrincipalAttributeKey'
-        nextPageToken:
-          type: string
-      description: ListPrincipalAttributeKeysResponse returns the list of principal attribute keys from a ListPrincipalAttributeKeys call.
-      required:
-      - principalAttributeKeys
-    v1GetPrincipalAttributeKeyResponse:
-      type: object
-      properties:
-        principalAttributeKey:
-          $ref: '#/components/schemas/v1PrincipalAttributeKey'
-      description: GetPrincipalAttributeKeyResponse returns a principal attribute key from a GetPrincipalAttributeKey call.
-      required:
-      - principalAttributeKey
-    v1CreatePrincipalAttributeEnumValueRequest:
-      type: object
-      properties:
-        principalAttributeKeyId:
-          type: string
-        displayName:
-          type: string
-        description:
-          type: string
-      title: Principal Attribute Enum Value RPC messages
-      required:
-      - principalAttributeKeyId
-      - displayName
     v1PrincipalAttributePrincipalType:
       type: string
       enum:
@@ -983,94 +996,6 @@ components:
       - PRINCIPAL_ATTRIBUTE_PRINCIPAL_TYPE_USER_GROUP
       default: PRINCIPAL_ATTRIBUTE_PRINCIPAL_TYPE_UNSPECIFIED
       description: PrincipalAttributePrincipalType enumerates the supported principal types for principal attribute values.
-    v1CreatePrincipalAttributeKeyRequest:
-      type: object
-      properties:
-        displayName:
-          type: string
-        description:
-          type: string
-        type:
-          $ref: '#/components/schemas/v1PrincipalAttributeValueType'
-        initialEnumValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1CreatePrincipalAttributeKeyRequestInitialEnumValue'
-          description: Optional initial enum values to create alongside the key. Only applicable for ENUM type keys.
-      description: CreatePrincipalAttributeKeyRequest is used to create a new principal attribute key.
-      required:
-      - displayName
-      - type
-    v1GetPrincipalAttributeEnumValueResponse:
-      type: object
-      properties:
-        principalAttributeEnumValue:
-          $ref: '#/components/schemas/v1PrincipalAttributeEnumValue'
-      required:
-      - principalAttributeEnumValue
-    v1UpdatePrincipalAttributeEnumValueResponse:
-      type: object
-      properties:
-        principalAttributeEnumValue:
-          $ref: '#/components/schemas/v1PrincipalAttributeEnumValue'
-      required:
-      - principalAttributeEnumValue
-    v1CheckPrincipalAttributeKeyArchiveImpactResponse:
-      type: object
-      properties:
-        activeUserPrincipalAttributeValueCount:
-          type: string
-          format: int64
-          description: 'Non-archived user principal-attribute value rows for this key that will be archived with the key
-
-            (same scope as ArchivePrincipalAttributeKeys; includes multiple rows per principal for SET_OF_ENUM).'
-        activeUserGroupPrincipalAttributeValueCount:
-          type: string
-          format: int64
-          description: 'Non-archived user_group_attribute_values rows for this key. They are not archived by ArchivePrincipalAttributeKeys,
-
-            but stop contributing to principal.groupAttributes once the key is archived (evaluation joins active keys only).'
-    v1GetPrincipalAttributeValueResponse:
-      type: object
-      properties:
-        principalAttributeValue:
-          $ref: '#/components/schemas/v1PrincipalAttributeValue'
-      description: GetPrincipalAttributeValueResponse returns a principal attribute value from a GetPrincipalAttributeValue call.
-      required:
-      - principalAttributeValue
-    v1ListPrincipalAttributeKeyValuesResponse:
-      type: object
-      properties:
-        principalAttributeValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1PrincipalAttributeValue'
-        nextPageToken:
-          type: string
-      description: ListPrincipalAttributeKeyValuesResponse returns the list of principal attribute values from a ListPrincipalAttributeKeyValues call.
-      required:
-      - principalAttributeValues
-    v1CreatePrincipalAttributeKeyResponse:
-      type: object
-      properties:
-        principalAttributeKey:
-          $ref: '#/components/schemas/v1PrincipalAttributeKey'
-        enumValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/v1PrincipalAttributeEnumValue'
-          description: The enum values created alongside the key, if any were provided in the request.
-      description: CreatePrincipalAttributeKeyResponse returns the principal attribute key from a CreatePrincipalAttributeKey call.
-      required:
-      - principalAttributeKey
-    v1UpdatePrincipalAttributeKeyResponse:
-      type: object
-      properties:
-        principalAttributeKey:
-          $ref: '#/components/schemas/v1PrincipalAttributeKey'
-      description: UpdatePrincipalAttributeKeyResponse returns the principal attribute key from a UpdatePrincipalAttributeKey call.
-      required:
-      - principalAttributeKey
     v1PrincipalAttributeValue:
       type: object
       properties:
@@ -1124,26 +1049,6 @@ components:
       - createdByUserId
       - createdDate
       - key
-    v1BatchUnarchivePrincipalAttributeEnumValuesRequest:
-      type: object
-      properties:
-        principalAttributeEnumValueIds:
-          type: array
-          items:
-            type: string
-      required:
-      - principalAttributeEnumValueIds
-    v1UnarchivePrincipalAttributeValuesResponse:
-      type: object
-    v1PrincipalAttributeEnumValueIdList:
-      type: object
-      properties:
-        ids:
-          type: array
-          items:
-            type: string
-    v1ArchivePrincipalAttributeKeysResponse:
-      type: object
     v1ArchivePrincipalAttributeValuesRequest:
       type: object
       properties:
@@ -1157,44 +1062,30 @@ components:
       required:
       - principalAttributeValueIds
       - principalType
-    v1CreatePrincipalAttributeEnumValueResponse:
+    v1BatchUnarchivePrincipalAttributeEnumValuesRequest:
+      type: object
+      properties:
+        principalAttributeEnumValueIds:
+          type: array
+          items:
+            type: string
+      required:
+      - principalAttributeEnumValueIds
+    v1GetPrincipalAttributeKeyResponse:
+      type: object
+      properties:
+        principalAttributeKey:
+          $ref: '#/components/schemas/v1PrincipalAttributeKey'
+      description: GetPrincipalAttributeKeyResponse returns a principal attribute key from a GetPrincipalAttributeKey call.
+      required:
+      - principalAttributeKey
+    v1UpdatePrincipalAttributeEnumValueResponse:
       type: object
       properties:
         principalAttributeEnumValue:
           $ref: '#/components/schemas/v1PrincipalAttributeEnumValue'
       required:
       - principalAttributeEnumValue
-    v1ArchivePrincipalAttributeEnumValueResponse:
-      type: object
-      properties:
-        principalAttributeValuesMigrated:
-          type: integer
-          format: int32
-          description: 'Total number of principal attribute values migrated or archived by this operation.
-
-            When a replacement enum value is provided, this represents values migrated to the new value.
-
-            When no replacement is provided, this represents values that were archived.'
-    v1PrincipalAttributeValueType:
-      type: string
-      enum:
-      - PRINCIPAL_ATTRIBUTE_VALUE_TYPE_UNSPECIFIED
-      - PRINCIPAL_ATTRIBUTE_VALUE_TYPE_ENUM
-      - PRINCIPAL_ATTRIBUTE_VALUE_TYPE_BOOLEAN
-      - PRINCIPAL_ATTRIBUTE_VALUE_TYPE_NUMBER
-      - PRINCIPAL_ATTRIBUTE_VALUE_TYPE_SET_OF_ENUM
-      default: PRINCIPAL_ATTRIBUTE_VALUE_TYPE_UNSPECIFIED
-      description: PrincipalAttributeValueType enumerates the supported value types for a principal attribute key.
-    v1CreatePrincipalAttributeKeyRequestInitialEnumValue:
-      type: object
-      properties:
-        displayName:
-          type: string
-        description:
-          type: string
-      description: Nested message for initial enum values in create requests.
-      required:
-      - displayName
     v1BatchArchivePrincipalAttributeEnumValuesResponse:
       type: object
       properties:
@@ -1204,29 +1095,47 @@ components:
           description: 'Total number of principal attribute values migrated or archived across all enum value operations.
 
             This includes both values migrated to replacement values and values archived without replacement.'
-    v1UnarchivePrincipalAttributeKeysRequest:
+    v1CreatePrincipalAttributeKeyRequest:
+      type: object
+      properties:
+        displayName:
+          type: string
+        description:
+          type: string
+        type:
+          $ref: '#/components/schemas/v1PrincipalAttributeValueType'
+        initialEnumValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1CreatePrincipalAttributeKeyRequestInitialEnumValue'
+          description: Optional initial enum values to create alongside the key. Only applicable for ENUM type keys.
+      description: CreatePrincipalAttributeKeyRequest is used to create a new principal attribute key.
+      required:
+      - displayName
+      - type
+    v1ArchivePrincipalAttributeKeysRequest:
       type: object
       properties:
         principalAttributeKeyIds:
           type: array
           items:
             type: string
-      description: UnarchivePrincipalAttributeKeysRequest is used to batch unarchive principal attribute keys by id.
+      description: ArchivePrincipalAttributeKeysRequest is used to batch archive principal attribute keys by id.
       required:
       - principalAttributeKeyIds
-    v1UnarchivePrincipalAttributeValuesRequest:
+    v1CreatePrincipalAttributeEnumValueRequest:
       type: object
       properties:
-        principalAttributeValueIds:
-          type: array
-          items:
-            type: string
-        principalType:
-          $ref: '#/components/schemas/v1PrincipalAttributePrincipalType'
-      description: UnarchivePrincipalAttributeValuesRequest is used to batch unarchive principal attribute values by id.
+        principalAttributeKeyId:
+          type: string
+        displayName:
+          type: string
+        description:
+          type: string
+      title: Principal Attribute Enum Value RPC messages
       required:
-      - principalAttributeValueIds
-      - principalType
+      - principalAttributeKeyId
+      - displayName
     v1PrincipalAttributeKey:
       type: object
       properties:
@@ -1273,8 +1182,55 @@ components:
       - createdByUserId
       - modifiedDate
       - modifiedByUserId
-    v1BatchUnarchivePrincipalAttributeEnumValuesResponse:
+    v1UnarchivePrincipalAttributeKeysRequest:
       type: object
+      properties:
+        principalAttributeKeyIds:
+          type: array
+          items:
+            type: string
+      description: UnarchivePrincipalAttributeKeysRequest is used to batch unarchive principal attribute keys by id.
+      required:
+      - principalAttributeKeyIds
+    v1CreatePrincipalAttributeKeyResponse:
+      type: object
+      properties:
+        principalAttributeKey:
+          $ref: '#/components/schemas/v1PrincipalAttributeKey'
+        enumValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1PrincipalAttributeEnumValue'
+          description: The enum values created alongside the key, if any were provided in the request.
+      description: CreatePrincipalAttributeKeyResponse returns the principal attribute key from a CreatePrincipalAttributeKey call.
+      required:
+      - principalAttributeKey
+    v1ArchivePrincipalAttributeKeysResponse:
+      type: object
+    v1ListPrincipalAttributeValuesResponse:
+      type: object
+      properties:
+        principalAttributeValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1PrincipalAttributeValue'
+        nextPageToken:
+          type: string
+      description: ListPrincipalAttributeValuesResponse returns the list of principal attribute values from a ListPrincipalAttributeValues call.
+      required:
+      - principalAttributeValues
+    v1ListPrincipalAttributeKeysResponse:
+      type: object
+      properties:
+        principalAttributeKeys:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1PrincipalAttributeKey'
+        nextPageToken:
+          type: string
+      description: ListPrincipalAttributeKeysResponse returns the list of principal attribute keys from a ListPrincipalAttributeKeys call.
+      required:
+      - principalAttributeKeys
     v1BatchArchivePrincipalAttributeEnumValuesRequestEnumValueArchival:
       type: object
       properties:
@@ -1288,15 +1244,34 @@ components:
             if provided. Otherwise, user-attributes that reference it will be archived as well.'
       required:
       - archivedEnumValueId
-    v1BatchArchivePrincipalAttributeEnumValuesRequest:
+    v1PrincipalAttributeEnumValueIdList:
       type: object
       properties:
-        archivalRequests:
+        ids:
           type: array
           items:
-            $ref: '#/components/schemas/v1BatchArchivePrincipalAttributeEnumValuesRequestEnumValueArchival'
+            type: string
+    v1UnarchivePrincipalAttributeValuesResponse:
+      type: object
+    v1ListPrincipalAttributeEnumValuesResponse:
+      type: object
+      properties:
+        principalAttributeEnumValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1PrincipalAttributeEnumValue'
+        nextPageToken:
+          type: string
+    v1CreatePrincipalAttributeKeyRequestInitialEnumValue:
+      type: object
+      properties:
+        displayName:
+          type: string
+        description:
+          type: string
+      description: Nested message for initial enum values in create requests.
       required:
-      - archivalRequests
+      - displayName
     v1BatchCreatePrincipalAttributeValueRequest:
       type: object
       properties:
@@ -1323,8 +1298,15 @@ components:
       - principalAttributeKeyId
       - principalIds
       - principalType
-    v1UnarchivePrincipalAttributeKeysResponse:
+    v1BatchArchivePrincipalAttributeEnumValuesRequest:
       type: object
+      properties:
+        archivalRequests:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1BatchArchivePrincipalAttributeEnumValuesRequestEnumValueArchival'
+      required:
+      - archivalRequests
     rpcStatus:
       type: object
       properties:
@@ -1337,15 +1319,33 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/protobufAny'
-    v1ListPrincipalAttributeEnumValuesResponse:
+    v1ListPrincipalAttributeKeyValuesResponse:
       type: object
       properties:
-        principalAttributeEnumValues:
+        principalAttributeValues:
           type: array
           items:
-            $ref: '#/components/schemas/v1PrincipalAttributeEnumValue'
+            $ref: '#/components/schemas/v1PrincipalAttributeValue'
         nextPageToken:
           type: string
+      description: ListPrincipalAttributeKeyValuesResponse returns the list of principal attribute values from a ListPrincipalAttributeKeyValues call.
+      required:
+      - principalAttributeValues
+    v1UnarchivePrincipalAttributeValuesRequest:
+      type: object
+      properties:
+        principalAttributeValueIds:
+          type: array
+          items:
+            type: string
+        principalType:
+          $ref: '#/components/schemas/v1PrincipalAttributePrincipalType'
+      description: UnarchivePrincipalAttributeValuesRequest is used to batch unarchive principal attribute values by id.
+      required:
+      - principalAttributeValueIds
+      - principalType
+    v1UnarchivePrincipalAttributeEnumValueResponse:
+      type: object
   requestBodies:
     PrincipalAttributeService_UpdatePrincipalAttributeEnumValueBody:
       content:

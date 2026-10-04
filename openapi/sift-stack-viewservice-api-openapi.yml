@@ -650,20 +650,31 @@ paths:
       - ViewService
 components:
   schemas:
-    viewsv1DeleteViewResponse:
+    viewsv2ViewAxisGroups:
       type: object
-    viewsv2UpdateViewResponse:
+      properties:
+        left:
+          type: array
+          items:
+            type: string
+        right:
+          type: array
+          items:
+            type: string
+    viewsv2GetViewResponse:
       type: object
       properties:
         view:
           $ref: '#/components/schemas/viewsv2View'
-    viewsv1ListApplicableViewsResponse:
+    viewsv1PinViewResponse:
+      type: object
+    viewsv2ListApplicableViewsResponse:
       type: object
       properties:
         views:
           type: array
           items:
-            $ref: '#/components/schemas/viewsv1View'
+            $ref: '#/components/schemas/viewsv2View'
         nextPageToken:
           type: string
           description: 'A token, which can be sent as `page_token` to retrieve the next page.
@@ -681,58 +692,20 @@ components:
           description: 'A token, which can be sent as `page_token` to retrieve the next page.
 
             If this field is omitted, there are no subsequent pages.'
-    protobufAny:
+    viewsv1UnpinViewResponse:
       type: object
-      properties:
-        '@type':
-          type: string
-          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
-      additionalProperties: {}
-      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
-    viewsv1ViewChannel:
-      type: object
-      properties:
-        name:
-          type: string
-        component:
-          type: string
-        dataType:
-          type: string
-        axisGroup:
-          type: string
-        bitFieldNames:
-          type: array
-          items:
-            type: string
-        calculatedChannelConfig:
-          $ref: '#/components/schemas/viewsv1ViewChannelCalculatedChannelConfig'
-      required:
-      - name
-      - component
-      - dataType
-    viewsv2GetViewResponse:
+    viewsv2CreateViewRequest:
       type: object
       properties:
         view:
           $ref: '#/components/schemas/viewsv2View'
-    viewsv1ViewChannelCalculatedChannelConfig:
+      required:
+      - view
+    viewsv1GetViewResponse:
       type: object
       properties:
-        channelKey:
-          type: string
-        channelReferences:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/ChannelCalculatedChannelConfigChannelReference'
-        expression:
-          type: string
-        unit:
-          type: string
-      required:
-      - channelKey
-      - channelReferences
-      - expression
-      - unit
+        view:
+          $ref: '#/components/schemas/viewsv1View'
     ChannelCalculatedChannelConfigChannelReference:
       type: object
       properties:
@@ -743,31 +716,6 @@ components:
       required:
       - name
       - component
-    viewsv2ViewAxisGroups:
-      type: object
-      properties:
-        left:
-          type: array
-          items:
-            type: string
-        right:
-          type: array
-          items:
-            type: string
-    viewsv1UnpinViewResponse:
-      type: object
-    viewsv1CreateViewResponse:
-      type: object
-      properties:
-        view:
-          $ref: '#/components/schemas/viewsv1View'
-    viewsv1UpdateViewResponse:
-      type: object
-      properties:
-        view:
-          $ref: '#/components/schemas/viewsv1View'
-    viewsv1PinViewResponse:
-      type: object
     viewsv2ViewChannel:
       type: object
       properties:
@@ -786,18 +734,43 @@ components:
       required:
       - name
       - dataType
-    viewsv1ListViewsResponse:
+    protobufAny:
       type: object
       properties:
-        views:
+        '@type':
+          type: string
+          description: "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    viewsv1ViewAxisGroups:
+      type: object
+      properties:
+        left:
           type: array
           items:
-            $ref: '#/components/schemas/viewsv1View'
-        nextPageToken:
+            type: string
+        right:
+          type: array
+          items:
+            type: string
+    viewsv2ViewChannelCalculatedChannelConfig:
+      type: object
+      properties:
+        channelKey:
           type: string
-          description: 'A token, which can be sent as `page_token` to retrieve the next page.
-
-            If this field is omitted, there are no subsequent pages.'
+        channelReferences:
+          type: object
+          additionalProperties:
+            type: string
+        expression:
+          type: string
+        unit:
+          type: string
+      required:
+      - channelKey
+      - channelReferences
+      - expression
+      - unit
     viewsv1View:
       type: object
       properties:
@@ -825,22 +798,6 @@ components:
           type: string
         isPinned:
           type: boolean
-    viewsv2ListApplicableViewsResponse:
-      type: object
-      properties:
-        views:
-          type: array
-          items:
-            $ref: '#/components/schemas/viewsv2View'
-        nextPageToken:
-          type: string
-          description: 'A token, which can be sent as `page_token` to retrieve the next page.
-
-            If this field is omitted, there are no subsequent pages.'
-    viewsv2UnpinViewResponse:
-      type: object
-    viewsv2PinViewResponse:
-      type: object
     viewsv2View:
       type: object
       properties:
@@ -866,12 +823,50 @@ components:
           type: string
         isPinned:
           type: boolean
-    viewsv1GetViewResponse:
+    viewsv1UpdateViewResponse:
       type: object
       properties:
         view:
           $ref: '#/components/schemas/viewsv1View'
-    viewsv2ViewChannelCalculatedChannelConfig:
+    viewsv2UpdateViewResponse:
+      type: object
+      properties:
+        view:
+          $ref: '#/components/schemas/viewsv2View'
+    viewsv2DeleteViewResponse:
+      type: object
+    viewsv1ListViewsResponse:
+      type: object
+      properties:
+        views:
+          type: array
+          items:
+            $ref: '#/components/schemas/viewsv1View'
+        nextPageToken:
+          type: string
+          description: 'A token, which can be sent as `page_token` to retrieve the next page.
+
+            If this field is omitted, there are no subsequent pages.'
+    viewsv2PinViewResponse:
+      type: object
+    viewsv1ListApplicableViewsResponse:
+      type: object
+      properties:
+        views:
+          type: array
+          items:
+            $ref: '#/components/schemas/viewsv1View'
+        nextPageToken:
+          type: string
+          description: 'A token, which can be sent as `page_token` to retrieve the next page.
+
+            If this field is omitted, there are no subsequent pages.'
+    viewsv1CreateViewResponse:
+      type: object
+      properties:
+        view:
+          $ref: '#/components/schemas/viewsv1View'
+    viewsv1ViewChannelCalculatedChannelConfig:
       type: object
       properties:
         channelKey:
@@ -879,7 +874,7 @@ components:
         channelReferences:
           type: object
           additionalProperties:
-            type: string
+            $ref: '#/components/schemas/ChannelCalculatedChannelConfigChannelReference'
         expression:
           type: string
         unit:
@@ -889,31 +884,34 @@ components:
       - channelReferences
       - expression
       - unit
+    viewsv1ViewChannel:
+      type: object
+      properties:
+        name:
+          type: string
+        component:
+          type: string
+        dataType:
+          type: string
+        axisGroup:
+          type: string
+        bitFieldNames:
+          type: array
+          items:
+            type: string
+        calculatedChannelConfig:
+          $ref: '#/components/schemas/viewsv1ViewChannelCalculatedChannelConfig'
+      required:
+      - name
+      - component
+      - dataType
+    viewsv2UnpinViewResponse:
+      type: object
     viewsv2CreateViewResponse:
       type: object
       properties:
         view:
           $ref: '#/components/schemas/viewsv2View'
-    viewsv2CreateViewRequest:
-      type: object
-      properties:
-        view:
-          $ref: '#/components/schemas/viewsv2View'
-      required:
-      - view
-    viewsv2DeleteViewResponse:
-      type: object
-    viewsv1ViewAxisGroups:
-      type: object
-      properties:
-        left:
-          type: array
-          items:
-            type: string
-        right:
-          type: array
-          items:
-            type: string
     rpcStatus:
       type: object
       properties:
@@ -926,6 +924,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/protobufAny'
+    viewsv1DeleteViewResponse:
+      type: object
   requestBodies:
     ViewService_PinViewBody:
       content:
