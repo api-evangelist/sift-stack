@@ -1,0 +1,12 @@
+{
+ "url": "https://docs.siftstack.com/openapi.json",
+ "requested_url": "https://docs.siftstack.com/openapi.json",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 1473368,
+ "sha256": "e3dcd0876a54d4d40c9ed43443fc210d0f6511914f8560b07fae1d36f8e4e1a7",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "equivalent",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the provider's current document describes the same operations (Jaccard 0.974), but the bytes differ, so the archive is an earlier or reformatted copy."
+}
