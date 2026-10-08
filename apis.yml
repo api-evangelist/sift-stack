@@ -1292,6 +1292,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: RateLimits
+  url: rate-limits/sift-stack-rate-limits.yml
 - type: License
   name: MIT
   url: https://github.com/sift-stack/sift/blob/main/LICENSE
